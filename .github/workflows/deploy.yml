@@ -1,0 +1,43 @@
+name: Deploy SSR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: secrets
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build image
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            --build-arg VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }} \
+            -t ${{ secrets.DOCKER_USERNAME }}/ssr-app:latest .
+
+      - name: Push image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/ssr-app:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/ssr-app:latest
+            docker stop ssr-app || true
+            docker rm ssr-app || true
+            docker run -d \
+              --name ssr-app \
+              -p 3000:3000 \
+              --restart always \
+              ${{ secrets.DOCKER_USERNAME }}/ssr-app:latest
