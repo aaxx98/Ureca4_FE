@@ -5,13 +5,13 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 
 import viteReact from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 
 const config = defineConfig({
   plugins: [
     devtools(),
     tsconfigPaths({ projects: ['./tsconfig.json'] }),
-    tailwindcss(),
+    vanillaExtractPlugin(),
     tanstackStart(),
     viteReact(),
   ],
