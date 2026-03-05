@@ -25,6 +25,8 @@
     "@tanstack/react-router-ssr-query": "^1.131.7",
     "@tanstack/react-start": "^1.132.0",
     "@tanstack/router-plugin": "^1.132.0",
+    "@vanilla-extract/css": "^1.18.0",
+    "@vanilla-extract/vite-plugin": "^5.1.4",
     "ky": "^1.14.3",
     "lucide-react": "^0.545.0",
     "react": "^19.2.0",

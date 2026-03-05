@@ -18,8 +18,11 @@ const kyInstance = ky.create({
 			async (request, _options, response) => {
 				if (response.status !== 401) return response
 
-				// auth/refresh 자체가 401이면 무한루프 방지
-				if (request.url.includes("/auth/refresh")) {
+				// 인증 엔드포인트 자체가 401이면 토큰 갱신 시도하지 않음
+				if (
+					request.url.includes("/auth/refresh") ||
+					request.url.includes("/auth/login")
+				) {
 					setAccessToken(null)
 					return response
 				}
@@ -47,6 +50,7 @@ const kyInstance = ky.create({
 export const apiClient = <T>(config: {
 	url: string
 	method: string
+	headers?: Record<string, string>
 	params?: Record<string, string | number | boolean>
 	data?: unknown
 	signal?: AbortSignal
