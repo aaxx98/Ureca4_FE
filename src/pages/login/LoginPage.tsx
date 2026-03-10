@@ -1,6 +1,11 @@
 import { useId, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useLogin } from "../../shared/api/generated/auth";
 import { setAccessToken } from "../../shared/api/tokenStore";
+import { ROUTES } from "../../shared/config/routes";
+import { Button } from "../../shared/ui/Button/Button";
+import { EyeIcon, EyeOffIcon, GoogleIcon } from "../../shared/ui/icons";
+import { Input } from "../../shared/ui/Input/Input";
 import * as s from "./LoginPage.css";
 
 export function LoginPage() {
@@ -10,17 +15,15 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const { mutate: login, isPending } = useLogin({
     mutation: {
       onSuccess: (data) => {
-        if (data.accessToken) {
-          setAccessToken(data.accessToken);
-        }
-        console.log("로그인 성공", data);
+        if (data.accessToken) setAccessToken(data.accessToken);
+        navigate({ to: ROUTES.HOME });
       },
-      onError: (error) => {
-        console.error("로그인 실패", error);
+      onError: () => {
         setError("아이디 또는 비밀번호가 올바르지 않습니다.");
       },
     },
@@ -29,16 +32,8 @@ export function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!loginId.trim()) {
-      setError("아이디를 입력해주세요.");
-      return;
-    }
-    if (!password.trim()) {
-      setError("비밀번호를 입력해주세요.");
-      return;
-    }
-
+    if (!loginId.trim()) return setError("아이디를 입력해주세요.");
+    if (!password.trim()) return setError("비밀번호를 입력해주세요.");
     login({ data: { loginId, password } });
   };
 
@@ -58,96 +53,59 @@ export function LoginPage() {
         <form className={s.form} onSubmit={handleSubmit} noValidate>
           {error && <div className={s.globalErrorBox}>{error}</div>}
 
-          <div className={s.fieldGroup}>
-            <label className={s.label} htmlFor={loginIdInputId}>
-              아이디
-            </label>
-            <div className={s.inputWrapper}>
-              <input
-                id={loginIdInputId}
-                type="text"
-                className={s.input}
-                placeholder="아이디를 입력하세요"
-                value={loginId}
-                onChange={(e) => setLoginId(e.target.value)}
-                autoComplete="username"
-                disabled={isPending}
-              />
-            </div>
-          </div>
+          <Input
+            id={loginIdInputId}
+            label="아이디"
+            type="text"
+            placeholder="아이디를 입력하세요"
+            value={loginId}
+            onChange={(e) => setLoginId(e.target.value)}
+            autoComplete="username"
+            disabled={isPending}
+          />
 
-          <div className={s.fieldGroup}>
-            <label className={s.label} htmlFor={passwordInputId}>
-              비밀번호
-            </label>
-            <div className={s.inputWrapper}>
-              <input
-                id={passwordInputId}
-                type={showPassword ? "text" : "password"}
-                className={`${s.input} ${s.inputWithToggle}`}
-                placeholder="비밀번호를 입력하세요"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                disabled={isPending}
-              />
-              <button
+          <Input
+            id={passwordInputId}
+            label="비밀번호"
+            type={showPassword ? "text" : "password"}
+            placeholder="비밀번호를 입력하세요"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            disabled={isPending}
+            rightSlot={
+              <Button
+                variant="icon"
                 type="button"
-                className={s.toggleButton}
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
               >
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-            </div>
+              </Button>
+            }
+          />
+
+          <Button variant="primary" type="submit" fullWidth disabled={isPending}>
+            {isPending ? "로그인 중..." : "로그인"}
+          </Button>
+
+          <div className={s.orDivider}>
+            <span className={s.orDividerText}>또는</span>
           </div>
 
-          <button type="submit" className={s.submitButton} disabled={isPending}>
-            {isPending ? "로그인 중..." : "로그인"}
-          </button>
+          <Button
+            variant="secondary"
+            type="button"
+            fullWidth
+            onClick={() => {
+              window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL;
+            }}
+          >
+            <GoogleIcon />
+            Google로 로그인
+          </Button>
         </form>
       </div>
     </div>
-  );
-}
-
-function EyeIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <title>비밀번호 보기</title>
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-function EyeOffIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <title>비밀번호 숨기기</title>
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-      <line x1="1" y1="1" x2="23" y2="23" />
-    </svg>
   );
 }
