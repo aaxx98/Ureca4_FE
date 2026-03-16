@@ -12,6 +12,6 @@ dist-ssr
 __unconfig*
 todos.json
 swagger.json
-swagger-test.json
+swagger_test.json
 orval.config.ts
 scripts/download-swagger.mjs
