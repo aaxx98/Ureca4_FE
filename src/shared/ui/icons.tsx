@@ -1,3 +1,31 @@
+export function UPlusLogoIcon({
+  height = 40,
+  color = "#1F1F1F",
+}: {
+  height?: number;
+  color?: string;
+}) {
+  const viewW = 110;
+  const viewH = 46;
+  const width = Math.round((height / viewH) * viewW);
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${viewW} ${viewH}`}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title>LG U+</title>
+      <text fontFamily="Arial, Helvetica, sans-serif" fontWeight="800" fontSize="34">
+        <tspan x="0" y="38" fill={color}>LG </tspan>
+        <tspan fill="#E1006A">U</tspan>
+        <tspan fill="#E1006A" fontSize="22" dy="-14">+</tspan>
+      </text>
+    </svg>
+  );
+}
+
 export function HomeIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -98,6 +126,15 @@ export function GoogleIcon() {
       <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
       <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
       <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+    </svg>
+  );
+}
+
+export function LockIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
   );
 }

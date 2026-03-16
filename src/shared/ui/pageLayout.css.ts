@@ -59,6 +59,10 @@ export const contextItem = style({
   cursor: "pointer",
   transition: `all ${vars.transition.fast}`,
   textDecoration: "none",
+  width: "100%",
+  background: "none",
+  border: "none",
+  textAlign: "left",
 
   ":hover": {
     backgroundColor: "rgba(255,255,255,0.07)",
