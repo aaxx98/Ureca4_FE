@@ -34,8 +34,10 @@ export const primary = style({
   backgroundColor: vars.color.primary,
   color: vars.color.textInverse,
 
-  ":hover:not(:disabled)": {
-    backgroundColor: vars.color.primaryHover,
+  selectors: {
+    "&:hover:not(:disabled)": {
+      backgroundColor: vars.color.primaryHover,
+    },
   },
 
   ":disabled": {
@@ -48,10 +50,12 @@ export const secondary = style({
   color: "#3C4043",
   border: `1px solid ${vars.color.border}`,
 
-  ":hover:not(:disabled)": {
-    backgroundColor: "#F8F9FA",
-    borderColor: "#DADCE0",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+  selectors: {
+    "&:hover:not(:disabled)": {
+      backgroundColor: "#F8F9FA",
+      borderColor: "#DADCE0",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+    },
   },
 });
 
@@ -62,8 +66,10 @@ export const ghost = style({
   height: "auto",
   padding: `${vars.spacing["2"]} ${vars.spacing["3"]}`,
 
-  ":hover:not(:disabled)": {
-    backgroundColor: vars.color.bgPage,
+  selectors: {
+    "&:hover:not(:disabled)": {
+      backgroundColor: vars.color.bgPage,
+    },
   },
 });
 
@@ -75,7 +81,9 @@ export const icon = style({
   color: vars.color.textSecondary,
   borderRadius: vars.radius.sm,
 
-  ":hover:not(:disabled)": {
-    color: vars.color.textPrimary,
+  selectors: {
+    "&:hover:not(:disabled)": {
+      color: vars.color.textPrimary,
+    },
   },
 });

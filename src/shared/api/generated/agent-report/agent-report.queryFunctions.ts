@@ -1,9 +1,15 @@
 import { apiClient } from "../../client";
 import type {
-	ErrorResponse,
+	AgentMetricsResponse,
+	AgentSatisfactionResponse,
+	CategoryRankingDto,
 	GetCategories1Params,
+	GetDailyQualityParams,
 	GetMetricsParams,
+	GetMonthlyQualityParams,
 	GetSatisfactionParams,
+	GetWeeklyQualityParams,
+	QualityAnalysisResponse,
 } from "../api.schemas";
 
 export const getSatisfaction = (
@@ -11,7 +17,7 @@ export const getSatisfaction = (
 	params?: GetSatisfactionParams,
 	signal?: AbortSignal,
 ) => {
-	return apiClient<unknown>({
+	return apiClient<AgentSatisfactionResponse>({
 		url: `/api/analysis/agent/${period}/satisfaction`,
 		method: "GET",
 		params,
@@ -19,15 +25,12 @@ export const getSatisfaction = (
 	});
 };
 
-export type GetSatisfactionQueryResult = NonNullable<Awaited<ReturnType<typeof getSatisfaction>>>;
-export type GetSatisfactionQueryError = ErrorResponse | ErrorResponse | ErrorResponse;
-
 export const getMetrics = (
 	period: string,
 	params?: GetMetricsParams,
 	signal?: AbortSignal,
 ) => {
-	return apiClient<unknown>({
+	return apiClient<AgentMetricsResponse>({
 		url: `/api/analysis/agent/${period}/metrics`,
 		method: "GET",
 		params,
@@ -35,15 +38,12 @@ export const getMetrics = (
 	});
 };
 
-export type GetMetricsQueryResult = NonNullable<Awaited<ReturnType<typeof getMetrics>>>;
-export type GetMetricsQueryError = ErrorResponse | ErrorResponse | ErrorResponse;
-
 export const getCategories1 = (
 	period: string,
 	params?: GetCategories1Params,
 	signal?: AbortSignal,
 ) => {
-	return apiClient<unknown>({
+	return apiClient<CategoryRankingDto[]>({
 		url: `/api/analysis/agent/${period}/categories`,
 		method: "GET",
 		params,
@@ -51,5 +51,38 @@ export const getCategories1 = (
 	});
 };
 
-export type GetCategories1QueryResult = NonNullable<Awaited<ReturnType<typeof getCategories1>>>;
-export type GetCategories1QueryError = ErrorResponse | ErrorResponse | ErrorResponse;
+export const getWeeklyQuality = (
+	params?: GetWeeklyQualityParams,
+	signal?: AbortSignal,
+) => {
+	return apiClient<QualityAnalysisResponse[]>({
+		url: `/analysis/agent/weekly/quality`,
+		method: "GET",
+		params,
+		signal,
+	});
+};
+
+export const getMonthlyQuality = (
+	params?: GetMonthlyQualityParams,
+	signal?: AbortSignal,
+) => {
+	return apiClient<QualityAnalysisResponse[]>({
+		url: `/analysis/agent/monthly/quality`,
+		method: "GET",
+		params,
+		signal,
+	});
+};
+
+export const getDailyQuality = (
+	params?: GetDailyQualityParams,
+	signal?: AbortSignal,
+) => {
+	return apiClient<QualityAnalysisResponse[]>({
+		url: `/analysis/agent/daily/quality`,
+		method: "GET",
+		params,
+		signal,
+	});
+};

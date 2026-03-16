@@ -4,10 +4,7 @@ import type {
 	GetConsultationListParams,
 } from "../api.schemas";
 
-export const getConsultationList = (
-	params?: GetConsultationListParams,
-	signal?: AbortSignal,
-) => {
+export const getConsultationList = (params?: GetConsultationListParams, signal?: AbortSignal) => {
 	return apiClient<ApiResponseConsultationListResponseDto>({
 		url: `/consultation/list`,
 		method: "GET",
@@ -15,6 +12,3 @@ export const getConsultationList = (
 		signal,
 	});
 };
-
-export type GetConsultationListQueryResult = NonNullable<Awaited<ReturnType<typeof getConsultationList>>>;
-export type GetConsultationListQueryError = unknown;

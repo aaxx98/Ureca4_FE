@@ -1,7 +1,9 @@
 import { apiClient } from "../../client";
 import type {
 	AgentDto,
+	AnalysisCodeDto,
 	CategoryDto,
+	GetAnalysisCodesParams,
 	GetCategoriesParams,
 	GradeDto,
 	ProductDto,
@@ -19,9 +21,6 @@ export const getRiskTypes = (signal?: AbortSignal) => {
 	});
 };
 
-export type GetRiskTypesQueryResult = NonNullable<Awaited<ReturnType<typeof getRiskTypes>>>;
-export type GetRiskTypesQueryError = unknown;
-
 export const getRiskLevels = (signal?: AbortSignal) => {
 	return apiClient<RiskLevelDto[]>({
 		url: `/api/meta/risk-levels`,
@@ -30,13 +29,7 @@ export const getRiskLevels = (signal?: AbortSignal) => {
 	});
 };
 
-export type GetRiskLevelsQueryResult = NonNullable<Awaited<ReturnType<typeof getRiskLevels>>>;
-export type GetRiskLevelsQueryError = unknown;
-
-export const searchProducts = (
-	params?: SearchProductsParams,
-	signal?: AbortSignal,
-) => {
+export const getProducts = (params?: SearchProductsParams, signal?: AbortSignal) => {
 	return apiClient<ProductDto[]>({
 		url: `/api/meta/products`,
 		method: "GET",
@@ -44,9 +37,6 @@ export const searchProducts = (
 		signal,
 	});
 };
-
-export type SearchProductsQueryResult = NonNullable<Awaited<ReturnType<typeof searchProducts>>>;
-export type SearchProductsQueryError = unknown;
 
 export const getGrades = (signal?: AbortSignal) => {
 	return apiClient<GradeDto[]>({
@@ -56,13 +46,7 @@ export const getGrades = (signal?: AbortSignal) => {
 	});
 };
 
-export type GetGradesQueryResult = NonNullable<Awaited<ReturnType<typeof getGrades>>>;
-export type GetGradesQueryError = unknown;
-
-export const getCategories = (
-	params?: GetCategoriesParams,
-	signal?: AbortSignal,
-) => {
+export const getCategories = (params?: GetCategoriesParams, signal?: AbortSignal) => {
 	return apiClient<CategoryDto[]>({
 		url: `/api/meta/categories`,
 		method: "GET",
@@ -71,13 +55,16 @@ export const getCategories = (
 	});
 };
 
-export type GetCategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof getCategories>>>;
-export type GetCategoriesQueryError = unknown;
+export const getAnalysisCodes = (params?: GetAnalysisCodesParams, signal?: AbortSignal) => {
+	return apiClient<AnalysisCodeDto[]>({
+		url: `/api/meta/analysis-codes`,
+		method: "GET",
+		params,
+		signal,
+	});
+};
 
-export const searchAgents = (
-	params?: SearchAgentsParams,
-	signal?: AbortSignal,
-) => {
+export const getAgents = (params?: SearchAgentsParams, signal?: AbortSignal) => {
 	return apiClient<AgentDto[]>({
 		url: `/api/meta/agents`,
 		method: "GET",
@@ -85,6 +72,3 @@ export const searchAgents = (
 		signal,
 	});
 };
-
-export type SearchAgentsQueryResult = NonNullable<Awaited<ReturnType<typeof searchAgents>>>;
-export type SearchAgentsQueryError = unknown;
