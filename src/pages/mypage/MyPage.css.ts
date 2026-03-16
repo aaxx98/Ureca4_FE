@@ -221,12 +221,27 @@ export const passwordForm = style({
   backgroundColor: "#fff",
   border: "1px solid #E5E9F0",
   borderRadius: vars.radius.lg,
-  padding: `${vars.spacing["5"]} 150px`,
+  padding: vars.spacing["5"],
   boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
   display: "flex",
   flexDirection: "column",
   gap: vars.spacing["4"],
   width: "100%",
+});
+
+export const cardSectionTitle = style({
+  fontSize: vars.fontSize.lg,
+  fontWeight: vars.fontWeight.semibold,
+  color: vars.color.textPrimary,
+  paddingBottom: vars.spacing["4"],
+  borderBottom: "1px solid #F3F4F6",
+  margin: 0,
+});
+
+export const passwordGrid = style({
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: `0 ${vars.spacing["4"]}`,
 });
 
 export const eyeBtn = style({
@@ -241,6 +256,20 @@ export const eyeBtn = style({
 });
 
 /* ── Notification settings ── */
+
+export const notificationCardHeader = style({
+  display: "flex",
+  alignItems: "center",
+  padding: `${vars.spacing["4"]} ${vars.spacing["5"]}`,
+  borderBottom: "1px solid #F3F4F6",
+});
+
+export const notificationCardTitle = style({
+  fontSize: vars.fontSize.lg,
+  fontWeight: vars.fontWeight.semibold,
+  color: vars.color.textPrimary,
+  margin: 0,
+});
 
 export const notificationCard = style({
   backgroundColor: "#fff",

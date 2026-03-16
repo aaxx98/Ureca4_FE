@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { Route } from "../../routes/oauth";
-import { useGoogleLogin } from "../../shared/api/generated/auth";
+import { useMutationPostGoogleLoginQuery } from "../../shared/api/generated/auth";
 import { setAccessToken } from "../../shared/api/tokenStore";
 import { ROUTES } from "../../shared/config/routes";
 
@@ -10,7 +10,7 @@ export function OAuthCallbackPage() {
   const { code } = Route.useSearch();
   const called = useRef(false);
 
-  const { mutate: googleLogin } = useGoogleLogin({
+  const { mutate: googleLogin } = useMutationPostGoogleLoginQuery({
     mutation: {
       onSuccess: (data) => {
         if (data.accessToken) {

@@ -13,7 +13,8 @@
     "format": "biome format",
     "lint": "biome lint",
     "check": "biome check",
-    "generate": "orval"
+    "generate": "orval",
+    "pregenerate": "node scripts/download-swagger.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
