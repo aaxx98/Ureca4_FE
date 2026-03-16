@@ -5,6 +5,7 @@ import {
   HomeIcon,
   OnlineIndicator,
   SettingsIcon,
+  UPlusLogoIcon,
 } from "../../shared/ui/icons";
 import { NavTab } from "../../shared/ui/NavTab/NavTab";
 import { UserDropdown } from "./UserDropdown";
@@ -14,7 +15,7 @@ export function AppTopbar() {
   return (
     <header className={s.topbar}>
       <div className={s.logo}>
-        <div className={s.logoMark}>U+{"\n"}LG</div>
+        <UPlusLogoIcon height={28} color="white" />
         <span className={s.logoName}>상담관리</span>
       </div>
 
