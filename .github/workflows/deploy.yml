@@ -21,6 +21,8 @@ jobs:
           docker build \
             --platform linux/amd64 \
             --build-arg VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }} \
+            --build-arg VITE_GOOGLE_REDIRECT_URI=${{ secrets.VITE_GOOGLE_REDIRECT_URI }} \
+            --build-arg VITE_GOOGLE_AUTH_URL=${{ secrets.VITE_GOOGLE_AUTH_URL }} \
             -t ${{ secrets.DOCKER_USERNAME }}/ssr-app:latest .
 
       - name: Push image
