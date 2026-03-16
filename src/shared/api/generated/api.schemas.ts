@@ -16,9 +16,32 @@ export interface FilterGroupUpdateRequest {
   filters: FilterItemRequest[];
 }
 
+/**
+ * 개별 필터 조건 항목
+ */
 export interface FilterItemRequest {
+  /** 필터 ID. GET /api/filters 로 전체 목록 조회 가능.
+| ID | filterKey            | 설명                    | filterValue 형식 |
+|----|----------------------|-------------------------|-----------------|
+| 1  | keyword              | 자율검색 (상담내용/상품명 OR) | 자유 텍스트 |
+| 2  | consult_from         | 상담 시작일              | yyyy-MM-dd |
+| 3  | consult_to           | 상담 종료일              | yyyy-MM-dd |
+| 4  | consultant_name      | 담당 상담사 이름          | 자유 텍스트 (부분 일치) |
+| 5  | category_name        | 상담 카테고리명           | 카테고리명 문자열 |
+| 6  | channel              | 상담 채널                | CALL 또는 CHATTING |
+| 10 | customer_name        | 고객 이름                | 자유 텍스트 (부분 일치) |
+| 11 | customer_phone       | 고객 연락처              | 자유 텍스트 (부분 일치) |
+| 12 | customer_type        | 고객 유형                | 개인 또는 법인 |
+| 13 | customer_grade       | 고객 등급 (OR, 복수 가능) | VVIP / VIP / DIAMOND |
+| 14 | risk_type            | 위험 유형 (OR, 복수 가능) | 폭언/욕설 / 해지위험 / 반복민원 / 사기의심 / 정책악용 / 과도한 보상 요구 / 피싱피해 |
+| 15 | product_name         | 상품명                   | 자유 텍스트 (부분 일치) |
+| 17 | consult_satisfaction | 고객만족도               | 숫자 (예: 4, 5) |
+ */
   filterId: number;
-  /** @minLength 1 */
+  /**
+   * 필터 값. filterId에 따라 형식이 다름 (위 filterId 설명 참고)
+   * @minLength 1
+   */
   filterValue: string;
 }
 
@@ -185,6 +208,23 @@ export interface PasswordChangeResponseDto {
   message?: string;
 }
 
+/**
+ * 매뉴얼 내용 수정 요청 데이터
+ */
+export interface ManualUpdateRequest {
+  /**
+   * 수정할 매뉴얼 제목
+   * @minLength 0
+   * @maxLength 100
+   */
+  title: string;
+  /**
+   * 수정할 매뉴얼 가이드 본문 내용
+   * @minLength 1
+   */
+  content: string;
+}
+
 export interface AdminEmployeeUpdateRequestDto {
   name?: string;
   email?: string;
@@ -205,14 +245,22 @@ export interface AdminEmployeeUpdateResponseDto {
   updatedAt?: string;
 }
 
+/**
+ * 검색 조건 저장 요청
+ */
 export interface FilterGroupCreateRequest {
   /**
+   * 필터 그룹 이름 (저장 이름)
    * @minLength 0
    * @maxLength 100
    */
   groupName: string;
+  /** 목록 표시 순서 (생략 시 null) */
   sortOrder?: number;
-  /** @minItems 1 */
+  /**
+   * 필터 조건 목록 (최소 1개 이상). customer_grade(13)·risk_type(14)은 같은 filterId를 여러 개 보내면 OR 조건으로 처리됩니다.
+   * @minItems 1
+   */
   filters: FilterItemRequest[];
 }
 
@@ -255,6 +303,7 @@ export interface NoticeCreateRequest {
 }
 
 /**
+ * 상담 채널 (GET 응답의 channel)
  * @minLength 1
  */
 export type DemoConsultSubmitRequestChannel = typeof DemoConsultSubmitRequestChannel[keyof typeof DemoConsultSubmitRequestChannel];
@@ -267,21 +316,36 @@ export const DemoConsultSubmitRequestChannel = {
 } as const;
 
 /**
- * 상담 결과 제출 요청
+ * 상담 결과 제출 요청 — GET /demo/consultation 응답값을 그대로 채워 보내고, iamIssue/iamAction/iamMemo만 직접 입력합니다.
  */
 export interface DemoConsultSubmitRequest {
+  /** 고객 식별자 (GET 응답의 customerId) */
   customerId: number;
-  /** @minLength 1 */
+  /**
+   * 상담 채널 (GET 응답의 channel)
+   * @minLength 1
+   */
   channel: DemoConsultSubmitRequestChannel;
-  /** @minLength 1 */
+  /**
+   * 상담 카테고리 코드 (GET 응답의 categoryCode)
+   * @minLength 1
+   */
   categoryCode: string;
+  /** 상담 소요 시간(초) (GET 응답의 durationSec) */
   durationSec?: number;
+  /** 고객 가입 상품 목록 (GET 응답의 subscribedProducts 그대로) */
   subscribedProducts?: DemoSubscribedProduct[];
+  /** IAM 이슈 요약 — 상담사가 직접 입력 */
   iamIssue?: string;
+  /** IAM 조치 내용 — 상담사가 직접 입력 */
   iamAction?: string;
+  /** IAM 메모 — 상담사가 직접 입력 */
   iamMemo?: string;
 }
 
+/**
+ * 상품 유형
+ */
 export type DemoSubscribedProductProductType = typeof DemoSubscribedProductProductType[keyof typeof DemoSubscribedProductProductType];
 
 
@@ -292,10 +356,17 @@ export const DemoSubscribedProductProductType = {
   ADDITIONAL: 'ADDITIONAL',
 } as const;
 
+/**
+ * 고객 가입 상품 정보
+ */
 export interface DemoSubscribedProduct {
+  /** 상품 유형 */
   productType?: DemoSubscribedProductProductType;
+  /** 상품 코드 */
   productCode?: string;
+  /** 상품명 */
   productName?: string;
+  /** 카테고리 */
   category?: string;
 }
 
@@ -308,6 +379,19 @@ export interface ApiResponseDemoConsultSubmitResponse {
 export interface DemoConsultSubmitResponse {
   consultId?: number;
   createdAt?: string;
+}
+
+export interface ApiResponseBookmarkToggleResponseDto {
+  success?: boolean;
+  message?: string;
+  data?: BookmarkToggleResponseDto;
+}
+
+export interface BookmarkToggleResponseDto {
+  type?: string;
+  targetId?: number;
+  bookmarked?: boolean;
+  message?: string;
 }
 
 export interface TokenRefreshResponseDto {
@@ -344,6 +428,31 @@ export interface GoogleAuthResponseDto {
   expiredAt?: string;
   isNewUser?: boolean;
   role?: string;
+}
+
+export interface ManualRequest {
+  /**
+   * 카테고리 정책 코드
+   * @minLength 1
+   */
+  categoryCode: string;
+  /**
+   * 매뉴얼 제목
+   * @minLength 1
+   */
+  title: string;
+  /**
+   * 매뉴얼 가이드 본문 내용
+   * @minLength 1
+   */
+  content: string;
+}
+
+export interface SyncResult {
+  total?: number;
+  synced?: number;
+  skipped?: number;
+  failed?: number[];
 }
 
 export interface EmployeeCreateRequestDto {
@@ -398,12 +507,132 @@ export interface EmployeeStatusUpdateResponseDto {
   message?: string;
 }
 
+export interface ConsultationSummaryListResponse {
+  consultId?: number;
+  consultedAt?: string;
+  channel?: string;
+  customerName?: string;
+  customerType?: string;
+  customerGrade?: string;
+  categoryCode?: string;
+  categoryLarge?: string;
+  categoryMedium?: string;
+  categorySmall?: string;
+  agentId?: number;
+  agentName?: string;
+  riskFlags?: string[];
+  summaryContent?: string;
+  summaryStatus?: string;
+  iamMatchRate?: number;
+  defenseAttempted?: boolean;
+}
+
+export interface PageConsultationSummaryListResponse {
+  totalElements?: number;
+  totalPages?: number;
+  pageable?: PageableObject;
+  size?: number;
+  content?: ConsultationSummaryListResponse[];
+  number?: number;
+  sort?: SortObject;
+  numberOfElements?: number;
+  first?: boolean;
+  last?: boolean;
+  empty?: boolean;
+}
+
+export interface PageableObject {
+  paged?: boolean;
+  pageNumber?: number;
+  pageSize?: number;
+  offset?: number;
+  sort?: SortObject;
+  unpaged?: boolean;
+}
+
+export interface SortObject {
+  sorted?: boolean;
+  empty?: boolean;
+  unsorted?: boolean;
+}
+
+export interface ActiveSubscriptionInfo {
+  productType?: string;
+  productCode?: string;
+  productName?: string;
+  category?: string;
+}
+
+export interface AgentInfo {
+  id?: number;
+  name?: string;
+  department?: string;
+}
+
+export interface AnalysisInfo {
+  iamIssue?: string;
+  iamAction?: string;
+  iamMemo?: string;
+  iamMatchRate?: number;
+  riskFlags?: string[];
+  cancellationIntent?: boolean;
+  defenseAttempted?: boolean;
+  defenseSuccess?: boolean;
+  defenseActions?: string[];
+  complaintReasons?: string;
+}
+
+export interface CategoryInfo {
+  code?: string;
+  large?: string;
+  medium?: string;
+  small?: string;
+}
+
+export interface ConsultationSummaryDetailResponse {
+  consultId?: number;
+  consultedAt?: string;
+  createdAt?: string;
+  durationSec?: number;
+  channel?: string;
+  category?: CategoryInfo;
+  agent?: AgentInfo;
+  customer?: CustomerInfo;
+  content?: ContentInfo;
+  analysis?: AnalysisInfo;
+  activeSubscriptions?: ActiveSubscriptionInfo[];
+}
+
+export interface ContentInfo {
+  status?: string;
+  aiSummary?: string;
+  keywords?: string[];
+  rawTextJson?: string;
+}
+
+export interface CustomerInfo {
+  name?: string;
+  phone?: string;
+  type?: string;
+  grade?: string;
+  ageGroup?: string;
+  satisfaction?: string;
+}
+
 export interface FilterGroupListResponse {
   filterGroupId?: number;
   groupName?: string;
   sortOrder?: number;
   createdAt?: string;
   filterCount?: number;
+}
+
+export interface Pageable {
+  /** @minimum 0 */
+  page?: number;
+  /** @minimum 1 */
+  size?: number;
+  sort?: string[];
 }
 
 export interface ApiResponsePageNotificationResponse {
@@ -446,21 +675,6 @@ export interface PageNotificationResponse {
   first?: boolean;
   last?: boolean;
   empty?: boolean;
-}
-
-export interface PageableObject {
-  paged?: boolean;
-  pageNumber?: number;
-  pageSize?: number;
-  offset?: number;
-  sort?: SortObject;
-  unpaged?: boolean;
-}
-
-export interface SortObject {
-  sorted?: boolean;
-  empty?: boolean;
-  unsorted?: boolean;
 }
 
 export interface ApiResponseLong {
@@ -531,12 +745,53 @@ export interface FilterResponse {
   filterName?: string;
 }
 
+/**
+ * 응대품질·키워드 분석 결과
+ */
+export interface ConsultAnalysisResponse {
+  /** ES 문서 ID */
+  id?: string;
+  /** 상담 ID (MySQL consultation_results.consult_id) */
+  consultId?: number;
+  /** AI 요약 내용 */
+  content?: string;
+  /** IAM 이슈 */
+  iamIssue?: string;
+  /** IAM 조치 */
+  iamAction?: string;
+  /** IAM 메모 */
+  iamMemo?: string;
+  /** 감정 분류 */
+  sentiment?: string;
+  /** 위험도 점수 (0~100) */
+  riskScore?: number;
+  /** 우선순위 */
+  priority?: string;
+  /** 고객 ID */
+  customerId?: string;
+  /** 고객명 */
+  customerName?: string;
+  /** 전화번호 */
+  phone?: string;
+  /** 상담 일시 */
+  createdAt?: string;
+  /** 인사말 포함 여부 (상담사 발화 기준) */
+  hasGreeting?: boolean;
+  /** 마무리 인사 포함 여부 (상담사 발화 기준) */
+  hasFarewell?: boolean;
+  /** 대화 원문 JSON (MySQL consultation_raw_texts.raw_text_json) */
+  rawTextJson?: string;
+}
+
 export interface ApiResponseDemoConsultDataResponse {
   success?: boolean;
   message?: string;
   data?: DemoConsultDataResponse;
 }
 
+/**
+ * 상담 채널
+ */
 export type DemoConsultDataResponseChannel = typeof DemoConsultDataResponseChannel[keyof typeof DemoConsultDataResponseChannel];
 
 
@@ -546,25 +801,47 @@ export const DemoConsultDataResponseChannel = {
   CHATTING: 'CHATTING',
 } as const;
 
+/**
+ * 랜덤 상담 데이터 응답
+ */
 export interface DemoConsultDataResponse {
+  /** 고객 식별자 */
   customerId?: number;
+  /** 고객명 */
   customerName?: string;
+  /** 전화번호 */
   phone?: string;
+  /** 고객 유형 */
   customerType?: string;
+  /** 성별 */
   gender?: string;
+  /** 생년월일 */
   birthDate?: string;
+  /** 등급 코드 */
   gradeCode?: string;
+  /** 이메일 */
   email?: string;
+  /** 현재 활성 가입 상품 목록 (해지되지 않은 상품) */
   subscribedProducts?: DemoSubscribedProduct[];
+  /** 상담 채널 */
   channel?: DemoConsultDataResponseChannel;
+  /** 상담 카테고리 코드 */
   categoryCode?: string;
+  /** 대분류 */
   largeCategory?: string;
+  /** 중분류 */
   mediumCategory?: string;
+  /** 소분류 */
   smallCategory?: string;
+  /** 상담 소요 시간(초) */
   durationSec?: number;
+  /** IAM 이슈 (null로 반환 — 상담사가 직접 입력) */
   iamIssue?: string;
+  /** IAM 조치 (null로 반환 — 상담사가 직접 입력) */
   iamAction?: string;
+  /** IAM 메모 (null로 반환 — 상담사가 직접 입력) */
   iamMemo?: string;
+  /** 상담 원문 JSON */
   rawTextJson?: string;
 }
 
@@ -574,6 +851,9 @@ export interface ApiResponseConsultDataResponse {
   data?: ConsultDataResponse;
 }
 
+/**
+ * 상담 채널
+ */
 export type ConsultDataResponseChannel = typeof ConsultDataResponseChannel[keyof typeof ConsultDataResponseChannel];
 
 
@@ -583,29 +863,55 @@ export const ConsultDataResponseChannel = {
   CHATTING: 'CHATTING',
 } as const;
 
+/**
+ * 상담 결과서 응답 (IAM 포함)
+ */
 export interface ConsultDataResponse {
+  /** 상담 식별자 */
   consultId?: number;
+  /** 고객 식별자 */
   customerId?: number;
+  /** 고객명 */
   customerName?: string;
+  /** 전화번호 */
   phone?: string;
+  /** 고객 유형 */
   customerType?: string;
+  /** 성별 */
   gender?: string;
+  /** 생년월일 */
   birthDate?: string;
+  /** 등급 코드 */
   gradeCode?: string;
+  /** 이메일 */
   email?: string;
+  /** 현재 활성 가입 상품 목록 (해지되지 않은 상품) */
   subscribedProducts?: SubscribedProduct[];
+  /** 상담 채널 */
   channel?: ConsultDataResponseChannel;
+  /** 상담 카테고리 코드 */
   categoryCode?: string;
+  /** 대분류 */
   largeCategory?: string;
+  /** 중분류 */
   mediumCategory?: string;
+  /** 소분류 */
   smallCategory?: string;
+  /** 상담 소요 시간(초) */
   durationSec?: number;
+  /** IAM 이슈 */
   iamIssue?: string;
+  /** IAM 조치 */
   iamAction?: string;
+  /** IAM 메모 */
   iamMemo?: string;
+  /** 상담 원문 JSON */
   rawTextJson?: string;
 }
 
+/**
+ * 상품 유형
+ */
 export type SubscribedProductProductType = typeof SubscribedProductProductType[keyof typeof SubscribedProductProductType];
 
 
@@ -616,11 +922,163 @@ export const SubscribedProductProductType = {
   ADDITIONAL: 'ADDITIONAL',
 } as const;
 
+/**
+ * 고객 가입 상품 정보
+ */
 export interface SubscribedProduct {
+  /** 상품 유형 */
   productType?: SubscribedProductProductType;
+  /** 상품 코드 */
   productCode?: string;
+  /** 상품명 */
   productName?: string;
+  /** 카테고리 */
   category?: string;
+}
+
+export interface ApiResponseConsultationListResponseDto {
+  success?: boolean;
+  message?: string;
+  data?: ConsultationListResponseDto;
+}
+
+export interface ConsultationListItemDto {
+  consultId?: number;
+  consultationNumber?: string;
+  customerName?: string;
+  customerPhone?: string;
+  consultationType?: string;
+  channel?: string;
+  counselorName?: string;
+  processStatus?: string;
+  summaryStatus?: string;
+  satisfaction?: number;
+  consultedAt?: string;
+}
+
+export interface ConsultationListResponseDto {
+  content?: ConsultationListItemDto[];
+  page?: number;
+  size?: number;
+  totalElements?: number;
+  totalPages?: number;
+}
+
+export interface ApiResponseConsultationDetailResponseDto {
+  success?: boolean;
+  message?: string;
+  data?: ConsultationDetailResponseDto;
+}
+
+export interface ConsultationAiAnalysisDto {
+  categoryCode?: string;
+  categoryName?: string;
+  hasIntent?: boolean;
+  complaintReason?: string;
+  defenseAttempted?: boolean;
+  defenseSuccess?: boolean;
+  defenseActions?: string;
+  rawSummary?: string;
+}
+
+export interface ConsultationBasicInfoDto {
+  consultId?: number;
+  consultationNumber?: string;
+  customerName?: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  channel?: string;
+  consultationType?: string;
+  processStatus?: string;
+  counselorName?: string;
+  satisfaction?: number;
+  consultedAt?: string;
+  durationMinutes?: number;
+  relatedProducts?: string;
+  tags?: string;
+}
+
+export interface ConsultationDetailResponseDto {
+  basicInfo?: ConsultationBasicInfoDto;
+  iamInfo?: ConsultationIamInfoDto;
+  rawTextJson?: string;
+  aiAnalysis?: ConsultationAiAnalysisDto;
+  history?: ConsultationHistoryItemDto[];
+}
+
+export interface ConsultationHistoryItemDto {
+  occurredAt?: string;
+  title?: string;
+  description?: string;
+}
+
+export interface ConsultationIamInfoDto {
+  title?: string;
+  content?: string;
+  aiSummary?: string;
+  memo?: string;
+}
+
+export interface ApiResponseListManualBookmarkResponseDto {
+  success?: boolean;
+  message?: string;
+  data?: ManualBookmarkResponseDto[];
+}
+
+export interface ManualBookmarkResponseDto {
+  bookmarkId?: number;
+  manualId?: number;
+  createdAt?: string;
+}
+
+export interface ApiResponseManualBookmarkDetailResponseDto {
+  success?: boolean;
+  message?: string;
+  data?: ManualBookmarkDetailResponseDto;
+}
+
+export interface ManualBookmarkDetailResponseDto {
+  bookmarkId?: number;
+  manualId?: number;
+  title?: string;
+  content?: string;
+  isActive?: boolean;
+  category?: string;
+  tags?: string;
+  targetCustomerType?: string;
+  createdBy?: number;
+  status?: string;
+  relatedManualIds?: string;
+  manualCreatedAt?: string;
+  manualUpdatedAt?: string;
+  bookmarkedAt?: string;
+}
+
+export interface ApiResponseListConsultationBookmarkResponseDto {
+  success?: boolean;
+  message?: string;
+  data?: ConsultationBookmarkResponseDto[];
+}
+
+export interface ConsultationBookmarkResponseDto {
+  bookmarkId?: number;
+  consultId?: number;
+  createdAt?: string;
+}
+
+export interface ApiResponseConsultationBookmarkDetailResponseDto {
+  success?: boolean;
+  message?: string;
+  data?: ConsultationBookmarkDetailResponseDto;
+}
+
+export interface ConsultationBookmarkDetailResponseDto {
+  bookmarkId?: number;
+  consultId?: number;
+  summary?: string;
+  result?: string;
+  consultationCreatedAt?: string;
+  bookmarkedAt?: string;
 }
 
 export interface MyInfoResponseDto {
@@ -646,108 +1104,115 @@ export interface EmailCheckResponseDto {
   email?: string;
 }
 
-export interface ConsultationSummaryListResponse {
-  consultId?: number;
-  consultedAt?: string;
-  customerName?: string;
+/**
+ * 전체 상담 성과 요약
+ */
+export interface PerformanceSummaryResponse {
+  /** 집계 시작일 */
+  startDate?: string;
+  /** 집계 종료일 */
+  endDate?: string;
+  /** 총 상담 수 */
+  totalConsultCount?: number;
+  /** 상담사별 평균 처리 건수 */
+  avgConsultCountPerAgent?: number;
+  /** 평균 소요 시간 (초) */
+  avgDurationMinutes?: number;
+  /** 평균 고객 만족도 (0~5) */
+  avgSatisfiedScore?: number;
+}
+
+export interface CustomerTypeKeyword {
   customerType?: string;
-  categoryLarge?: string;
-  categoryMedium?: string;
-  categorySmall?: string;
+  keywords?: string[];
+}
+
+export interface KeywordAnalysisResponse {
+  startDate?: string;
+  endDate?: string;
+  topKeywords?: TopKeyword[];
+  longTermTopKeywords?: LongTermKeyword[];
+  byCustomerType?: CustomerTypeKeyword[];
+}
+
+export interface LongTermKeyword {
+  keyword?: string;
+  count?: number;
+  rank?: number;
+  appearanceDays?: number;
+  totalDays?: number;
+}
+
+export interface TopKeyword {
+  keyword?: string;
+  count?: number;
+  rank?: number;
+  changeRate?: number;
+}
+
+/**
+ * 개별 상담사 성과
+ */
+export interface AgentPerformance {
+  /** 순위 */
+  rank?: number;
+  /** 상담사 ID */
   agentId?: number;
+  /** 상담사 이름 */
   agentName?: string;
+  /** 처리 건수 */
+  consultCount?: number;
+  /** 평균 소요 시간 (초) */
+  avgDurationMinutes?: number;
+  /** 평균 고객 만족도 (0~5) */
+  avgSatisfiedScore?: number;
+  /** 응대 품질 점수 (추후 구현) */
+  qualityScore?: number;
 }
 
-export interface PageConsultationSummaryListResponse {
-  totalElements?: number;
-  totalPages?: number;
-  pageable?: PageableObject;
-  size?: number;
-  content?: ConsultationSummaryListResponse[];
-  number?: number;
-  sort?: SortObject;
-  numberOfElements?: number;
-  first?: boolean;
-  last?: boolean;
-  empty?: boolean;
+/**
+ * 상담사 성과 순위 (TOP 10)
+ */
+export interface AgentRankingResponse {
+  /** 집계 시작일 */
+  startDate?: string;
+  /** 집계 종료일 */
+  endDate?: string;
+  /** 상담사 성과 순위 목록 (최대 10명) */
+  agents?: AgentPerformance[];
 }
 
-export interface AgentInfo {
-  id?: number;
-  name?: string;
-}
-
-export interface CancellationInfo {
-  intent?: boolean;
-  defenseAttempted?: boolean;
-  defenseSuccess?: boolean;
-  defenseActions?: string[];
-  complaintReasons?: string;
-}
-
-export interface CategoryInfo {
-  large?: string;
-  medium?: string;
-  small?: string;
-}
-
-export interface ConsultationSummaryDetailResponse {
-  consultId?: number;
-  consultedAt?: string;
-  createdAt?: string;
-  durationSec?: number;
-  channel?: string;
-  category?: CategoryInfo;
-  agent?: AgentInfo;
-  customer?: CustomerInfo;
-  iam?: IamInfo;
-  cancellation?: CancellationInfo;
-  products?: ProductInfo[];
-}
-
-export interface Conversion {
-  subscribed?: string;
-  canceled?: string;
-}
-
-export interface CustomerInfo {
-  grade?: string;
-  name?: string;
-  phone?: string;
-  type?: string;
-  ageGroup?: string;
-  satisfaction?: string;
-}
-
-export interface IamInfo {
-  memo?: string;
-  action?: string;
-  issue?: string;
-  matchRate?: number;
-}
-
-export interface ProductInfo {
-  subscribed?: string[];
-  canceled?: string[];
-  conversion?: Conversion[];
-  recommitment?: string[];
-  changeType?: string;
-}
-
+/**
+ * 고객 특이사항 집계 응답
+ */
 export interface CustomerRiskResponse {
+  /** 집계 시작 시각 */
   startAt?: string;
+  /** 집계 종료 시각 */
   endAt?: string;
+  /** 사기 의심 건수 */
   fraudSuspect?: number;
+  /** 악성 민원 건수 */
   maliciousComplaint?: number;
+  /** 정책 악용 건수 */
   policyAbuse?: number;
+  /** 과도한 보상 요구 건수 */
   excessiveCompensation?: number;
+  /** 반복 민원 건수 */
   repeatedComplaint?: number;
+  /** 피싱 피해 건수 */
   phishingVictim?: number;
+  /** 해지 위험 건수 */
   churnRisk?: number;
+  /** 위험 플래그 총 건수 (7종 합계) */
   totalRiskCount?: number;
+  /** 전일 대비 급증 경고 (전일 데이터 없으면 null) */
   surgeAlerts?: SurgeAlert;
 }
 
+/**
+ * 전일 대비 급증 경고
+ */
 export interface SurgeAlert {
   previousTotalRiskCount?: number;
   changeRate?: number;
@@ -755,32 +1220,194 @@ export interface SurgeAlert {
   surgeTypes?: string[];
 }
 
+/**
+ * 상담사 액션별 현황
+ */
+export interface ActionDefense {
+  /** 방어 액션 */
+  action?: string;
+  /** 시도 건수 */
+  attempts?: number;
+  /** 성공률 (%) */
+  successRate?: number;
+}
+
+/**
+ * 해지방어 패턴 분석 응답
+ */
+export interface ChurnDefenseResponse {
+  /** 집계 시작일 */
+  startDate?: string;
+  /** 집계 종료일 */
+  endDate?: string;
+  /** 해지방어 시도 건수 */
+  totalAttempts?: number;
+  /** 방어 성공 건수 */
+  successCount?: number;
+  /** 방어 성공률 (%) */
+  successRate?: number;
+  /** 해지 의향 상담 평균 소요 시간(초) */
+  avgDurationSec?: number;
+  /** 불만 사유별 방어율 */
+  complaintReasons?: ComplaintReason[];
+  /** 고객 유형별 해지 분석 (연령+성별) */
+  byCustomerType?: CustomerTypeDefense[];
+  /** 상담사 액션별 현황 */
+  byAction?: ActionDefense[];
+}
+
+/**
+ * 불만 사유별 방어율
+ */
+export interface ComplaintReason {
+  /** 사유 */
+  reason?: string;
+  /** 방어 시도 건수 */
+  attempts?: number;
+  /** 성공 건수 */
+  successCount?: number;
+  /** 성공률 (%) */
+  successRate?: number;
+  /** 평균 소요 시간(초) */
+  avgDurationSec?: number;
+}
+
+/**
+ * 고객 유형별 해지 분석
+ */
+export interface CustomerTypeDefense {
+  /** 고객 유형 (연령+성별) */
+  type?: string;
+  /** 주요 불만 사유 */
+  mainComplaintReason?: string;
+  /** 건수 */
+  attempts?: number;
+  /** 방어 성공률 (%) */
+  successRate?: number;
+}
+
+export interface CategoryBreakdown {
+  code?: string;
+  name?: string;
+  count?: number;
+  rate?: number;
+}
+
+export interface SlotResult {
+  slot?: string;
+  consultCount?: number;
+  avgDuration?: number;
+  categoryBreakdown?: CategoryBreakdown[];
+}
+
+export interface TimeSlotTrendResponse {
+  date?: string;
+  timeSlotTrend?: SlotResult[];
+}
+
+export interface KeywordRankingResponse {
+  date?: string;
+  slot?: string;
+  topKeywords?: TopKeyword[];
+  newKeywords?: NewKeyword[];
+}
+
+export interface NewKeyword {
+  keyword?: string;
+  count?: number;
+}
+
+/**
+ * 유형별 증감 상세
+ */
 export interface ChangeDetail {
+  /** 건수 차이 (기준 - 비교) */
   diff?: number;
+  /** 증감율 (%) */
   changeRate?: number;
 }
 
+/**
+ * 유형별 증감 상세
+ */
 export type CustomerRiskCompareResponseChanges = {[key: string]: ChangeDetail};
 
+/**
+ * 고객 특이사항 기간 비교 응답
+ */
 export interface CustomerRiskCompareResponse {
+  /** 기준 날짜 */
   baseDate?: string;
+  /** 비교 날짜 */
   compareDate?: string;
+  /** 기준 날짜 위험 건수 */
   base?: RiskSnapshot;
+  /** 비교 날짜 위험 건수 */
   compare?: RiskSnapshot;
+  /** 유형별 증감 상세 */
   changes?: CustomerRiskCompareResponseChanges;
+  /** 급증 여부 (증감율 50% 이상 또는 유형별 2배 이상) */
   surgeDetected?: boolean;
+  /** 급증 유형 코드 목록 */
   surgeTypes?: string[];
 }
 
+/**
+ * 특정 날짜의 위험유형별 건수 스냅샷
+ */
 export interface RiskSnapshot {
+  /** 사기 의심 건수 */
   fraudSuspect?: number;
+  /** 악성 민원 건수 */
   maliciousComplaint?: number;
+  /** 정책 악용 건수 */
   policyAbuse?: number;
+  /** 과도한 보상 요구 건수 */
   excessiveCompensation?: number;
+  /** 반복 민원 건수 */
   repeatedComplaint?: number;
+  /** 피싱 피해 건수 */
   phishingVictim?: number;
+  /** 해지 위험 건수 */
   churnRisk?: number;
+  /** 위험 플래그 총 건수 (7종 합계) */
   totalRiskCount?: number;
+}
+
+export interface CategoryItem {
+  code?: string;
+  name?: string;
+  count?: number;
+  rate?: number;
+}
+
+export interface CategorySummaryResponse {
+  date?: string;
+  slot?: string;
+  totalConsultCount?: number;
+  categories?: CategoryItem[];
+}
+
+/**
+ * 매뉴얼 상세 및 이력 조회 응답 데이터
+ */
+export interface ManualResponse {
+  /** 매뉴얼 고유 식별자(PK) */
+  manualId?: number;
+  /** 카테고리 정책 코드 */
+  categoryCode?: string;
+  /** 전체 카테고리 명칭 */
+  categoryName?: string;
+  /** 매뉴얼 제목 */
+  title?: string;
+  /** 매뉴얼 가이드 본문 내용 */
+  content?: string;
+  /** 현재 활성화 여부 */
+  isActive?: boolean;
+  /** 작성자 이름 */
+  empName?: string;
+  /** 최종 수정 일시 */
+  updatedAt?: string;
 }
 
 export interface EmployeeDto {
@@ -829,13 +1456,18 @@ export type GetMyFilterGroups200 = {[key: string]: FilterGroupListResponse[]};
 
 export type GetNoticeListParams = {
 /**
+ * Zero-based page index (0..N)
  * @minimum 0
  */
 page?: number;
 /**
+ * The size of the page to be returned
  * @minimum 1
  */
 size?: number;
+/**
+ * Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+ */
 sort?: string[];
 };
 
@@ -844,46 +1476,295 @@ page?: number;
 size?: number;
 dept_id?: number;
 job_role_id?: number;
+/**
+ * 계정 상태 (활성화 / 비활성화 / 전체)
+ */
 status?: string;
 keyword?: string;
 };
 
-export type GetNotificationsParams = {
+export type Update200 = {[key: string]: unknown};
+
+export type Reload200 = {[key: string]: string};
+
+export type ListParams = {
+keyword?: string;
+consultantName?: string;
+customerName?: string;
+productName?: string;
+from?: string;
+to?: string;
+categoryName?: string;
+channel?: string;
+customerPhone?: string;
+customerType?: string;
+customerGrades?: string[];
+riskTypes?: string[];
+satisfactionScore?: number;
 /**
+ * Zero-based page index (0..N)
  * @minimum 0
  */
 page?: number;
 /**
+ * The size of the page to be returned
  * @minimum 1
  */
 size?: number;
+/**
+ * Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+ */
+sort?: string[];
+};
+
+export type SuggestParams = {
+/**
+ * 검색어 prefix (미입력 시 인기 키워드 반환)
+ */
+q?: string;
+/**
+ * 반환 개수 (최대 30)
+ */
+size?: number;
+};
+
+export type ExecuteFilterGroupParams = {
+pageable: Pageable;
+};
+
+export type GetNotificationsParams = {
+/**
+ * Zero-based page index (0..N)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * The size of the page to be returned
+ * @minimum 1
+ */
+size?: number;
+/**
+ * Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+ */
 sort?: string[];
 };
 
 export type GetFilterDefinitions200 = {[key: string]: FilterResponse[]};
 
+export type AnalyzeParams = {
+/**
+ * 분석할 텍스트
+ */
+text: string;
+/**
+ * 분석기 이름 (korean_index_analyzer / korean_analysis_index_analyzer)
+ */
+analyzer?: string;
+};
+
+export type AnalyzeQualityParams = {
+/**
+ * 인사말 포함 여부 필터 (true/false, 생략 시 전체)
+ */
+hasGreeting?: boolean;
+/**
+ * 마무리 인사 포함 여부 필터 (true/false, 생략 시 전체)
+ */
+hasFarewell?: boolean;
+/**
+ * 대화원문 품질 키워드 (analysis_synonyms.txt 동의어 적용, 예: 친절응대, 불만감정, 대기안내)
+ */
+keyword?: string;
+/**
+ * 페이지 번호
+ */
+page?: number;
+/**
+ * 페이지 크기
+ */
+size?: number;
+};
+
+export type AnalyzeKeywordsParams = {
+/**
+ * 분석할 키워드 (analysis_synonyms.txt 동의어 적용)
+ */
+keyword: string;
+/**
+ * 페이지 번호
+ */
+page?: number;
+/**
+ * 페이지 크기
+ */
+size?: number;
+};
+
+export type GetConsultationListParams = {
+keyword?: string;
+channel?: string;
+categoryCode?: string;
+summaryStatus?: string;
+resultStatus?: string;
+page?: number;
+size?: number;
+};
+
+export type GetConsultationDetailParams = {
+/**
+ * 상담 결과서 ID
+ */
+consultId: number;
+};
+
 export type CheckEmailParams = {
 email: string;
 };
 
-export type ListParams = {
+export type GetSatisfactionParams = {
 /**
- * @minimum 0
+ * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
  */
-page?: number;
+date?: string;
+targetEmpId?: number;
+};
+
+export type GetMetricsParams = {
 /**
- * @minimum 1
+ * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
  */
-size?: number;
-sort?: string[];
+date?: string;
+targetEmpId?: number;
+};
+
+export type GetCategoriesParams = {
+/**
+ * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
+ */
+date?: string;
+targetEmpId?: number;
+};
+
+export type GetPerformanceSummaryParams = {
+/**
+ * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 주간 스냅샷 조회. 미지정 시 최근 스냅샷
+ */
+date?: string;
+};
+
+export type GetKeywordAnalysisParams = {
+/**
+ * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 주간 스냅샷 조회. 미지정 시 최근 스냅샷
+ */
+date?: string;
+};
+
+export type GetAgentRankingParams = {
+/**
+ * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 주간 스냅샷 조회. 미지정 시 최근 스냅샷
+ */
+date?: string;
+};
+
+export type GetPerformanceSummary1Params = {
+/**
+ * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 월간 스냅샷 조회. 미지정 시 최근 스냅샷
+ */
+date?: string;
+};
+
+export type GetMonthlyKeywordAnalysisParams = {
+/**
+ * 조회 대상 날짜 (yyyy-MM-dd). 해당 월의 아무 날짜
+ */
+date?: string;
+};
+
+export type GetMonthlyCustomerRiskParams = {
+/**
+ * 조회 대상 날짜 (yyyy-MM-dd). 해당 월의 아무 날짜
+ */
+date?: string;
+};
+
+export type GetMonthlyChurnDefenseAnalysisParams = {
+/**
+ * 조회 대상 날짜 (yyyy-MM-dd). 해당 월의 아무 날짜
+ */
+date?: string;
+};
+
+export type GetAgentRanking1Params = {
+/**
+ * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 월간 스냅샷 조회. 미지정 시 최근 스냅샷
+ */
+date?: string;
+};
+
+export type GetTimeSlotTrendParams = {
+/**
+ * 조회 대상 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+/**
+ * 시간대 슬롯 (예: 09-12). 미지정 시 전체 슬롯
+ */
+slot?: string;
+};
+
+export type GetKeywordRankingParams = {
+/**
+ * 조회 대상 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+/**
+ * 시간대 슬롯 (예: 09-12). 미지정 시 전체 슬롯
+ */
+slot?: string;
 };
 
 export type GetCustomerRiskParams = {
+/**
+ * 조회 대상 날짜 (yyyy-MM-dd). 미지정 시 전일 기준
+ */
 date?: string;
 };
 
 export type CompareCustomerRiskParams = {
+/**
+ * 기준 날짜 (yyyy-MM-dd)
+ */
 baseDate: string;
+/**
+ * 비교 날짜 (yyyy-MM-dd)
+ */
 compareDate: string;
 };
+
+export type GetCategorySummaryParams = {
+/**
+ * 조회 대상 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+/**
+ * 시간대 슬롯 (예: 09-12). 미지정 시 전체 슬롯
+ */
+slot?: string;
+};
+
+export type GetManualHistoryParams = {
+/**
+ * 필터링할 카테고리 코드 (선택)
+ */
+categoryCode?: string;
+};
+
+export type ExtractParams = {
+/**
+ * 반환할 최대 키워드 수 (기본 100)
+ */
+limit?: number;
+};
+
+export type Extract200 = {[key: string]: unknown};
 
