@@ -17,12 +17,16 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build image
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_GOOGLE_REDIRECT_URI: ${{ secrets.VITE_GOOGLE_REDIRECT_URI }}
+          VITE_GOOGLE_AUTH_URL: ${{ secrets.VITE_GOOGLE_AUTH_URL }}
         run: |
           docker build \
             --platform linux/amd64 \
-            --build-arg VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }} \
-            --build-arg VITE_GOOGLE_REDIRECT_URI=${{ secrets.VITE_GOOGLE_REDIRECT_URI }} \
-            --build-arg VITE_GOOGLE_AUTH_URL=${{ secrets.VITE_GOOGLE_AUTH_URL }} \
+            --build-arg VITE_API_BASE_URL="$VITE_API_BASE_URL" \
+            --build-arg VITE_GOOGLE_REDIRECT_URI="$VITE_GOOGLE_REDIRECT_URI" \
+            --build-arg VITE_GOOGLE_AUTH_URL="$VITE_GOOGLE_AUTH_URL" \
             -t ${{ secrets.DOCKER_USERNAME }}/ssr-app:latest .
 
       - name: Push image
