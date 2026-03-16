@@ -36,7 +36,7 @@ import { apiClient } from '../../client';
 
 
 /**
- * DB에서 랜덤으로 1건을 선택해 고객정보 + 상담기본정보를 반환합니다.
+ * DB에서 랜덤으로 1건을 선택해 고객정보 + 상담기본정보를 반환합니다. IAM 3필드는 null로 반환됩니다.
  * @summary 랜덤 상담 데이터 조회
  */
 export const getRandomConsultData = (
@@ -128,7 +128,10 @@ export function useGetRandomConsultData<TData = Awaited<ReturnType<typeof getRan
 
 
 /**
- * GET /demo/consultation 응답에서 받은 값을 그대로 채우고, iamIssue / iamAction / iamMemo 세 필드를 직접 입력하여 전송합니다.
+ * GET /demo/consultation 응답에서 받은 값을 그대로 채우고, 
+iamIssue / iamAction / iamMemo 세 필드를 직접 입력하여 전송합니다. 
+consultation_results 테이블에 신규 row를 삽입합니다. 
+(empId는 JWT 토큰에서 자동 추출, channel은 CALL 또는 CHATTING만 허용)
  * @summary 상담 결과 제출
  */
 export const submitConsult = (

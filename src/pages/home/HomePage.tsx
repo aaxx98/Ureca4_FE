@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { ROUTES } from "../../shared/config/routes";
+import { ContextNavItem } from "../../shared/ui/ContextNavItem";
 import { CalendarIcon, EmptyIcon, HomeIcon, NoticeIcon } from "../../shared/ui/icons";
 import * as layout from "../../shared/ui/pageLayout.css";
 import { AppTopbar } from "../../widgets/AppTopbar/AppTopbar";
@@ -20,23 +20,9 @@ export function HomePage() {
       <div className={layout.body}>
         <aside className={layout.contextPanel}>
           <div className={layout.contextLabel}>홈</div>
-          <Link
-            to={ROUTES.HOME}
-            className={layout.contextItem}
-            activeProps={{ className: `${layout.contextItem} ${layout.contextItemActive}` }}
-          >
-            <HomeIcon />
-            개요
-          </Link>
-          <div className={`${layout.contextItem} ${layout.contextItemDisabled}`}>
-            <NoticeIcon />
-            공지사항
-            <span className={layout.contextBadge}>2</span>
-          </div>
-          <div className={`${layout.contextItem} ${layout.contextItemDisabled}`}>
-            <CalendarIcon />
-            내 일정
-          </div>
+          <ContextNavItem to={ROUTES.HOME} icon={<HomeIcon />} label="개요" />
+          <ContextNavItem icon={<NoticeIcon />} label="공지사항" badge={2} />
+          <ContextNavItem icon={<CalendarIcon />} label="내 일정" />
         </aside>
 
         <main className={layout.main}>

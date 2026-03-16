@@ -39,6 +39,12 @@ export const input = style({
     borderColor: vars.color.borderFocus,
   },
 
+  ":read-only": {
+    backgroundColor: "#F9FAFB",
+    color: "#6B7280",
+    cursor: "default",
+  },
+
   ":disabled": {
     opacity: 0.6,
     cursor: "not-allowed",

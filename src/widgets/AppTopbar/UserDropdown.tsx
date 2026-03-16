@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useGetMyInfo, useLogout } from "../../shared/api/generated/auth";
 import { setAccessToken } from "../../shared/api/tokenStore";
@@ -52,17 +52,14 @@ export function UserDropdown() {
             </div>
 
             <div className={s.menu}>
-              <button
-                type="button"
+              <Link
+                to={ROUTES.MYPAGE}
                 className={s.menuItem}
-                onClick={() => {
-                  setOpen(false);
-                  navigate({ to: ROUTES.MYPAGE });
-                }}
+                onClick={() => setOpen(false)}
               >
                 <UserIcon />
                 마이페이지
-              </button>
+              </Link>
               <button
                 type="button"
                 className={`${s.menuItem} ${s.menuItemDanger}`}

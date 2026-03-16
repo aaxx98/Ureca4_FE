@@ -20,21 +20,6 @@ export const logo = style({
   flexShrink: 0,
 });
 
-export const logoMark = style({
-  width: "28px",
-  height: "28px",
-  borderRadius: vars.radius.md,
-  backgroundColor: vars.color.primary,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "9px",
-  fontWeight: vars.fontWeight.bold,
-  lineHeight: "1.2",
-  textAlign: "center",
-  color: "#FFFFFF",
-});
-
 export const logoName = style({
   fontSize: vars.fontSize.sm,
   fontWeight: vars.fontWeight.semibold,

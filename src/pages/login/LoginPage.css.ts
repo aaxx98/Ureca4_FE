@@ -24,27 +24,6 @@ export const logoSection = style({
   marginBottom: vars.spacing["8"],
 });
 
-export const logoMark = style({
-  display: "inline-flex",
-  alignItems: "center",
-  gap: vars.spacing["2"],
-  marginBottom: vars.spacing["3"],
-});
-
-export const logoU = style({
-  fontSize: vars.fontSize["2xl"],
-  fontWeight: vars.fontWeight.bold,
-  color: vars.color.primary,
-  letterSpacing: "-0.5px",
-});
-
-export const logoPlus = style({
-  fontSize: vars.fontSize["2xl"],
-  fontWeight: vars.fontWeight.bold,
-  color: vars.color.textPrimary,
-  letterSpacing: "-0.5px",
-});
-
 export const serviceTitle = style({
   fontSize: vars.fontSize.sm,
   color: vars.color.textSecondary,

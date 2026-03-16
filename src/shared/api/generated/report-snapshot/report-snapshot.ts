@@ -21,11 +21,29 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AgentRankingResponse,
+  CategorySummaryResponse,
+  ChurnDefenseResponse,
   CompareCustomerRiskParams,
   CustomerRiskCompareResponse,
   CustomerRiskResponse,
   ErrorResponse,
-  GetCustomerRiskParams
+  GetAgentRanking1Params,
+  GetAgentRankingParams,
+  GetCategorySummaryParams,
+  GetCustomerRiskParams,
+  GetKeywordAnalysisParams,
+  GetKeywordRankingParams,
+  GetMonthlyChurnDefenseAnalysisParams,
+  GetMonthlyCustomerRiskParams,
+  GetMonthlyKeywordAnalysisParams,
+  GetPerformanceSummary1Params,
+  GetPerformanceSummaryParams,
+  GetTimeSlotTrendParams,
+  KeywordAnalysisResponse,
+  KeywordRankingResponse,
+  PerformanceSummaryResponse,
+  TimeSlotTrendResponse
 } from '../api.schemas';
 
 import { apiClient } from '../../client';
@@ -34,7 +52,937 @@ import { apiClient } from '../../client';
 
 
 /**
- * daily_report_snapshot의 customerRiskAnalysis 섹션을 조회합니다.
+ * weekly_report_snapshot에서 주간 성과 요약을 조회합니다. 총 상담 수, 상담사별 평균 처리 건수, 평균 소요 시간, 평균 고객 만족도를 제공합니다. date 미지정 시 가장 최근 주간 스냅샷을 조회합니다.
+ * @summary 주간 전체 상담 성과 요약
+ */
+export const getPerformanceSummary = (
+    params?: GetPerformanceSummaryParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<PerformanceSummaryResponse | void>(
+      {url: `/analysis/weekly/performance-summary`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetPerformanceSummaryQueryKey = (params?: GetPerformanceSummaryParams,) => {
+    return [
+    `/analysis/weekly/performance-summary`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetPerformanceSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getPerformanceSummary>>, TError = ErrorResponse | ErrorResponse>(params?: GetPerformanceSummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPerformanceSummaryQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPerformanceSummary>>> = ({ signal }) => getPerformanceSummary(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPerformanceSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getPerformanceSummary>>>
+export type GetPerformanceSummaryQueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetPerformanceSummary<TData = Awaited<ReturnType<typeof getPerformanceSummary>>, TError = ErrorResponse | ErrorResponse>(
+ params: undefined |  GetPerformanceSummaryParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPerformanceSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getPerformanceSummary>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPerformanceSummary<TData = Awaited<ReturnType<typeof getPerformanceSummary>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetPerformanceSummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPerformanceSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getPerformanceSummary>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPerformanceSummary<TData = Awaited<ReturnType<typeof getPerformanceSummary>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetPerformanceSummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 주간 전체 상담 성과 요약
+ */
+
+export function useGetPerformanceSummary<TData = Awaited<ReturnType<typeof getPerformanceSummary>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetPerformanceSummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetPerformanceSummaryQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * weekly_report_snapshot의 keywordSummary 섹션을 조회합니다. 키워드 빈도 순위(TOP 20), 증감율, 장기 상위 유지 키워드, 고객 유형별 키워드를 제공합니다. date 미지정 시 가장 최근 주간 스냅샷을 조회합니다.
+ * @summary 주간 키워드 분석 조회
+ */
+export const getKeywordAnalysis = (
+    params?: GetKeywordAnalysisParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<KeywordAnalysisResponse | void>(
+      {url: `/analysis/weekly/keyword-ranking`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetKeywordAnalysisQueryKey = (params?: GetKeywordAnalysisParams,) => {
+    return [
+    `/analysis/weekly/keyword-ranking`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetKeywordAnalysisQueryOptions = <TData = Awaited<ReturnType<typeof getKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(params?: GetKeywordAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordAnalysis>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetKeywordAnalysisQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getKeywordAnalysis>>> = ({ signal }) => getKeywordAnalysis(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getKeywordAnalysis>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetKeywordAnalysisQueryResult = NonNullable<Awaited<ReturnType<typeof getKeywordAnalysis>>>
+export type GetKeywordAnalysisQueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetKeywordAnalysis<TData = Awaited<ReturnType<typeof getKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params: undefined |  GetKeywordAnalysisParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordAnalysis>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getKeywordAnalysis>>,
+          TError,
+          Awaited<ReturnType<typeof getKeywordAnalysis>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetKeywordAnalysis<TData = Awaited<ReturnType<typeof getKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetKeywordAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordAnalysis>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getKeywordAnalysis>>,
+          TError,
+          Awaited<ReturnType<typeof getKeywordAnalysis>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetKeywordAnalysis<TData = Awaited<ReturnType<typeof getKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetKeywordAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordAnalysis>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 주간 키워드 분석 조회
+ */
+
+export function useGetKeywordAnalysis<TData = Awaited<ReturnType<typeof getKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetKeywordAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordAnalysis>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetKeywordAnalysisQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * weekly_report_snapshot에서 상담사별 성과 순위를 조회합니다. 처리 건수 내림차순 기준 상위 10명의 성과 데이터를 제공합니다. date 미지정 시 가장 최근 주간 스냅샷을 조회합니다.
+ * @summary 주간 상담사 성과 순위 (TOP 10)
+ */
+export const getAgentRanking = (
+    params?: GetAgentRankingParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<AgentRankingResponse | void>(
+      {url: `/analysis/weekly/agent-ranking`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetAgentRankingQueryKey = (params?: GetAgentRankingParams,) => {
+    return [
+    `/analysis/weekly/agent-ranking`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetAgentRankingQueryOptions = <TData = Awaited<ReturnType<typeof getAgentRanking>>, TError = ErrorResponse | ErrorResponse>(params?: GetAgentRankingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAgentRankingQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAgentRanking>>> = ({ signal }) => getAgentRanking(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAgentRankingQueryResult = NonNullable<Awaited<ReturnType<typeof getAgentRanking>>>
+export type GetAgentRankingQueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetAgentRanking<TData = Awaited<ReturnType<typeof getAgentRanking>>, TError = ErrorResponse | ErrorResponse>(
+ params: undefined |  GetAgentRankingParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAgentRanking>>,
+          TError,
+          Awaited<ReturnType<typeof getAgentRanking>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAgentRanking<TData = Awaited<ReturnType<typeof getAgentRanking>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetAgentRankingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAgentRanking>>,
+          TError,
+          Awaited<ReturnType<typeof getAgentRanking>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAgentRanking<TData = Awaited<ReturnType<typeof getAgentRanking>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetAgentRankingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 주간 상담사 성과 순위 (TOP 10)
+ */
+
+export function useGetAgentRanking<TData = Awaited<ReturnType<typeof getAgentRanking>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetAgentRankingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAgentRankingQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * monthly_report_snapshot에서 월간 성과 요약을 조회합니다. 총 상담 수, 상담사별 평균 처리 건수, 평균 소요 시간, 평균 고객 만족도를 제공합니다. date 미지정 시 가장 최근 월간 스냅샷을 조회합니다.
+ * @summary 월간 전체 상담 성과 요약
+ */
+export const getPerformanceSummary1 = (
+    params?: GetPerformanceSummary1Params,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<PerformanceSummaryResponse | void>(
+      {url: `/analysis/monthly/performance-summary`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetPerformanceSummary1QueryKey = (params?: GetPerformanceSummary1Params,) => {
+    return [
+    `/analysis/monthly/performance-summary`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetPerformanceSummary1QueryOptions = <TData = Awaited<ReturnType<typeof getPerformanceSummary1>>, TError = ErrorResponse | ErrorResponse>(params?: GetPerformanceSummary1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPerformanceSummary1QueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPerformanceSummary1>>> = ({ signal }) => getPerformanceSummary1(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPerformanceSummary1QueryResult = NonNullable<Awaited<ReturnType<typeof getPerformanceSummary1>>>
+export type GetPerformanceSummary1QueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetPerformanceSummary1<TData = Awaited<ReturnType<typeof getPerformanceSummary1>>, TError = ErrorResponse | ErrorResponse>(
+ params: undefined |  GetPerformanceSummary1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPerformanceSummary1>>,
+          TError,
+          Awaited<ReturnType<typeof getPerformanceSummary1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPerformanceSummary1<TData = Awaited<ReturnType<typeof getPerformanceSummary1>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetPerformanceSummary1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPerformanceSummary1>>,
+          TError,
+          Awaited<ReturnType<typeof getPerformanceSummary1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPerformanceSummary1<TData = Awaited<ReturnType<typeof getPerformanceSummary1>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetPerformanceSummary1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 월간 전체 상담 성과 요약
+ */
+
+export function useGetPerformanceSummary1<TData = Awaited<ReturnType<typeof getPerformanceSummary1>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetPerformanceSummary1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPerformanceSummary1>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetPerformanceSummary1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * monthly_report_snapshot의 keywordSummary 섹션을 조회합니다. 키워드 빈도 순위(TOP 20), 증감율, 장기 상위 유지 키워드, 고객 유형별 키워드를 제공합니다. date에 해당 월의 아무 날짜를 넣으면 해당 월 스냅샷을 반환합니다.
+ * @summary 월별 키워드 분석 조회
+ */
+export const getMonthlyKeywordAnalysis = (
+    params?: GetMonthlyKeywordAnalysisParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<KeywordAnalysisResponse | void>(
+      {url: `/analysis/monthly/keyword-ranking`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetMonthlyKeywordAnalysisQueryKey = (params?: GetMonthlyKeywordAnalysisParams,) => {
+    return [
+    `/analysis/monthly/keyword-ranking`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetMonthlyKeywordAnalysisQueryOptions = <TData = Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(params?: GetMonthlyKeywordAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMonthlyKeywordAnalysisQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>> = ({ signal }) => getMonthlyKeywordAnalysis(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMonthlyKeywordAnalysisQueryResult = NonNullable<Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>>
+export type GetMonthlyKeywordAnalysisQueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetMonthlyKeywordAnalysis<TData = Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params: undefined |  GetMonthlyKeywordAnalysisParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>,
+          TError,
+          Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMonthlyKeywordAnalysis<TData = Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetMonthlyKeywordAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>,
+          TError,
+          Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMonthlyKeywordAnalysis<TData = Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetMonthlyKeywordAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 월별 키워드 분석 조회
+ */
+
+export function useGetMonthlyKeywordAnalysis<TData = Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetMonthlyKeywordAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyKeywordAnalysis>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetMonthlyKeywordAnalysisQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * monthly_report_snapshot의 customerRiskAnalysis 섹션을 조회합니다. 월별 배치(monthlyAdminReportJob)가 생성한 스냅샷 기반이며, 실시간 집계가 아닙니다. date에 해당 월의 아무 날짜를 넣으면 해당 월 스냅샷을 반환합니다.
+ * @summary 월별 고객 특이사항 조회
+ */
+export const getMonthlyCustomerRisk = (
+    params?: GetMonthlyCustomerRiskParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<CustomerRiskResponse | void>(
+      {url: `/analysis/monthly/customer-risk`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetMonthlyCustomerRiskQueryKey = (params?: GetMonthlyCustomerRiskParams,) => {
+    return [
+    `/analysis/monthly/customer-risk`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetMonthlyCustomerRiskQueryOptions = <TData = Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError = ErrorResponse | ErrorResponse>(params?: GetMonthlyCustomerRiskParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMonthlyCustomerRiskQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMonthlyCustomerRisk>>> = ({ signal }) => getMonthlyCustomerRisk(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMonthlyCustomerRiskQueryResult = NonNullable<Awaited<ReturnType<typeof getMonthlyCustomerRisk>>>
+export type GetMonthlyCustomerRiskQueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetMonthlyCustomerRisk<TData = Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError = ErrorResponse | ErrorResponse>(
+ params: undefined |  GetMonthlyCustomerRiskParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMonthlyCustomerRisk>>,
+          TError,
+          Awaited<ReturnType<typeof getMonthlyCustomerRisk>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMonthlyCustomerRisk<TData = Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetMonthlyCustomerRiskParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMonthlyCustomerRisk>>,
+          TError,
+          Awaited<ReturnType<typeof getMonthlyCustomerRisk>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMonthlyCustomerRisk<TData = Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetMonthlyCustomerRiskParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 월별 고객 특이사항 조회
+ */
+
+export function useGetMonthlyCustomerRisk<TData = Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetMonthlyCustomerRiskParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyCustomerRisk>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetMonthlyCustomerRiskQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * monthly_report_snapshot의 churnDefenseAnalysis 섹션을 조회합니다. 해지방어 시도/성공률, 불만 사유, 고객 등급별 방어율, 방어 액션별 성공률을 제공합니다. date에 해당 월의 아무 날짜를 넣으면 해당 월 스냅샷을 반환합니다.
+ * @summary 월별 해지방어 패턴 분석 조회
+ */
+export const getMonthlyChurnDefenseAnalysis = (
+    params?: GetMonthlyChurnDefenseAnalysisParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<ChurnDefenseResponse | void>(
+      {url: `/analysis/monthly/churn-defense`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetMonthlyChurnDefenseAnalysisQueryKey = (params?: GetMonthlyChurnDefenseAnalysisParams,) => {
+    return [
+    `/analysis/monthly/churn-defense`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetMonthlyChurnDefenseAnalysisQueryOptions = <TData = Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError = ErrorResponse | ErrorResponse>(params?: GetMonthlyChurnDefenseAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMonthlyChurnDefenseAnalysisQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>> = ({ signal }) => getMonthlyChurnDefenseAnalysis(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMonthlyChurnDefenseAnalysisQueryResult = NonNullable<Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>>
+export type GetMonthlyChurnDefenseAnalysisQueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetMonthlyChurnDefenseAnalysis<TData = Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params: undefined |  GetMonthlyChurnDefenseAnalysisParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>,
+          TError,
+          Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMonthlyChurnDefenseAnalysis<TData = Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetMonthlyChurnDefenseAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>,
+          TError,
+          Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMonthlyChurnDefenseAnalysis<TData = Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetMonthlyChurnDefenseAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 월별 해지방어 패턴 분석 조회
+ */
+
+export function useGetMonthlyChurnDefenseAnalysis<TData = Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetMonthlyChurnDefenseAnalysisParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMonthlyChurnDefenseAnalysis>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetMonthlyChurnDefenseAnalysisQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * monthly_report_snapshot에서 상담사별 성과 순위를 조회합니다. 처리 건수 내림차순 기준 상위 10명의 성과 데이터를 제공합니다. date 미지정 시 가장 최근 월간 스냅샷을 조회합니다.
+ * @summary 월간 상담사 성과 순위 (TOP 10)
+ */
+export const getAgentRanking1 = (
+    params?: GetAgentRanking1Params,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<AgentRankingResponse | void>(
+      {url: `/analysis/monthly/agent-ranking`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetAgentRanking1QueryKey = (params?: GetAgentRanking1Params,) => {
+    return [
+    `/analysis/monthly/agent-ranking`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetAgentRanking1QueryOptions = <TData = Awaited<ReturnType<typeof getAgentRanking1>>, TError = ErrorResponse | ErrorResponse>(params?: GetAgentRanking1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAgentRanking1QueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAgentRanking1>>> = ({ signal }) => getAgentRanking1(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAgentRanking1QueryResult = NonNullable<Awaited<ReturnType<typeof getAgentRanking1>>>
+export type GetAgentRanking1QueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetAgentRanking1<TData = Awaited<ReturnType<typeof getAgentRanking1>>, TError = ErrorResponse | ErrorResponse>(
+ params: undefined |  GetAgentRanking1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAgentRanking1>>,
+          TError,
+          Awaited<ReturnType<typeof getAgentRanking1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAgentRanking1<TData = Awaited<ReturnType<typeof getAgentRanking1>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetAgentRanking1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAgentRanking1>>,
+          TError,
+          Awaited<ReturnType<typeof getAgentRanking1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAgentRanking1<TData = Awaited<ReturnType<typeof getAgentRanking1>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetAgentRanking1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 월간 상담사 성과 순위 (TOP 10)
+ */
+
+export function useGetAgentRanking1<TData = Awaited<ReturnType<typeof getAgentRanking1>>, TError = ErrorResponse | ErrorResponse>(
+ params?: GetAgentRanking1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAgentRanking1>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAgentRanking1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * 슬롯별 상담 건수/평균시간/카테고리 분포. date 미지정 시 전일 기준.
+ * @summary 시간대별 이슈 트렌드
+ */
+export const getTimeSlotTrend = (
+    params?: GetTimeSlotTrendParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<TimeSlotTrendResponse>(
+      {url: `/analysis/daily/time-slot-trend`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetTimeSlotTrendQueryKey = (params?: GetTimeSlotTrendParams,) => {
+    return [
+    `/analysis/daily/time-slot-trend`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetTimeSlotTrendQueryOptions = <TData = Awaited<ReturnType<typeof getTimeSlotTrend>>, TError = unknown>(params?: GetTimeSlotTrendParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTimeSlotTrend>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetTimeSlotTrendQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTimeSlotTrend>>> = ({ signal }) => getTimeSlotTrend(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTimeSlotTrend>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetTimeSlotTrendQueryResult = NonNullable<Awaited<ReturnType<typeof getTimeSlotTrend>>>
+export type GetTimeSlotTrendQueryError = unknown
+
+
+export function useGetTimeSlotTrend<TData = Awaited<ReturnType<typeof getTimeSlotTrend>>, TError = unknown>(
+ params: undefined |  GetTimeSlotTrendParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTimeSlotTrend>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getTimeSlotTrend>>,
+          TError,
+          Awaited<ReturnType<typeof getTimeSlotTrend>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTimeSlotTrend<TData = Awaited<ReturnType<typeof getTimeSlotTrend>>, TError = unknown>(
+ params?: GetTimeSlotTrendParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTimeSlotTrend>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getTimeSlotTrend>>,
+          TError,
+          Awaited<ReturnType<typeof getTimeSlotTrend>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTimeSlotTrend<TData = Awaited<ReturnType<typeof getTimeSlotTrend>>, TError = unknown>(
+ params?: GetTimeSlotTrendParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTimeSlotTrend>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 시간대별 이슈 트렌드
+ */
+
+export function useGetTimeSlotTrend<TData = Awaited<ReturnType<typeof getTimeSlotTrend>>, TError = unknown>(
+ params?: GetTimeSlotTrendParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTimeSlotTrend>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetTimeSlotTrendQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * 슬롯별 또는 전체 키워드 순위/증감율/신규 진입. date 미지정 시 전일 기준.
+ * @summary 키워드 빈도 순위
+ */
+export const getKeywordRanking = (
+    params?: GetKeywordRankingParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<KeywordRankingResponse>(
+      {url: `/analysis/daily/keyword-ranking`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetKeywordRankingQueryKey = (params?: GetKeywordRankingParams,) => {
+    return [
+    `/analysis/daily/keyword-ranking`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetKeywordRankingQueryOptions = <TData = Awaited<ReturnType<typeof getKeywordRanking>>, TError = unknown>(params?: GetKeywordRankingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordRanking>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetKeywordRankingQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getKeywordRanking>>> = ({ signal }) => getKeywordRanking(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getKeywordRanking>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetKeywordRankingQueryResult = NonNullable<Awaited<ReturnType<typeof getKeywordRanking>>>
+export type GetKeywordRankingQueryError = unknown
+
+
+export function useGetKeywordRanking<TData = Awaited<ReturnType<typeof getKeywordRanking>>, TError = unknown>(
+ params: undefined |  GetKeywordRankingParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordRanking>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getKeywordRanking>>,
+          TError,
+          Awaited<ReturnType<typeof getKeywordRanking>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetKeywordRanking<TData = Awaited<ReturnType<typeof getKeywordRanking>>, TError = unknown>(
+ params?: GetKeywordRankingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordRanking>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getKeywordRanking>>,
+          TError,
+          Awaited<ReturnType<typeof getKeywordRanking>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetKeywordRanking<TData = Awaited<ReturnType<typeof getKeywordRanking>>, TError = unknown>(
+ params?: GetKeywordRankingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordRanking>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 키워드 빈도 순위
+ */
+
+export function useGetKeywordRanking<TData = Awaited<ReturnType<typeof getKeywordRanking>>, TError = unknown>(
+ params?: GetKeywordRankingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getKeywordRanking>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetKeywordRankingQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * daily_report_snapshot의 customerRiskAnalysis 섹션을 조회합니다. 매일 02:00 배치가 생성한 스냅샷 기반이며, 실시간 집계가 아닙니다. 전일 스냅샷과 비교하여 급증 경고(surgeAlerts)를 API 조회 시점에 계산합니다. date 미지정 시 전일(어제) 기준으로 조회합니다.
  * @summary 고객 특이사항 조회
  */
 export const getCustomerRisk = (
@@ -127,7 +1075,7 @@ export function useGetCustomerRisk<TData = Awaited<ReturnType<typeof getCustomer
 
 
 /**
- * 두 날짜의 daily_report_snapshot을 비교하여 유형별 증감율과 급증 여부를 계산합니다.
+ * 두 날짜의 daily_report_snapshot을 비교하여 유형별 증감율과 급증 여부를 계산합니다. 관리자가 직접 기준일/비교일을 선택하여 상세 분석할 때 사용합니다.
  * @summary 고객 특이사항 기간 비교
  */
 export const compareCustomerRisk = (
@@ -209,6 +1157,99 @@ export function useCompareCustomerRisk<TData = Awaited<ReturnType<typeof compare
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getCompareCustomerRiskQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * 슬롯별 또는 전체 카테고리 빈도. date 미지정 시 전일 기준.
+ * @summary 카테고리별 빈도
+ */
+export const getCategorySummary = (
+    params?: GetCategorySummaryParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<CategorySummaryResponse>(
+      {url: `/analysis/daily/category-summary`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetCategorySummaryQueryKey = (params?: GetCategorySummaryParams,) => {
+    return [
+    `/analysis/daily/category-summary`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetCategorySummaryQueryOptions = <TData = Awaited<ReturnType<typeof getCategorySummary>>, TError = unknown>(params?: GetCategorySummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategorySummary>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCategorySummaryQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCategorySummary>>> = ({ signal }) => getCategorySummary(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCategorySummary>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCategorySummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getCategorySummary>>>
+export type GetCategorySummaryQueryError = unknown
+
+
+export function useGetCategorySummary<TData = Awaited<ReturnType<typeof getCategorySummary>>, TError = unknown>(
+ params: undefined |  GetCategorySummaryParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategorySummary>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCategorySummary>>,
+          TError,
+          Awaited<ReturnType<typeof getCategorySummary>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCategorySummary<TData = Awaited<ReturnType<typeof getCategorySummary>>, TError = unknown>(
+ params?: GetCategorySummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategorySummary>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCategorySummary>>,
+          TError,
+          Awaited<ReturnType<typeof getCategorySummary>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCategorySummary<TData = Awaited<ReturnType<typeof getCategorySummary>>, TError = unknown>(
+ params?: GetCategorySummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategorySummary>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 카테고리별 빈도
+ */
+
+export function useGetCategorySummary<TData = Awaited<ReturnType<typeof getCategorySummary>>, TError = unknown>(
+ params?: GetCategorySummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategorySummary>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCategorySummaryQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
