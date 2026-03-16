@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useLogin } from "../../shared/api/generated/auth";
+import { useMutationPostLoginQuery } from "../../shared/api/generated/auth";
 import { setAccessToken } from "../../shared/api/tokenStore";
 import { ROUTES } from "../../shared/config/routes";
 import { Button } from "../../shared/ui/Button/Button";
@@ -17,7 +17,7 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const { mutate: login, isPending } = useLogin({
+  const { mutate: login, isPending } = useMutationPostLoginQuery({
     mutation: {
       onSuccess: (data) => {
         if (data.accessToken) setAccessToken(data.accessToken);

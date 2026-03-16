@@ -448,11 +448,9 @@ export interface ManualRequest {
   content: string;
 }
 
-export interface SyncResult {
-  total?: number;
-  synced?: number;
-  skipped?: number;
-  failed?: number[];
+export interface ExcellentCaseRegisterRequest {
+  /** 관리자 선정 사유 */
+  adminReason?: string;
 }
 
 export interface EmployeeCreateRequestDto {
@@ -507,132 +505,12 @@ export interface EmployeeStatusUpdateResponseDto {
   message?: string;
 }
 
-export interface ConsultationSummaryListResponse {
-  consultId?: number;
-  consultedAt?: string;
-  channel?: string;
-  customerName?: string;
-  customerType?: string;
-  customerGrade?: string;
-  categoryCode?: string;
-  categoryLarge?: string;
-  categoryMedium?: string;
-  categorySmall?: string;
-  agentId?: number;
-  agentName?: string;
-  riskFlags?: string[];
-  summaryContent?: string;
-  summaryStatus?: string;
-  iamMatchRate?: number;
-  defenseAttempted?: boolean;
-}
-
-export interface PageConsultationSummaryListResponse {
-  totalElements?: number;
-  totalPages?: number;
-  pageable?: PageableObject;
-  size?: number;
-  content?: ConsultationSummaryListResponse[];
-  number?: number;
-  sort?: SortObject;
-  numberOfElements?: number;
-  first?: boolean;
-  last?: boolean;
-  empty?: boolean;
-}
-
-export interface PageableObject {
-  paged?: boolean;
-  pageNumber?: number;
-  pageSize?: number;
-  offset?: number;
-  sort?: SortObject;
-  unpaged?: boolean;
-}
-
-export interface SortObject {
-  sorted?: boolean;
-  empty?: boolean;
-  unsorted?: boolean;
-}
-
-export interface ActiveSubscriptionInfo {
-  productType?: string;
-  productCode?: string;
-  productName?: string;
-  category?: string;
-}
-
-export interface AgentInfo {
-  id?: number;
-  name?: string;
-  department?: string;
-}
-
-export interface AnalysisInfo {
-  iamIssue?: string;
-  iamAction?: string;
-  iamMemo?: string;
-  iamMatchRate?: number;
-  riskFlags?: string[];
-  cancellationIntent?: boolean;
-  defenseAttempted?: boolean;
-  defenseSuccess?: boolean;
-  defenseActions?: string[];
-  complaintReasons?: string;
-}
-
-export interface CategoryInfo {
-  code?: string;
-  large?: string;
-  medium?: string;
-  small?: string;
-}
-
-export interface ConsultationSummaryDetailResponse {
-  consultId?: number;
-  consultedAt?: string;
-  createdAt?: string;
-  durationSec?: number;
-  channel?: string;
-  category?: CategoryInfo;
-  agent?: AgentInfo;
-  customer?: CustomerInfo;
-  content?: ContentInfo;
-  analysis?: AnalysisInfo;
-  activeSubscriptions?: ActiveSubscriptionInfo[];
-}
-
-export interface ContentInfo {
-  status?: string;
-  aiSummary?: string;
-  keywords?: string[];
-  rawTextJson?: string;
-}
-
-export interface CustomerInfo {
-  name?: string;
-  phone?: string;
-  type?: string;
-  grade?: string;
-  ageGroup?: string;
-  satisfaction?: string;
-}
-
 export interface FilterGroupListResponse {
   filterGroupId?: number;
   groupName?: string;
   sortOrder?: number;
   createdAt?: string;
   filterCount?: number;
-}
-
-export interface Pageable {
-  /** @minimum 0 */
-  page?: number;
-  /** @minimum 1 */
-  size?: number;
-  sort?: string[];
 }
 
 export interface ApiResponsePageNotificationResponse {
@@ -675,6 +553,21 @@ export interface PageNotificationResponse {
   first?: boolean;
   last?: boolean;
   empty?: boolean;
+}
+
+export interface PageableObject {
+  paged?: boolean;
+  pageNumber?: number;
+  pageSize?: number;
+  offset?: number;
+  sort?: SortObject;
+  unpaged?: boolean;
+}
+
+export interface SortObject {
+  sorted?: boolean;
+  empty?: boolean;
+  unsorted?: boolean;
 }
 
 export interface ApiResponseLong {
@@ -746,40 +639,63 @@ export interface FilterResponse {
 }
 
 /**
- * 응대품질·키워드 분석 결과
+ * 주간 우수 상담 사례 게시판 응답 DTO
  */
-export interface ConsultAnalysisResponse {
-  /** ES 문서 ID */
-  id?: string;
-  /** 상담 ID (MySQL consultation_results.consult_id) */
+export interface WeeklyExcellentCaseResponse {
+  /** 우수 사례 스냅샷 ID (PK) */
+  snapshotId?: number;
+  /** 상담 ID */
   consultId?: number;
-  /** AI 요약 내용 */
-  content?: string;
-  /** IAM 이슈 */
-  iamIssue?: string;
-  /** IAM 조치 */
-  iamAction?: string;
-  /** IAM 메모 */
-  iamMemo?: string;
-  /** 감정 분류 */
-  sentiment?: string;
-  /** 위험도 점수 (0~100) */
-  riskScore?: number;
-  /** 우선순위 */
-  priority?: string;
-  /** 고객 ID */
-  customerId?: string;
-  /** 고객명 */
-  customerName?: string;
-  /** 전화번호 */
-  phone?: string;
-  /** 상담 일시 */
+  /** 상담사 성함 */
+  counselorName?: string;
+  /** 상담 소카테고리 */
+  smallCategory?: string;
+  /** 게시글 제목 */
+  title?: string;
+  /** AI 상담 요약 내용 */
+  rawSummary?: string;
+  /** AI 평가 점수 */
+  score?: number;
+  /** 관리자 선정 사유 */
+  adminReason?: string;
+  /** 우수 사례 선정 일시 */
+  selectedAt?: string;
+}
+
+/**
+ * 현재 선정 상태
+ */
+export type EvaluationDetailResponseSelectionStatus = typeof EvaluationDetailResponseSelectionStatus[keyof typeof EvaluationDetailResponseSelectionStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EvaluationDetailResponseSelectionStatus = {
+  PENDING: 'PENDING',
+  SELECTED: 'SELECTED',
+  REJECTED: 'REJECTED',
+} as const;
+
+/**
+ * 우수 사례 상세 조회 응답
+ */
+export interface EvaluationDetailResponse {
+  /** 상담 ID */
+  consultId?: number;
+  /** 상담사 이름 */
+  counselorName?: string;
+  /** 카테고리명 */
+  categoryName?: string;
+  /** AI 채점 점수 */
+  score?: number;
+  /** AI 평가 상세 사유 */
+  evaluationReason?: string;
+  /** 상담 요약 내용 */
+  summary?: string;
+  /** 현재 선정 상태 */
+  selectionStatus?: EvaluationDetailResponseSelectionStatus;
+  /** 분석 생성 일시 */
   createdAt?: string;
-  /** 인사말 포함 여부 (상담사 발화 기준) */
-  hasGreeting?: boolean;
-  /** 마무리 인사 포함 여부 (상담사 발화 기준) */
-  hasFarewell?: boolean;
-  /** 대화 원문 JSON (MySQL consultation_raw_texts.raw_text_json) */
+  /** 상담 대화 원문 (JSON String) */
   rawTextJson?: string;
 }
 
@@ -1104,6 +1020,533 @@ export interface EmailCheckResponseDto {
   email?: string;
 }
 
+export interface ConsultationSummaryDto {
+  consultId?: number;
+  consultedAt?: string;
+  channel?: string;
+  customerName?: string;
+  phone?: string;
+  grade?: string;
+  agentName?: string;
+  categoryLarge?: string;
+  categoryMedium?: string;
+  categorySmall?: string;
+  summaryContent?: string;
+  intent?: boolean;
+  defenseSuccess?: boolean;
+  riskFlags?: RiskFlagDto[];
+  outboundResult?: string;
+}
+
+export interface PageConsultationSummaryDto {
+  totalElements?: number;
+  totalPages?: number;
+  pageable?: PageableObject;
+  size?: number;
+  content?: ConsultationSummaryDto[];
+  number?: number;
+  sort?: SortObject;
+  numberOfElements?: number;
+  first?: boolean;
+  last?: boolean;
+  empty?: boolean;
+}
+
+export interface RiskFlagDto {
+  riskType?: string;
+  riskLevel?: string;
+}
+
+export interface AgentInfo {
+  id?: number;
+  name?: string;
+}
+
+export interface CancellationInfo {
+  intent?: boolean;
+  defenseAttempted?: boolean;
+  defenseSuccess?: boolean;
+  defenseActions?: string[];
+  defenseCategory?: string;
+  complaintReasons?: string;
+  complaintCategory?: string;
+}
+
+export interface CategoryInfo {
+  code?: string;
+  large?: string;
+  medium?: string;
+  small?: string;
+}
+
+export interface ConsultationSummaryDetailResponse {
+  id?: string;
+  consultId?: number;
+  consultedAt?: string;
+  createdAt?: string;
+  durationSec?: number;
+  channel?: string;
+  category?: CategoryInfo;
+  agent?: AgentInfo;
+  customer?: CustomerInfo;
+  iam?: IamInfo;
+  summary?: SummaryInfo;
+  riskFlags?: RiskFlagInfo[];
+  cancellation?: CancellationInfo;
+  outbound?: OutboundInfo;
+  resultProducts?: ResultProductInfo[];
+}
+
+export interface CustomerInfo {
+  id?: number;
+  grade?: string;
+  name?: string;
+  phone?: string;
+  type?: string;
+  ageGroup?: string;
+  gender?: string;
+  satisfiedScore?: number;
+}
+
+export interface IamInfo {
+  memo?: string;
+  action?: string;
+  issue?: string;
+  matchKeyword?: string[];
+  matchRate?: number;
+}
+
+export interface OutboundInfo {
+  callResult?: string;
+  rejectReason?: string;
+  outboundReport?: string;
+}
+
+export interface ProductAction {
+  before?: ProductInfo;
+  after?: ProductInfo;
+}
+
+export interface ProductInfo {
+  code?: string;
+  name?: string;
+}
+
+export interface ResultProductInfo {
+  changeType?: string;
+  products?: ProductAction[];
+}
+
+export interface RiskFlagInfo {
+  riskType?: string;
+  riskLevel?: string;
+}
+
+export interface SummaryInfo {
+  content?: string;
+  keywords?: string[];
+}
+
+export interface RiskTypeDto {
+  typeCode?: string;
+  typeName?: string;
+}
+
+export interface RiskLevelDto {
+  levelCode?: string;
+  levelName?: string;
+}
+
+export interface ProductDto {
+  code?: string;
+  name?: string;
+  type?: string;
+}
+
+export interface GradeDto {
+  gradeCode?: string;
+  gradeName?: string;
+  priorityLevel?: number;
+}
+
+export interface CategoryDto {
+  categoryCode?: string;
+  largeCategory?: string;
+  mediumCategory?: string;
+  smallCategory?: string;
+}
+
+export interface AnalysisCodeDto {
+  codeName?: string;
+  displayName?: string;
+  classification?: string;
+  description?: string;
+}
+
+export interface AgentDto {
+  empId?: number;
+  loginId?: string;
+  name?: string;
+}
+
+export interface AgentSatisfactionResponse {
+  empId?: string;
+  startedAt?: string;
+  endedAt?: string;
+  satisfactionScore?: number;
+  teamAvgSatisfactionScore?: number;
+  responseRate?: number;
+}
+
+export interface AgentMetricsResponse {
+  empId?: string;
+  startedAt?: string;
+  endedAt?: string;
+  myConsultCount?: number;
+  myAvgDuration?: string;
+  myQualityScore?: number;
+  mySatisfactionScore?: number;
+  iamMatchRate?: number;
+  teamAvgConsultCount?: number;
+  teamAvgDuration?: string;
+  teamAvgQualityScore?: number;
+  teamAvgSatisfactionScore?: number;
+}
+
+/**
+ * 처리 카테고리 순위 및 건수 정보
+ */
+export interface CategoryRankingDto {
+  empId?: string;
+  startedAt?: string;
+  endedAt?: string;
+  name?: string;
+  totalCount?: number;
+  mediumCategories?: MediumCategoryDto[];
+}
+
+export interface MediumCategoryDto {
+  name?: string;
+  count?: number;
+}
+
+/**
+ * 아웃바운드 카테고리별 최적 연락 시간
+ */
+export interface OutboundOptimalTimeResponse {
+  /** 조회 시작일시 */
+  startAt?: string;
+  /** 조회 종료일시 */
+  endAt?: string;
+  /** 카테고리별 추천 시간 */
+  recommendations?: Recommendation[];
+}
+
+export interface Recommendation {
+  /** 카테고리 코드 */
+  categoryCode?: string;
+  /** 카테고리명 */
+  categoryName?: string;
+  /** 최적 시간대 */
+  bestHourRange?: string;
+  /** 해당 시간대 전환율 (%) */
+  bestConversionRate?: number;
+  /** 최적 요일 */
+  bestDays?: string[];
+}
+
+/**
+ * 아웃바운드 KPI 요약
+ */
+export interface OutboundKpiResponse {
+  /** 조회 시작일시 */
+  startAt?: string;
+  /** 조회 종료일시 */
+  endAt?: string;
+  /** 총 발신 건수 */
+  totalCount?: number;
+  /** 전환 성공 건수 */
+  convertedCount?: number;
+  /** 거절 건수 */
+  rejectedCount?: number;
+  /** 전환율 (%) */
+  conversionRate?: number;
+  /** 평균 통화 시간 (초) */
+  avgDurationSec?: number;
+  /** 예상 매출 합계 */
+  estimatedRevenue?: number;
+}
+
+export interface HeatmapRow {
+  /** 시간 (0~23) */
+  hour?: number;
+  /** 요일별 전환율 [월,화,수,목,금,토,일] */
+  days?: number[];
+}
+
+/**
+ * 아웃바운드 시간대×요일 전환율 히트맵
+ */
+export interface OutboundHeatmapResponse {
+  /** 조회 시작일시 */
+  startAt?: string;
+  /** 조회 종료일시 */
+  endAt?: string;
+  /** 지표명 */
+  metric?: string;
+  /** 시간대별 전환율 데이터 */
+  rows?: HeatmapRow[];
+}
+
+export interface CategoryConversion {
+  /** 카테고리 코드 */
+  categoryCode?: string;
+  /** 카테고리명 */
+  categoryName?: string;
+  /** 전환 성공 건수 */
+  convertedCount?: number;
+  /** 총 발신 건수 */
+  totalCount?: number;
+  /** 전환율 (%) */
+  conversionRate?: number;
+}
+
+/**
+ * 아웃바운드 카테고리별 전환율
+ */
+export interface OutboundConversionResponse {
+  /** 조회 시작일시 */
+  startAt?: string;
+  /** 조회 종료일시 */
+  endAt?: string;
+  /** 카테고리별 전환율 목록 */
+  categories?: CategoryConversion[];
+}
+
+export interface CampaignDetail {
+  /** 카테고리 코드 */
+  categoryCode?: string;
+  /** 카테고리명 */
+  categoryName?: string;
+  /** 캠페인 활성 여부 */
+  isActive?: boolean;
+  /** 총 발신 건수 */
+  totalCount?: number;
+  /** 전환 성공 건수 */
+  convertedCount?: number;
+  /** 전환율 (%) */
+  conversionRate?: number;
+  /** 평균 통화 시간 (초) */
+  avgDurationSec?: number;
+  /** 평균 만족도 (0~5) */
+  avgSatisfiedScore?: number;
+  /** 예상 매출 */
+  estimatedRevenue?: number;
+}
+
+export interface CampaignTotal {
+  totalCount?: number;
+  conversionRate?: number;
+  avgDurationSec?: number;
+  avgSatisfiedScore?: number;
+  estimatedRevenue?: number;
+}
+
+/**
+ * 아웃바운드 캠페인 성과 현황
+ */
+export interface OutboundCampaignResponse {
+  /** 조회 시작일시 */
+  startAt?: string;
+  /** 조회 종료일시 */
+  endAt?: string;
+  /** 캠페인별 성과 목록 */
+  campaigns?: CampaignDetail[];
+  /** 전체 합계 */
+  total?: CampaignTotal;
+}
+
+export interface Distribution {
+  /** 전환 성공 */
+  converted?: ResultCount;
+  /** 거절 */
+  rejected?: ResultCount;
+}
+
+/**
+ * 아웃바운드 발신 결과 분포 + 거절 사유
+ */
+export interface OutboundCallResultResponse {
+  /** 조회 시작일시 */
+  startAt?: string;
+  /** 조회 종료일시 */
+  endAt?: string;
+  /** 발신 결과 분포 */
+  distribution?: Distribution;
+  /** 거절 사유 목록 (건수 내림차순) */
+  rejectReasons?: RejectReason[];
+}
+
+export interface RejectReason {
+  /** 거절 사유 코드 */
+  code?: string;
+  /** 거절 사유 명칭 */
+  name?: string;
+  /** 거절 사유 설명 */
+  description?: string;
+  /** 건수 */
+  count?: number;
+  /** 비율 (%) */
+  rate?: number;
+  /** 순위 */
+  rank?: number;
+}
+
+export interface ResultCount {
+  /** 건수 */
+  count?: number;
+  /** 비율 (%) */
+  rate?: number;
+}
+
+export interface AgentDetail {
+  /** 순위 */
+  rank?: number;
+  /** 상담사 ID */
+  agentId?: number;
+  /** 상담사 이름 */
+  agentName?: string;
+  /** 총 발신 건수 */
+  totalCount?: number;
+  /** 전환 성공 건수 */
+  convertedCount?: number;
+  /** 전환율 (%) */
+  conversionRate?: number;
+  /** 평균 통화 시간 (초) */
+  avgDurationSec?: number;
+}
+
+/**
+ * 아웃바운드 상담사별 실적
+ */
+export interface OutboundAgentResponse {
+  /** 조회 시작일시 */
+  startAt?: string;
+  /** 조회 종료일시 */
+  endAt?: string;
+  /** 상담사별 실적 목록 (전환 건수 내림차순) */
+  agents?: AgentDetail[];
+}
+
+/**
+ * 응대 품질 분석
+ */
+export interface QualityAnalysisResponse {
+  /** 상담사 ID */
+  agentId?: number;
+  /** 집계 시작일 */
+  startDate?: string;
+  /** 집계 종료일 */
+  endDate?: string;
+  /** 상담 처리 건수 */
+  consultCount?: number;
+  /** 품질 분석 완료 건수 (원문이 존재하여 실제 분석된 상담 수) */
+  analyzedCount?: number;
+  /** 공감 표현 총 횟수 — '그러셨군요', '힘드셨겠다' 등 공감 토큰의 전체 등장 횟수 합산 */
+  empathyCount?: number;
+  /** 건당 평균 공감 횟수 (empathyCount ÷ analyzedCount) */
+  avgEmpathyPerConsult?: number;
+  /** 사과 표현 포함 비율 (%) — '죄송합니다', '불편을 드려' 등이 포함된 상담 비율 */
+  apologyRate?: number;
+  /** 마무리 인사 포함 비율 (%) — '수고하세요', '좋은 하루 되세요', '감사합니다' 등 */
+  closingRate?: number;
+  /** 친절 표현 포함 비율 (%) — '편하게 말씀해 주세요', '도움이 되셨으면' 등 */
+  courtesyRate?: number;
+  /** 신속 응대 포함 비율 (%) — '바로 확인', '즉시 처리' 등 신속 대응 표현 */
+  promptnessRate?: number;
+  /** 정확 응대 포함 비율 (%) — '정확히 안내', '확인 결과' 등 정확성 관련 표현 */
+  accuracyRate?: number;
+  /** 대기 안내 포함 비율 (%) — '잠시만요', '확인해 드리겠습니다' 등 대기 안내 표현 */
+  waitingGuideRate?: number;
+  /** 종합 점수 (0~5) — 7개 지표 가중 합산 × 5.0 */
+  totalScore?: number;
+}
+
+export interface CategoryBreakdown {
+  code?: string;
+  name?: string;
+  count?: number;
+  rate?: number;
+}
+
+export interface KeywordAnalysis {
+  topKeywords?: TopKeyword[];
+  newKeywords?: NewKeyword[];
+}
+
+export interface NewKeyword {
+  keyword?: string;
+  count?: number;
+}
+
+export interface SlotResult {
+  slot?: string;
+  consultCount?: number;
+  avgDuration?: number;
+  categoryBreakdown?: CategoryBreakdown[];
+  keywordAnalysis?: KeywordAnalysis;
+}
+
+export interface TimeSlotTrendResponse {
+  date?: string;
+  timeSlotTrend?: SlotResult[];
+}
+
+export interface TopKeyword {
+  keyword?: string;
+  count?: number;
+  rank?: number;
+  changeRate?: number;
+}
+
+/**
+ * 연령대별 선호 상품
+ */
+export interface AgeGroupPreference {
+  /** 연령대 */
+  ageGroup?: string;
+  /** 선호 상품 (TOP 3) */
+  preferredProducts?: ProductCount[];
+}
+
+/**
+ * 상품별 건수
+ */
+export interface ProductCount {
+  /** 상품 ID */
+  productId?: string;
+  /** 상품명 */
+  productName?: string;
+  /** 건수 */
+  count?: number;
+}
+
+/**
+ * 구독상품 선호도 분석 응답
+ */
+export interface SubscriptionAnalysisResponse {
+  /** 집계 시작일 */
+  startDate?: string;
+  /** 집계 종료일 */
+  endDate?: string;
+  /** 신규 가입 상위 상품 (TOP 6) */
+  newSubscriptions?: ProductCount[];
+  /** 해지 상위 상품 (TOP 6) */
+  canceledSubscriptions?: ProductCount[];
+  /** 연령대별 선호 상품 */
+  byAgeGroup?: AgeGroupPreference[];
+}
+
 /**
  * 전체 상담 성과 요약
  */
@@ -1120,66 +1563,6 @@ export interface PerformanceSummaryResponse {
   avgDurationMinutes?: number;
   /** 평균 고객 만족도 (0~5) */
   avgSatisfiedScore?: number;
-}
-
-export interface CustomerTypeKeyword {
-  customerType?: string;
-  keywords?: string[];
-}
-
-export interface KeywordAnalysisResponse {
-  startDate?: string;
-  endDate?: string;
-  topKeywords?: TopKeyword[];
-  longTermTopKeywords?: LongTermKeyword[];
-  byCustomerType?: CustomerTypeKeyword[];
-}
-
-export interface LongTermKeyword {
-  keyword?: string;
-  count?: number;
-  rank?: number;
-  appearanceDays?: number;
-  totalDays?: number;
-}
-
-export interface TopKeyword {
-  keyword?: string;
-  count?: number;
-  rank?: number;
-  changeRate?: number;
-}
-
-/**
- * 개별 상담사 성과
- */
-export interface AgentPerformance {
-  /** 순위 */
-  rank?: number;
-  /** 상담사 ID */
-  agentId?: number;
-  /** 상담사 이름 */
-  agentName?: string;
-  /** 처리 건수 */
-  consultCount?: number;
-  /** 평균 소요 시간 (초) */
-  avgDurationMinutes?: number;
-  /** 평균 고객 만족도 (0~5) */
-  avgSatisfiedScore?: number;
-  /** 응대 품질 점수 (추후 구현) */
-  qualityScore?: number;
-}
-
-/**
- * 상담사 성과 순위 (TOP 10)
- */
-export interface AgentRankingResponse {
-  /** 집계 시작일 */
-  startDate?: string;
-  /** 집계 종료일 */
-  endDate?: string;
-  /** 상담사 성과 순위 목록 (최대 10명) */
-  agents?: AgentPerformance[];
 }
 
 /**
@@ -1218,103 +1601,6 @@ export interface SurgeAlert {
   changeRate?: number;
   surgeDetected?: boolean;
   surgeTypes?: string[];
-}
-
-/**
- * 상담사 액션별 현황
- */
-export interface ActionDefense {
-  /** 방어 액션 */
-  action?: string;
-  /** 시도 건수 */
-  attempts?: number;
-  /** 성공률 (%) */
-  successRate?: number;
-}
-
-/**
- * 해지방어 패턴 분석 응답
- */
-export interface ChurnDefenseResponse {
-  /** 집계 시작일 */
-  startDate?: string;
-  /** 집계 종료일 */
-  endDate?: string;
-  /** 해지방어 시도 건수 */
-  totalAttempts?: number;
-  /** 방어 성공 건수 */
-  successCount?: number;
-  /** 방어 성공률 (%) */
-  successRate?: number;
-  /** 해지 의향 상담 평균 소요 시간(초) */
-  avgDurationSec?: number;
-  /** 불만 사유별 방어율 */
-  complaintReasons?: ComplaintReason[];
-  /** 고객 유형별 해지 분석 (연령+성별) */
-  byCustomerType?: CustomerTypeDefense[];
-  /** 상담사 액션별 현황 */
-  byAction?: ActionDefense[];
-}
-
-/**
- * 불만 사유별 방어율
- */
-export interface ComplaintReason {
-  /** 사유 */
-  reason?: string;
-  /** 방어 시도 건수 */
-  attempts?: number;
-  /** 성공 건수 */
-  successCount?: number;
-  /** 성공률 (%) */
-  successRate?: number;
-  /** 평균 소요 시간(초) */
-  avgDurationSec?: number;
-}
-
-/**
- * 고객 유형별 해지 분석
- */
-export interface CustomerTypeDefense {
-  /** 고객 유형 (연령+성별) */
-  type?: string;
-  /** 주요 불만 사유 */
-  mainComplaintReason?: string;
-  /** 건수 */
-  attempts?: number;
-  /** 방어 성공률 (%) */
-  successRate?: number;
-}
-
-export interface CategoryBreakdown {
-  code?: string;
-  name?: string;
-  count?: number;
-  rate?: number;
-}
-
-export interface SlotResult {
-  slot?: string;
-  consultCount?: number;
-  avgDuration?: number;
-  categoryBreakdown?: CategoryBreakdown[];
-}
-
-export interface TimeSlotTrendResponse {
-  date?: string;
-  timeSlotTrend?: SlotResult[];
-}
-
-export interface KeywordRankingResponse {
-  date?: string;
-  slot?: string;
-  topKeywords?: TopKeyword[];
-  newKeywords?: NewKeyword[];
-}
-
-export interface NewKeyword {
-  keyword?: string;
-  count?: number;
 }
 
 /**
@@ -1374,6 +1660,88 @@ export interface RiskSnapshot {
   totalRiskCount?: number;
 }
 
+/**
+ * 상담사 액션별 현황
+ */
+export interface ActionDefense {
+  /** 방어 액션 */
+  action?: string;
+  /** 시도 건수 */
+  attempts?: number;
+  /** 성공률 (%) */
+  successRate?: number;
+  /** 순위 */
+  rank?: number;
+  /** 불만 사유별 분석 */
+  byReason?: ReasonBreakdown[];
+}
+
+/**
+ * 해지방어 패턴 분석 응답
+ */
+export interface ChurnDefenseResponse {
+  /** 집계 시작일 */
+  startDate?: string;
+  /** 집계 종료일 */
+  endDate?: string;
+  /** 해지방어 시도 건수 */
+  totalAttempts?: number;
+  /** 방어 성공 건수 */
+  successCount?: number;
+  /** 방어 성공률 (%) */
+  successRate?: number;
+  /** 해지 의향 상담 평균 소요 시간(초) */
+  avgDurationSec?: number;
+  /** 불만 사유별 방어율 */
+  complaintReasons?: ComplaintReason[];
+  /** 고객 유형별 해지 분석 (연령+성별) */
+  byCustomerType?: CustomerTypeDefense[];
+  /** 상담사 액션별 현황 */
+  byAction?: ActionDefense[];
+}
+
+/**
+ * 불만 사유별 방어율
+ */
+export interface ComplaintReason {
+  /** 사유 */
+  reason?: string;
+  /** 방어 시도 건수 */
+  attempts?: number;
+  /** 성공 건수 */
+  successCount?: number;
+  /** 성공률 (%) */
+  successRate?: number;
+  /** 평균 소요 시간(초) */
+  avgDurationSec?: number;
+}
+
+/**
+ * 고객 유형별 해지 분석
+ */
+export interface CustomerTypeDefense {
+  /** 고객 유형 (연령+성별) */
+  type?: string;
+  /** 주요 불만 사유 */
+  mainComplaintReason?: string;
+  /** 건수 */
+  attempts?: number;
+  /** 방어 성공률 (%) */
+  successRate?: number;
+}
+
+/**
+ * 불만 사유별 분석
+ */
+export interface ReasonBreakdown {
+  /** 불만 사유 */
+  reason?: string;
+  /** 시도 건수 */
+  attempts?: number;
+  /** 성공률 (%) */
+  successRate?: number;
+}
+
 export interface CategoryItem {
   code?: string;
   name?: string;
@@ -1386,6 +1754,38 @@ export interface CategorySummaryResponse {
   slot?: string;
   totalConsultCount?: number;
   categories?: CategoryItem[];
+}
+
+/**
+ * 개별 상담사 성과
+ */
+export interface AgentPerformance {
+  /** 순위 */
+  rank?: number;
+  /** 상담사 ID */
+  agentId?: number;
+  /** 상담사 이름 */
+  agentName?: string;
+  /** 처리 건수 */
+  consultCount?: number;
+  /** 평균 소요 시간 (초) */
+  avgDurationMinutes?: number;
+  /** 평균 고객 만족도 (0~5) */
+  avgSatisfiedScore?: number;
+  /** 응대 품질 점수 (0~5) */
+  qualityScore?: number;
+}
+
+/**
+ * 상담사 성과 순위 (TOP 10)
+ */
+export interface AgentRankingResponse {
+  /** 집계 시작일 */
+  startDate?: string;
+  /** 집계 종료일 */
+  endDate?: string;
+  /** 상담사 성과 순위 목록 (최대 10명) */
+  agents?: AgentPerformance[];
 }
 
 /**
@@ -1408,6 +1808,50 @@ export interface ManualResponse {
   empName?: string;
   /** 최종 수정 일시 */
   updatedAt?: string;
+}
+
+/**
+ * 현재 선정 상태
+ */
+export type EvaluationListResponseSelectionStatus = typeof EvaluationListResponseSelectionStatus[keyof typeof EvaluationListResponseSelectionStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EvaluationListResponseSelectionStatus = {
+  PENDING: 'PENDING',
+  SELECTED: 'SELECTED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export interface EvaluationListResponse {
+  /** 상담 ID */
+  consultId?: number;
+  /** 소분류 카테고리명 */
+  categoryName?: string;
+  /** 상담사 이름 */
+  counselorName?: string;
+  /** AI 채점 점수 */
+  score?: number;
+  /** 상담 요약 제목 */
+  title?: string;
+  /** 현재 선정 상태 */
+  selectionStatus?: EvaluationListResponseSelectionStatus;
+  /** 분석 생성 일시 */
+  createdAt?: string;
+}
+
+export interface PageEvaluationListResponse {
+  totalElements?: number;
+  totalPages?: number;
+  pageable?: PageableObject;
+  size?: number;
+  content?: EvaluationListResponse[];
+  number?: number;
+  sort?: SortObject;
+  numberOfElements?: number;
+  first?: boolean;
+  last?: boolean;
+  empty?: boolean;
 }
 
 export interface EmployeeDto {
@@ -1483,55 +1927,6 @@ status?: string;
 keyword?: string;
 };
 
-export type Update200 = {[key: string]: unknown};
-
-export type Reload200 = {[key: string]: string};
-
-export type ListParams = {
-keyword?: string;
-consultantName?: string;
-customerName?: string;
-productName?: string;
-from?: string;
-to?: string;
-categoryName?: string;
-channel?: string;
-customerPhone?: string;
-customerType?: string;
-customerGrades?: string[];
-riskTypes?: string[];
-satisfactionScore?: number;
-/**
- * Zero-based page index (0..N)
- * @minimum 0
- */
-page?: number;
-/**
- * The size of the page to be returned
- * @minimum 1
- */
-size?: number;
-/**
- * Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
- */
-sort?: string[];
-};
-
-export type SuggestParams = {
-/**
- * 검색어 prefix (미입력 시 인기 키워드 반환)
- */
-q?: string;
-/**
- * 반환 개수 (최대 30)
- */
-size?: number;
-};
-
-export type ExecuteFilterGroupParams = {
-pageable: Pageable;
-};
-
 export type GetNotificationsParams = {
 /**
  * Zero-based page index (0..N)
@@ -1551,53 +1946,15 @@ sort?: string[];
 
 export type GetFilterDefinitions200 = {[key: string]: FilterResponse[]};
 
-export type AnalyzeParams = {
+export type GetWeeklyBoardParams = {
 /**
- * 분석할 텍스트
+ * 조회 연도 (예: 2026)
  */
-text: string;
+year?: number;
 /**
- * 분석기 이름 (korean_index_analyzer / korean_analysis_index_analyzer)
+ * 조회 주차 (1~52)
  */
-analyzer?: string;
-};
-
-export type AnalyzeQualityParams = {
-/**
- * 인사말 포함 여부 필터 (true/false, 생략 시 전체)
- */
-hasGreeting?: boolean;
-/**
- * 마무리 인사 포함 여부 필터 (true/false, 생략 시 전체)
- */
-hasFarewell?: boolean;
-/**
- * 대화원문 품질 키워드 (analysis_synonyms.txt 동의어 적용, 예: 친절응대, 불만감정, 대기안내)
- */
-keyword?: string;
-/**
- * 페이지 번호
- */
-page?: number;
-/**
- * 페이지 크기
- */
-size?: number;
-};
-
-export type AnalyzeKeywordsParams = {
-/**
- * 분석할 키워드 (analysis_synonyms.txt 동의어 적용)
- */
-keyword: string;
-/**
- * 페이지 번호
- */
-page?: number;
-/**
- * 페이지 크기
- */
-size?: number;
+week?: number;
 };
 
 export type GetConsultationListParams = {
@@ -1621,6 +1978,70 @@ export type CheckEmailParams = {
 email: string;
 };
 
+export type ListParams = {
+/**
+ * @minLength 0
+ * @maxLength 300
+ */
+keyword?: string;
+agentId?: string;
+agentName?: string;
+channel?: string;
+categoryCode?: string;
+categoryLarge?: string;
+categoryMedium?: string;
+categorySmall?: string;
+customerId?: string;
+customerName?: string;
+customerPhone?: string;
+grade?: string;
+gender?: string;
+intent?: boolean;
+defenseAttempted?: boolean;
+defenseSuccess?: boolean;
+riskType?: string[];
+riskLevel?: string[];
+productCode?: string[];
+complaintCategory?: string;
+defenseCategory?: string;
+outboundCategory?: string;
+outboundResult?: string;
+fromDate?: string;
+toDate?: string;
+minDuration?: number;
+maxDuration?: number;
+/**
+ * Zero-based page index (0..N)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * The size of the page to be returned
+ * @minimum 1
+ */
+size?: number;
+/**
+ * Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+ */
+sort?: string[];
+};
+
+export type SearchProductsParams = {
+keyword?: string;
+};
+
+export type GetCategoriesParams = {
+keyword?: string;
+};
+
+export type GetAnalysisCodesParams = {
+classification?: string;
+};
+
+export type SearchAgentsParams = {
+name?: string;
+};
+
 export type GetSatisfactionParams = {
 /**
  * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
@@ -1637,7 +2058,7 @@ date?: string;
 targetEmpId?: number;
 };
 
-export type GetCategoriesParams = {
+export type GetCategories1Params = {
 /**
  * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
  */
@@ -1645,87 +2066,202 @@ date?: string;
 targetEmpId?: number;
 };
 
-export type GetPerformanceSummaryParams = {
+export type GetOptimalTimeParams = {
 /**
- * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 주간 스냅샷 조회. 미지정 시 최근 스냅샷
+ * 기간: daily/weekly/monthly
+ */
+period: string;
+/**
+ * 기준일 (yyyy-MM-dd)
  */
 date?: string;
 };
 
-export type GetKeywordAnalysisParams = {
+export type GetKpiParams = {
 /**
- * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 주간 스냅샷 조회. 미지정 시 최근 스냅샷
+ * 기간: daily/weekly/monthly
+ */
+period: string;
+/**
+ * 기준일 (yyyy-MM-dd)
  */
 date?: string;
 };
 
-export type GetAgentRankingParams = {
+export type GetHeatmapParams = {
 /**
- * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 주간 스냅샷 조회. 미지정 시 최근 스냅샷
+ * 기간: daily/weekly/monthly
+ */
+period: string;
+/**
+ * 기준일 (yyyy-MM-dd)
  */
 date?: string;
 };
 
-export type GetPerformanceSummary1Params = {
+export type GetConversionByCategoryParams = {
 /**
- * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 월간 스냅샷 조회. 미지정 시 최근 스냅샷
+ * 기간: daily/weekly/monthly
+ */
+period: string;
+/**
+ * 기준일 (yyyy-MM-dd)
  */
 date?: string;
 };
 
-export type GetMonthlyKeywordAnalysisParams = {
+export type GetCampaignsParams = {
 /**
- * 조회 대상 날짜 (yyyy-MM-dd). 해당 월의 아무 날짜
+ * 기간: daily/weekly/monthly
+ */
+period: string;
+/**
+ * 기준일 (yyyy-MM-dd)
  */
 date?: string;
 };
 
-export type GetMonthlyCustomerRiskParams = {
+export type GetCallResultsParams = {
 /**
- * 조회 대상 날짜 (yyyy-MM-dd). 해당 월의 아무 날짜
+ * 기간: daily/weekly/monthly
+ */
+period: string;
+/**
+ * 기준일 (yyyy-MM-dd)
  */
 date?: string;
 };
 
-export type GetMonthlyChurnDefenseAnalysisParams = {
+export type GetAgentsParams = {
 /**
- * 조회 대상 날짜 (yyyy-MM-dd). 해당 월의 아무 날짜
+ * 기간: daily/weekly/monthly
+ */
+period: string;
+/**
+ * 기준일 (yyyy-MM-dd)
  */
 date?: string;
 };
 
-export type GetAgentRanking1Params = {
+export type GetWeeklyQualityParams = {
 /**
- * 기준 날짜 (yyyy-MM-dd). 해당 날짜가 포함된 월간 스냅샷 조회. 미지정 시 최근 스냅샷
+ * 상담사 ID (미지정 시 전체 조회)
+ */
+agentId?: number;
+/**
+ * 기준 날짜 (yyyy-MM-dd). 해당 주간 스냅샷 조회
+ */
+date?: string;
+};
+
+export type GetMonthlyQualityParams = {
+/**
+ * 상담사 ID (미지정 시 전체 조회)
+ */
+agentId?: number;
+/**
+ * 기준 날짜 (yyyy-MM-dd). 해당 월간 스냅샷 조회
+ */
+date?: string;
+};
+
+export type GetDailyQualityParams = {
+/**
+ * 상담사 ID (미지정 시 전체 조회)
+ */
+agentId?: number;
+/**
+ * 조회 날짜 (yyyy-MM-dd). 미지정 시 전일
  */
 date?: string;
 };
 
 export type GetTimeSlotTrendParams = {
 /**
- * 조회 대상 날짜 (yyyy-MM-dd)
+ * 조회 기준 날짜 (yyyy-MM-dd)
  */
 date?: string;
 /**
- * 시간대 슬롯 (예: 09-12). 미지정 시 전체 슬롯
+ * 시간대 슬롯 (미지정 시 전체 슬롯)
  */
-slot?: string;
+slot?: GetTimeSlotTrendSlot;
 };
 
-export type GetKeywordRankingParams = {
+export type GetTimeSlotTrendSlot = typeof GetTimeSlotTrendSlot[keyof typeof GetTimeSlotTrendSlot];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetTimeSlotTrendSlot = {
+  '09-12': '09-12',
+  '12-15': '12-15',
+  '15-18': '15-18',
+} as const;
+
+export type GetSubscriptionProductsParams = {
 /**
- * 조회 대상 날짜 (yyyy-MM-dd)
+ * 조회 기준 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+};
+
+export type GetSubscriptionAgeGroupsParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+};
+
+export type GetPerformanceSummaryParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd). 미지정 시 전일 기준
+ */
+date?: string;
+};
+
+export type GetKeywordTopParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd)
  */
 date?: string;
 /**
- * 시간대 슬롯 (예: 09-12). 미지정 시 전체 슬롯
+ * 시간대 슬롯 (daily만 지원, 미지정 시 전체)
  */
-slot?: string;
+slot?: GetKeywordTopSlot;
 };
+
+export type GetKeywordTopSlot = typeof GetKeywordTopSlot[keyof typeof GetKeywordTopSlot];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetKeywordTopSlot = {
+  '09-12': '09-12',
+  '12-15': '12-15',
+  '15-18': '15-18',
+} as const;
+
+export type GetKeywordTop200 = { [key: string]: unknown };
+
+export type GetKeywordLongTermParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+};
+
+export type GetKeywordLongTerm200 = { [key: string]: unknown };
+
+export type GetKeywordCustomerTypesParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+};
+
+export type GetKeywordCustomerTypes200 = { [key: string]: unknown };
 
 export type GetCustomerRiskParams = {
 /**
- * 조회 대상 날짜 (yyyy-MM-dd). 미지정 시 전일 기준
+ * 조회 기준 날짜 (yyyy-MM-dd)
  */
 date?: string;
 };
@@ -1741,15 +2277,60 @@ baseDate: string;
 compareDate: string;
 };
 
+export type GetChurnDefenseSummaryParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+};
+
+export type GetChurnDefenseCustomerTypesParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+};
+
+export type GetChurnDefenseComplaintReasonsParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+};
+
+export type GetChurnDefenseActionsParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd)
+ */
+date?: string;
+};
+
 export type GetCategorySummaryParams = {
 /**
- * 조회 대상 날짜 (yyyy-MM-dd)
+ * 조회 기준 날짜 (yyyy-MM-dd)
  */
 date?: string;
 /**
- * 시간대 슬롯 (예: 09-12). 미지정 시 전체 슬롯
+ * 시간대 슬롯 (미지정 시 전체 슬롯)
  */
-slot?: string;
+slot?: GetCategorySummarySlot;
+};
+
+export type GetCategorySummarySlot = typeof GetCategorySummarySlot[keyof typeof GetCategorySummarySlot];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetCategorySummarySlot = {
+  '09-12': '09-12',
+  '12-15': '12-15',
+  '15-18': '15-18',
+} as const;
+
+export type GetAgentRankingParams = {
+/**
+ * 조회 기준 날짜 (yyyy-MM-dd)
+ */
+date?: string;
 };
 
 export type GetManualHistoryParams = {
@@ -1759,12 +2340,46 @@ export type GetManualHistoryParams = {
 categoryCode?: string;
 };
 
-export type ExtractParams = {
+export type GetCandidatesParams = {
 /**
- * 반환할 최대 키워드 수 (기본 100)
+ * 선정 상태 (PENDING, SELECTED, REJECTED, ALL)
  */
-limit?: number;
+status?: GetCandidatesStatus;
+/**
+ * 정렬 기준 필드 (null/빈값일 경우 최신순, 'score' 입력 시 점수순)
+ */
+sortBy?: string;
+/**
+ * 정렬 방향 (asc, desc)
+ */
+direction?: GetCandidatesDirection;
+/**
+ * 페이지 번호 (0부터 시작)
+ */
+page?: number;
+/**
+ * 한 페이지당 개수
+ */
+size?: number;
 };
 
-export type Extract200 = {[key: string]: unknown};
+export type GetCandidatesStatus = typeof GetCandidatesStatus[keyof typeof GetCandidatesStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetCandidatesStatus = {
+  PENDING: 'PENDING',
+  SELECTED: 'SELECTED',
+  REJECTED: 'REJECTED',
+  ALL: 'ALL',
+} as const;
+
+export type GetCandidatesDirection = typeof GetCandidatesDirection[keyof typeof GetCandidatesDirection];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetCandidatesDirection = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
 

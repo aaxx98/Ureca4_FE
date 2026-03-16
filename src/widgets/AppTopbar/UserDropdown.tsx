@@ -1,6 +1,6 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useGetMyInfo, useLogout } from "../../shared/api/generated/auth";
+import { useGetMyInfoQuery, useMutationPostLogoutQuery } from "../../shared/api/generated/auth";
 import { setAccessToken } from "../../shared/api/tokenStore";
 import { ROUTES } from "../../shared/config/routes";
 import { LogoutIcon, UserIcon } from "../../shared/ui/icons";
@@ -10,9 +10,9 @@ export function UserDropdown() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
-  const { data } = useGetMyInfo();
+  const { data } = useGetMyInfoQuery();
 
-  const { mutate: logout } = useLogout({
+  const { mutate: logout } = useMutationPostLogoutQuery({
     mutation: {
       onSuccess: () => {
         setAccessToken(null);
@@ -52,14 +52,14 @@ export function UserDropdown() {
             </div>
 
             <div className={s.menu}>
-              <Link
-                to={ROUTES.MYPAGE}
+              <button
+                type="button"
                 className={s.menuItem}
-                onClick={() => setOpen(false)}
+                onClick={() => { navigate({ to: ROUTES.MYPAGE }); setOpen(false); }}
               >
                 <UserIcon />
                 마이페이지
-              </Link>
+              </button>
               <button
                 type="button"
                 className={`${s.menuItem} ${s.menuItemDanger}`}
