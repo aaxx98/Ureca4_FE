@@ -23,7 +23,7 @@ import type {
 import type {
   ConsultationSummaryDetailResponse,
   ListParams,
-  PageConsultationSummaryListResponse
+  PageConsultationSummaryDto
 } from '../api.schemas';
 
 import { apiClient } from '../../client';
@@ -37,7 +37,7 @@ export const list = (
 ) => {
       
       
-      return apiClient<PageConsultationSummaryListResponse>(
+      return apiClient<PageConsultationSummaryDto>(
       {url: `/api/summaries`, method: 'GET',
         params, signal
     },

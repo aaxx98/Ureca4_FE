@@ -448,13 +448,6 @@ export interface ManualRequest {
   content: string;
 }
 
-export interface SyncResult {
-  total?: number;
-  synced?: number;
-  skipped?: number;
-  failed?: number[];
-}
-
 export interface EmployeeCreateRequestDto {
   loginId?: string;
   password?: string;
@@ -507,132 +500,12 @@ export interface EmployeeStatusUpdateResponseDto {
   message?: string;
 }
 
-export interface ConsultationSummaryListResponse {
-  consultId?: number;
-  consultedAt?: string;
-  channel?: string;
-  customerName?: string;
-  customerType?: string;
-  customerGrade?: string;
-  categoryCode?: string;
-  categoryLarge?: string;
-  categoryMedium?: string;
-  categorySmall?: string;
-  agentId?: number;
-  agentName?: string;
-  riskFlags?: string[];
-  summaryContent?: string;
-  summaryStatus?: string;
-  iamMatchRate?: number;
-  defenseAttempted?: boolean;
-}
-
-export interface PageConsultationSummaryListResponse {
-  totalElements?: number;
-  totalPages?: number;
-  pageable?: PageableObject;
-  size?: number;
-  content?: ConsultationSummaryListResponse[];
-  number?: number;
-  sort?: SortObject;
-  numberOfElements?: number;
-  first?: boolean;
-  last?: boolean;
-  empty?: boolean;
-}
-
-export interface PageableObject {
-  paged?: boolean;
-  pageNumber?: number;
-  pageSize?: number;
-  offset?: number;
-  sort?: SortObject;
-  unpaged?: boolean;
-}
-
-export interface SortObject {
-  sorted?: boolean;
-  empty?: boolean;
-  unsorted?: boolean;
-}
-
-export interface ActiveSubscriptionInfo {
-  productType?: string;
-  productCode?: string;
-  productName?: string;
-  category?: string;
-}
-
-export interface AgentInfo {
-  id?: number;
-  name?: string;
-  department?: string;
-}
-
-export interface AnalysisInfo {
-  iamIssue?: string;
-  iamAction?: string;
-  iamMemo?: string;
-  iamMatchRate?: number;
-  riskFlags?: string[];
-  cancellationIntent?: boolean;
-  defenseAttempted?: boolean;
-  defenseSuccess?: boolean;
-  defenseActions?: string[];
-  complaintReasons?: string;
-}
-
-export interface CategoryInfo {
-  code?: string;
-  large?: string;
-  medium?: string;
-  small?: string;
-}
-
-export interface ConsultationSummaryDetailResponse {
-  consultId?: number;
-  consultedAt?: string;
-  createdAt?: string;
-  durationSec?: number;
-  channel?: string;
-  category?: CategoryInfo;
-  agent?: AgentInfo;
-  customer?: CustomerInfo;
-  content?: ContentInfo;
-  analysis?: AnalysisInfo;
-  activeSubscriptions?: ActiveSubscriptionInfo[];
-}
-
-export interface ContentInfo {
-  status?: string;
-  aiSummary?: string;
-  keywords?: string[];
-  rawTextJson?: string;
-}
-
-export interface CustomerInfo {
-  name?: string;
-  phone?: string;
-  type?: string;
-  grade?: string;
-  ageGroup?: string;
-  satisfaction?: string;
-}
-
 export interface FilterGroupListResponse {
   filterGroupId?: number;
   groupName?: string;
   sortOrder?: number;
   createdAt?: string;
   filterCount?: number;
-}
-
-export interface Pageable {
-  /** @minimum 0 */
-  page?: number;
-  /** @minimum 1 */
-  size?: number;
-  sort?: string[];
 }
 
 export interface ApiResponsePageNotificationResponse {
@@ -675,6 +548,21 @@ export interface PageNotificationResponse {
   first?: boolean;
   last?: boolean;
   empty?: boolean;
+}
+
+export interface PageableObject {
+  paged?: boolean;
+  pageNumber?: number;
+  pageSize?: number;
+  offset?: number;
+  sort?: SortObject;
+  unpaged?: boolean;
+}
+
+export interface SortObject {
+  sorted?: boolean;
+  empty?: boolean;
+  unsorted?: boolean;
 }
 
 export interface ApiResponseLong {
@@ -743,44 +631,6 @@ export interface FilterResponse {
   filterId?: number;
   filterKey?: string;
   filterName?: string;
-}
-
-/**
- * 응대품질·키워드 분석 결과
- */
-export interface ConsultAnalysisResponse {
-  /** ES 문서 ID */
-  id?: string;
-  /** 상담 ID (MySQL consultation_results.consult_id) */
-  consultId?: number;
-  /** AI 요약 내용 */
-  content?: string;
-  /** IAM 이슈 */
-  iamIssue?: string;
-  /** IAM 조치 */
-  iamAction?: string;
-  /** IAM 메모 */
-  iamMemo?: string;
-  /** 감정 분류 */
-  sentiment?: string;
-  /** 위험도 점수 (0~100) */
-  riskScore?: number;
-  /** 우선순위 */
-  priority?: string;
-  /** 고객 ID */
-  customerId?: string;
-  /** 고객명 */
-  customerName?: string;
-  /** 전화번호 */
-  phone?: string;
-  /** 상담 일시 */
-  createdAt?: string;
-  /** 인사말 포함 여부 (상담사 발화 기준) */
-  hasGreeting?: boolean;
-  /** 마무리 인사 포함 여부 (상담사 발화 기준) */
-  hasFarewell?: boolean;
-  /** 대화 원문 JSON (MySQL consultation_raw_texts.raw_text_json) */
-  rawTextJson?: string;
 }
 
 export interface ApiResponseDemoConsultDataResponse {
@@ -1102,6 +952,157 @@ export interface MyInfoResponseDto {
 export interface EmailCheckResponseDto {
   available?: boolean;
   email?: string;
+}
+
+export interface ConsultationSummaryDto {
+  consultId?: number;
+  consultedAt?: string;
+  channel?: string;
+  customerName?: string;
+  phone?: string;
+  grade?: string;
+  agentName?: string;
+  categoryLarge?: string;
+  categoryMedium?: string;
+  categorySmall?: string;
+  summaryContent?: string;
+  intent?: boolean;
+  defenseSuccess?: boolean;
+  riskFlags?: RiskFlagDto[];
+}
+
+export interface PageConsultationSummaryDto {
+  totalElements?: number;
+  totalPages?: number;
+  pageable?: PageableObject;
+  size?: number;
+  content?: ConsultationSummaryDto[];
+  number?: number;
+  sort?: SortObject;
+  numberOfElements?: number;
+  first?: boolean;
+  last?: boolean;
+  empty?: boolean;
+}
+
+export interface RiskFlagDto {
+  riskType?: string;
+  riskLevel?: string;
+}
+
+export interface AgentInfo {
+  id?: number;
+  name?: string;
+}
+
+export interface CancellationInfo {
+  intent?: boolean;
+  defenseAttempted?: boolean;
+  defenseSuccess?: boolean;
+  defenseActions?: string[];
+  complaintReasons?: string;
+}
+
+export interface CategoryInfo {
+  code?: string;
+  large?: string;
+  medium?: string;
+  small?: string;
+}
+
+export interface ConsultationSummaryDetailResponse {
+  id?: string;
+  consultId?: number;
+  consultedAt?: string;
+  createdAt?: string;
+  durationSec?: number;
+  channel?: string;
+  category?: CategoryInfo;
+  agent?: AgentInfo;
+  customer?: CustomerInfo;
+  iam?: IamInfo;
+  summary?: SummaryInfo;
+  riskFlags?: RiskFlagInfo[];
+  cancellation?: CancellationInfo;
+  resultProducts?: ResultProductInfo[];
+}
+
+export interface CustomerInfo {
+  id?: number;
+  grade?: string;
+  name?: string;
+  phone?: string;
+  type?: string;
+  ageGroup?: string;
+  satisfiedScore?: number;
+}
+
+export interface IamInfo {
+  memo?: string;
+  action?: string;
+  issue?: string;
+  matchKeyword?: string[];
+  matchRate?: number;
+}
+
+export interface ProductAction {
+  before?: ProductInfo;
+  after?: ProductInfo;
+}
+
+export interface ProductInfo {
+  code?: string;
+  name?: string;
+}
+
+export interface ResultProductInfo {
+  changeType?: string;
+  products?: ProductAction[];
+}
+
+export interface RiskFlagInfo {
+  riskType?: string;
+  riskLevel?: string;
+}
+
+export interface SummaryInfo {
+  content?: string;
+  keywords?: string[];
+}
+
+export interface RiskTypeDto {
+  typeCode?: string;
+  typeName?: string;
+}
+
+export interface RiskLevelDto {
+  levelCode?: string;
+  levelName?: string;
+}
+
+export interface ProductDto {
+  code?: string;
+  name?: string;
+  type?: string;
+}
+
+export interface GradeDto {
+  gradeCode?: string;
+  gradeName?: string;
+  priorityLevel?: number;
+}
+
+export interface CategoryDto {
+  categoryCode?: string;
+  largeCategory?: string;
+  mediumCategory?: string;
+  smallCategory?: string;
+}
+
+export interface AgentDto {
+  empId?: number;
+  loginId?: string;
+  name?: string;
 }
 
 /**
@@ -1483,55 +1484,6 @@ status?: string;
 keyword?: string;
 };
 
-export type Update200 = {[key: string]: unknown};
-
-export type Reload200 = {[key: string]: string};
-
-export type ListParams = {
-keyword?: string;
-consultantName?: string;
-customerName?: string;
-productName?: string;
-from?: string;
-to?: string;
-categoryName?: string;
-channel?: string;
-customerPhone?: string;
-customerType?: string;
-customerGrades?: string[];
-riskTypes?: string[];
-satisfactionScore?: number;
-/**
- * Zero-based page index (0..N)
- * @minimum 0
- */
-page?: number;
-/**
- * The size of the page to be returned
- * @minimum 1
- */
-size?: number;
-/**
- * Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
- */
-sort?: string[];
-};
-
-export type SuggestParams = {
-/**
- * 검색어 prefix (미입력 시 인기 키워드 반환)
- */
-q?: string;
-/**
- * 반환 개수 (최대 30)
- */
-size?: number;
-};
-
-export type ExecuteFilterGroupParams = {
-pageable: Pageable;
-};
-
 export type GetNotificationsParams = {
 /**
  * Zero-based page index (0..N)
@@ -1550,55 +1502,6 @@ sort?: string[];
 };
 
 export type GetFilterDefinitions200 = {[key: string]: FilterResponse[]};
-
-export type AnalyzeParams = {
-/**
- * 분석할 텍스트
- */
-text: string;
-/**
- * 분석기 이름 (korean_index_analyzer / korean_analysis_index_analyzer)
- */
-analyzer?: string;
-};
-
-export type AnalyzeQualityParams = {
-/**
- * 인사말 포함 여부 필터 (true/false, 생략 시 전체)
- */
-hasGreeting?: boolean;
-/**
- * 마무리 인사 포함 여부 필터 (true/false, 생략 시 전체)
- */
-hasFarewell?: boolean;
-/**
- * 대화원문 품질 키워드 (analysis_synonyms.txt 동의어 적용, 예: 친절응대, 불만감정, 대기안내)
- */
-keyword?: string;
-/**
- * 페이지 번호
- */
-page?: number;
-/**
- * 페이지 크기
- */
-size?: number;
-};
-
-export type AnalyzeKeywordsParams = {
-/**
- * 분석할 키워드 (analysis_synonyms.txt 동의어 적용)
- */
-keyword: string;
-/**
- * 페이지 번호
- */
-page?: number;
-/**
- * 페이지 크기
- */
-size?: number;
-};
 
 export type GetConsultationListParams = {
 keyword?: string;
@@ -1621,6 +1524,62 @@ export type CheckEmailParams = {
 email: string;
 };
 
+export type ListParams = {
+/**
+ * @minLength 0
+ * @maxLength 300
+ */
+keyword?: string;
+agentId?: string;
+agentName?: string;
+channel?: string;
+categoryCode?: string;
+categoryLarge?: string;
+categoryMedium?: string;
+categorySmall?: string;
+customerId?: string;
+customerName?: string;
+customerPhone?: string;
+grade?: string;
+gender?: string;
+intent?: boolean;
+defenseAttempted?: boolean;
+defenseSuccess?: boolean;
+riskType?: string[];
+riskLevel?: string[];
+productCode?: string[];
+fromDate?: string;
+toDate?: string;
+minDuration?: number;
+maxDuration?: number;
+/**
+ * Zero-based page index (0..N)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * The size of the page to be returned
+ * @minimum 1
+ */
+size?: number;
+/**
+ * Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+ */
+sort?: string[];
+};
+
+export type SearchProductsParams = {
+keyword?: string;
+};
+
+export type GetCategoriesParams = {
+keyword?: string;
+};
+
+export type SearchAgentsParams = {
+name?: string;
+};
+
 export type GetSatisfactionParams = {
 /**
  * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
@@ -1637,7 +1596,7 @@ date?: string;
 targetEmpId?: number;
 };
 
-export type GetCategoriesParams = {
+export type GetCategories1Params = {
 /**
  * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
  */
@@ -1758,13 +1717,4 @@ export type GetManualHistoryParams = {
  */
 categoryCode?: string;
 };
-
-export type ExtractParams = {
-/**
- * 반환할 최대 키워드 수 (기본 100)
- */
-limit?: number;
-};
-
-export type Extract200 = {[key: string]: unknown};
 

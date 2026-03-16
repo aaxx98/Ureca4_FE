@@ -27,14 +27,12 @@ import type {
 import type {
   DeleteFilterGroup200,
   ErrorResponse,
-  ExecuteFilterGroupParams,
   FilterGroupCreateRequest,
   FilterGroupDetailResponse,
   FilterGroupOrderRequest,
   FilterGroupUpdateRequest,
   GetFilterDefinitions200,
   GetMyFilterGroups200,
-  PageConsultationSummaryListResponse,
   UpdateFilterGroupOrder200
 } from '../api.schemas';
 
@@ -501,106 +499,6 @@ export const useCreateFilterGroup = <TError = ErrorResponse | ErrorResponse,
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * 저장된 필터 그룹의 조건을 그대로 적용하여 상담 요약 검색을 실행합니다. filter_custom의 filterKey-filterValue 쌍을 SummarySearchRequest로 변환한 뒤 MongoDB Criteria 검색을 수행합니다. customer_grade·risk_type 은 복수 값을 OR로 처리합니다.
- * @summary 저장된 검색조건 재실행
- */
-export const executeFilterGroup = (
-    id: number,
-    params: ExecuteFilterGroupParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return apiClient<PageConsultationSummaryListResponse>(
-      {url: `/search-filters/${id}/execute`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-
-
-export const getExecuteFilterGroupQueryKey = (id?: number,
-    params?: ExecuteFilterGroupParams,) => {
-    return [
-    `/search-filters/${id}/execute`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getExecuteFilterGroupQueryOptions = <TData = Awaited<ReturnType<typeof executeFilterGroup>>, TError = ErrorResponse | ErrorResponse>(id: number,
-    params: ExecuteFilterGroupParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executeFilterGroup>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getExecuteFilterGroupQueryKey(id,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof executeFilterGroup>>> = ({ signal }) => executeFilterGroup(id,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof executeFilterGroup>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ExecuteFilterGroupQueryResult = NonNullable<Awaited<ReturnType<typeof executeFilterGroup>>>
-export type ExecuteFilterGroupQueryError = ErrorResponse | ErrorResponse
-
-
-export function useExecuteFilterGroup<TData = Awaited<ReturnType<typeof executeFilterGroup>>, TError = ErrorResponse | ErrorResponse>(
- id: number,
-    params: ExecuteFilterGroupParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof executeFilterGroup>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof executeFilterGroup>>,
-          TError,
-          Awaited<ReturnType<typeof executeFilterGroup>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useExecuteFilterGroup<TData = Awaited<ReturnType<typeof executeFilterGroup>>, TError = ErrorResponse | ErrorResponse>(
- id: number,
-    params: ExecuteFilterGroupParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executeFilterGroup>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof executeFilterGroup>>,
-          TError,
-          Awaited<ReturnType<typeof executeFilterGroup>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useExecuteFilterGroup<TData = Awaited<ReturnType<typeof executeFilterGroup>>, TError = ErrorResponse | ErrorResponse>(
- id: number,
-    params: ExecuteFilterGroupParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executeFilterGroup>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary 저장된 검색조건 재실행
- */
-
-export function useExecuteFilterGroup<TData = Awaited<ReturnType<typeof executeFilterGroup>>, TError = ErrorResponse | ErrorResponse>(
- id: number,
-    params: ExecuteFilterGroupParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executeFilterGroup>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getExecuteFilterGroupQueryOptions(id,params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-/**
  * 검색 폼 동적 생성용. filter 테이블(18)의 전체 필터 항목(filterKey, filterName 등)을 반환합니다.
  * @summary 필터 정의 목록 조회
  */

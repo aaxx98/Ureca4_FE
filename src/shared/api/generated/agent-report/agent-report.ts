@@ -22,7 +22,7 @@ import type {
 
 import type {
   ErrorResponse,
-  GetCategoriesParams,
+  GetCategories1Params,
   GetMetricsParams,
   GetSatisfactionParams
 } from '../api.schemas';
@@ -236,9 +236,9 @@ export function useGetMetrics<TData = Awaited<ReturnType<typeof getMetrics>>, TE
  * 특정 기간(daily, weekly, monthly) 동안 상담사가 처리한 상담 카테고리 순위를 조회합니다. date 미지정 시 전일(어제) 기준으로 조회합니다.
  * @summary 상담사 카테고리 순위 조회
  */
-export const getCategories = (
+export const getCategories1 = (
     period: string,
-    params?: GetCategoriesParams,
+    params?: GetCategories1Params,
  signal?: AbortSignal
 ) => {
       
@@ -253,75 +253,75 @@ export const getCategories = (
 
 
 
-export const getGetCategoriesQueryKey = (period?: string,
-    params?: GetCategoriesParams,) => {
+export const getGetCategories1QueryKey = (period?: string,
+    params?: GetCategories1Params,) => {
     return [
     `/api/analysis/agent/${period}/categories`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof getCategories>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(period: string,
-    params?: GetCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories>>, TError, TData>>, }
+export const getGetCategories1QueryOptions = <TData = Awaited<ReturnType<typeof getCategories1>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(period: string,
+    params?: GetCategories1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories1>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetCategoriesQueryKey(period,params);
+  const queryKey =  queryOptions?.queryKey ?? getGetCategories1QueryKey(period,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCategories>>> = ({ signal }) => getCategories(period,params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCategories1>>> = ({ signal }) => getCategories1(period,params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(period), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCategories>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(period), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCategories1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetCategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof getCategories>>>
-export type GetCategoriesQueryError = ErrorResponse | ErrorResponse | ErrorResponse
+export type GetCategories1QueryResult = NonNullable<Awaited<ReturnType<typeof getCategories1>>>
+export type GetCategories1QueryError = ErrorResponse | ErrorResponse | ErrorResponse
 
 
-export function useGetCategories<TData = Awaited<ReturnType<typeof getCategories>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
+export function useGetCategories1<TData = Awaited<ReturnType<typeof getCategories1>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  period: string,
-    params: undefined |  GetCategoriesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories>>, TError, TData>> & Pick<
+    params: undefined |  GetCategories1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCategories>>,
+          Awaited<ReturnType<typeof getCategories1>>,
           TError,
-          Awaited<ReturnType<typeof getCategories>>
+          Awaited<ReturnType<typeof getCategories1>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCategories<TData = Awaited<ReturnType<typeof getCategories>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
+export function useGetCategories1<TData = Awaited<ReturnType<typeof getCategories1>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  period: string,
-    params?: GetCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories>>, TError, TData>> & Pick<
+    params?: GetCategories1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCategories>>,
+          Awaited<ReturnType<typeof getCategories1>>,
           TError,
-          Awaited<ReturnType<typeof getCategories>>
+          Awaited<ReturnType<typeof getCategories1>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCategories<TData = Awaited<ReturnType<typeof getCategories>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
+export function useGetCategories1<TData = Awaited<ReturnType<typeof getCategories1>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  period: string,
-    params?: GetCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories>>, TError, TData>>, }
+    params?: GetCategories1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 상담사 카테고리 순위 조회
  */
 
-export function useGetCategories<TData = Awaited<ReturnType<typeof getCategories>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
+export function useGetCategories1<TData = Awaited<ReturnType<typeof getCategories1>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  period: string,
-    params?: GetCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories>>, TError, TData>>, }
+    params?: GetCategories1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCategories1>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetCategoriesQueryOptions(period,params,options)
+  const queryOptions = getGetCategories1QueryOptions(period,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
