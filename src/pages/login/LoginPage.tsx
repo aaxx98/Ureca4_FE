@@ -4,7 +4,7 @@ import { useLogin } from "../../shared/api/generated/auth";
 import { setAccessToken } from "../../shared/api/tokenStore";
 import { ROUTES } from "../../shared/config/routes";
 import { Button } from "../../shared/ui/Button/Button";
-import { EyeIcon, EyeOffIcon, GoogleIcon } from "../../shared/ui/icons";
+import { EyeIcon, EyeOffIcon, GoogleIcon, UPlusLogoIcon } from "../../shared/ui/icons";
 import { Input } from "../../shared/ui/Input/Input";
 import * as s from "./LoginPage.css";
 
@@ -41,10 +41,7 @@ export function LoginPage() {
     <div className={s.pageContainer}>
       <div className={s.card}>
         <div className={s.logoSection}>
-          <div className={s.logoMark}>
-            <span className={s.logoU}>U+</span>
-            <span className={s.logoPlus}>LG</span>
-          </div>
+          <UPlusLogoIcon height={44} />
           <p className={s.serviceTitle}>고객 상담 기록 관리 시스템</p>
         </div>
 
