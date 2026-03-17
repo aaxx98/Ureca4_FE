@@ -11,13 +11,6 @@ const TYPE_VARIANT: Record<string, BadgeVariant> = {
   변경: "purple",
 };
 
-const PROCESS_VARIANT: Record<string, BadgeVariant> = {
-  처리중: "blue",
-  완료:   "green",
-  미완료: "orange",
-  보류:   "gray",
-};
-
 const SUMMARY_VARIANT: Record<string, BadgeVariant> = {
   요약완료: "green",
   요청됨:   "orange",
@@ -59,7 +52,6 @@ export function ConsultationListTable({ items, onDetail }: TableProps) {
             <th className={s.th}>유형</th>
             <th className={s.th}>채널</th>
             <th className={s.th}>상담사</th>
-            <th className={s.th}>처리상태</th>
             <th className={s.th}>요약상태</th>
             <th className={s.th}>만족도</th>
             <th className={s.th}>상담일시</th>
@@ -81,13 +73,6 @@ export function ConsultationListTable({ items, onDetail }: TableProps) {
               </td>
               <td className={s.td}>{item.channel ?? "–"}</td>
               <td className={s.td}>{item.counselorName ?? "–"}</td>
-              <td className={s.td}>
-                {item.processStatus ? (
-                  <span className={s.badgeVariant[PROCESS_VARIANT[item.processStatus] ?? "gray"]}>
-                    {item.processStatus}
-                  </span>
-                ) : "–"}
-              </td>
               <td className={s.td}>
                 {item.summaryStatus ? (
                   <span className={s.badgeVariant[SUMMARY_VARIANT[item.summaryStatus] ?? "gray"]}>
