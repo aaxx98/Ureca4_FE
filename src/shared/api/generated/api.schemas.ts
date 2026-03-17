@@ -341,6 +341,8 @@ export interface DemoConsultSubmitRequest {
   iamAction?: string;
   /** IAM 메모 — 상담사가 직접 입력 */
   iamMemo?: string;
+  /** 상담 원문 JSON (GET 응답의 rawTextJson 그대로) */
+  rawTextJson?: string;
 }
 
 /**
@@ -889,11 +891,13 @@ export interface ApiResponseConsultationDetailResponseDto {
 export interface ConsultationAiAnalysisDto {
   categoryCode?: string;
   categoryName?: string;
-  hasIntent?: boolean;
   complaintReason?: string;
   defenseAttempted?: boolean;
   defenseSuccess?: boolean;
   defenseActions?: string;
+  outboundCallResult?: string;
+  outboundReport?: string;
+  evaluationReason?: string;
   rawSummary?: string;
 }
 
@@ -1958,12 +1962,33 @@ week?: number;
 };
 
 export type GetConsultationListParams = {
+/**
+ * 고객명, 전화번호, 상담 ID
+ */
 keyword?: string;
+/**
+ * 상담 채널 (입력 가능 값: 전화, 채팅)
+ */
 channel?: string;
+/**
+ * 상담 카테고리 코드
+ */
 categoryCode?: string;
+/**
+ * AI 요약 상태 (입력 가능 값: 요약완료, 요청중, 실패)
+ */
 summaryStatus?: string;
+/**
+ * 처리 상태 (입력 가능 값: 처리중, 완료, 미완료, 요청중)
+ */
 resultStatus?: string;
+/**
+ * 페이지 번호 (0부터 시작)
+ */
 page?: number;
+/**
+ * 페이지당 데이터 개수
+ */
 size?: number;
 };
 
@@ -2047,6 +2072,9 @@ export type GetSatisfactionParams = {
  * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
  */
 date?: string;
+/**
+ * 조회 대상 상담사 ID. **[관리자]** 필수 입력. **[상담사]** 본인 ID 외 입력 불가 (입력해도 본인 것만 조회됨)
+ */
 targetEmpId?: number;
 };
 
@@ -2055,6 +2083,9 @@ export type GetMetricsParams = {
  * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
  */
 date?: string;
+/**
+ * 조회 대상 상담사 ID. **[관리자]** 필수 입력. **[상담사]** 본인 ID 외 입력 불가 (입력해도 본인 것만 조회됨)
+ */
 targetEmpId?: number;
 };
 
@@ -2063,6 +2094,9 @@ export type GetCategories1Params = {
  * 조회 기준 날짜 (ISO 형식: YYYY-MM-DD)
  */
 date?: string;
+/**
+ * 조회 대상 상담사 ID. **[관리자]** 필수 입력. **[상담사]** 본인 ID 외 입력 불가 (입력해도 본인 것만 조회됨)
+ */
 targetEmpId?: number;
 };
 
