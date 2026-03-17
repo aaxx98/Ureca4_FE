@@ -1,6 +1,8 @@
 import { useCallback, useState } from "react";
 import type { GetConsultationListParams } from "../../../shared/api/generated/api.schemas";
 import { useGetConsultationListQuery } from "../../../shared/api/generated/consultation-list";
+import { getRole } from "../../../shared/api/roleStore";
+import { hasAccess, MENU_KEYS } from "../../../shared/config/roles";
 import { ROUTES } from "../../../shared/config/routes";
 import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
 import { AnalysisIcon, ConsultationIcon } from "../../../shared/ui/icons";
@@ -16,10 +18,7 @@ const PAGE_SIZE = 20;
 const CLOSE_DELAY = 180;
 
 export function ConsultationListPage() {
-  const [params, setParams] = useState<GetConsultationListParams>({
-    page: 1,
-    size: PAGE_SIZE,
-  });
+  const [params, setParams] = useState<GetConsultationListParams>({});
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isClosing, setIsClosing]   = useState(false);
 
@@ -31,7 +30,7 @@ export function ConsultationListPage() {
   const currentPage   = listData?.page ?? 1;
 
   function handleFilterChange(updates: Partial<GetConsultationListParams>) {
-    setParams((prev) => ({ ...prev, ...updates, page: 1 }));
+    setParams((prev) => ({ ...prev, ...updates, page: undefined }));
   }
 
   function handlePageChange(page: number) {
@@ -55,7 +54,9 @@ export function ConsultationListPage() {
     <>
       <AppSidebar label="상담업무">
         <ContextNavItem icon={<ConsultationIcon />} label="상담내역" to={ROUTES.CONSULT} />
-        <ContextNavItem icon={<ConsultationIcon />} label="결과서 작성" />
+        {(() => { const r = getRole(); return r && hasAccess(r, MENU_KEYS.RESULT_WRITE); })() && (
+          <ContextNavItem icon={<ConsultationIcon />} label="결과서 작성" to={ROUTES.CONSULT_RESULT} />
+        )}
         <ContextNavItem icon={<ConsultationIcon />} label="상담요약" />
         <ContextNavItem icon={<AnalysisIcon />}     label="상담분석" />
       </AppSidebar>

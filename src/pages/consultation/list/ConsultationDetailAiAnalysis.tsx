@@ -50,20 +50,10 @@ export function ConsultationDetailAiAnalysis({ ai }: Props) {
         </p>
       </div>
 
-      {(ai.hasIntent != null || ai.defenseAttempted != null) && (
-        <div className={s.aiTwoCol}>
-          {ai.hasIntent != null && (
-            <div className={s.aiCard}>
-              <p className={s.aiCardLabel}>이탈 의도</p>
-              <p className={s.aiCardValue}>{ai.hasIntent ? "있음" : "없음"}</p>
-            </div>
-          )}
-          {ai.defenseAttempted != null && (
-            <div className={s.aiCard}>
-              <p className={s.aiCardLabel}>방어 시도</p>
-              <p className={s.aiCardValue}>{ai.defenseAttempted ? "시도함" : "미시도"}</p>
-            </div>
-          )}
+      {ai.defenseAttempted != null && (
+        <div className={s.aiCard}>
+          <p className={s.aiCardLabel}>방어 시도</p>
+          <p className={s.aiCardValue}>{ai.defenseAttempted ? "시도함" : "미시도"}</p>
         </div>
       )}
     </>

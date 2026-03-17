@@ -55,9 +55,15 @@ export const apiClient = <T>(config: {
 	data?: unknown
 	signal?: AbortSignal
 }): Promise<T> => {
+	const searchParams = config.params
+		? Object.fromEntries(
+				Object.entries(config.params).filter(([, v]) => v !== undefined && v !== null),
+		  )
+		: undefined;
+
 	return kyInstance(config.url.replace(/^\//, ""), {
 		method: config.method,
-		searchParams: config.params,
+		searchParams,
 		json: config.data,
 		signal: config.signal,
 	}).json<T>()

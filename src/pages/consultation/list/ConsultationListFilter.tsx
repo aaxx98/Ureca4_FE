@@ -1,26 +1,82 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { GetConsultationListParams } from "../../../shared/api/generated/api.schemas";
 import * as s from "./ConsultationListPage.css";
 
-const RESULT_STATUS_OPTIONS  = ["처리중", "완료", "미완료", "보류"];
-const SUMMARY_STATUS_OPTIONS = ["요약완료", "요청됨", "실패"];
-const CATEGORY_OPTIONS       = ["문의", "불만", "가입", "해지", "변경"];
-const CHANNEL_OPTIONS        = ["전화", "이메일", "채팅", "방문"];
+const RESULT_STATUS_OPTIONS  = ["처리중", "완료", "미완료", "요청중"];
+const SUMMARY_STATUS_OPTIONS = ["요약완료", "요청중", "실패"];
+const CHANNEL_OPTIONS        = ["전화", "채팅"];
 
 interface FilterProps {
   params: GetConsultationListParams;
   onChange: (updates: Partial<GetConsultationListParams>) => void;
 }
 
+function DropdownFilter({
+  value,
+  placeholder,
+  options,
+  onChange,
+}: {
+  value: string;
+  placeholder: string;
+  options: string[];
+  onChange: (v: string | undefined) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  const isActive = !!value;
+  const label = value || placeholder;
+
+  return (
+    <div className={s.dropdownWrapper} ref={ref}>
+      <button
+        type="button"
+        className={`${s.dropdownTrigger}${isActive ? ` ${s.dropdownTriggerActive}` : ""}`}
+        onClick={() => setOpen((o) => !o)}
+      >
+        {label}
+        <span className={`${s.dropdownChevron}${open ? ` ${s.dropdownChevronOpen}` : ""}`}>▼</span>
+      </button>
+
+      {open && (
+        <div className={s.dropdownMenu}>
+          <button
+            type="button"
+            className={`${s.dropdownItem}${!value ? ` ${s.dropdownItemActive}` : ""}`}
+            onClick={() => { onChange(undefined); setOpen(false); }}
+          >
+            전체
+          </button>
+          {options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              className={`${s.dropdownItem}${value === opt ? ` ${s.dropdownItemActive}` : ""}`}
+              onClick={() => { onChange(opt); setOpen(false); }}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ConsultationListFilter({ params, onChange }: FilterProps) {
   const [inputValue, setInputValue] = useState(params.keyword ?? "");
-
-  const hasFilter =
-    params.keyword ||
-    params.resultStatus ||
-    params.summaryStatus ||
-    params.categoryCode ||
-    params.channel;
 
   function submitSearch() {
     onChange({ keyword: inputValue.trim() || undefined });
@@ -46,45 +102,24 @@ export function ConsultationListFilter({ params, onChange }: FilterProps) {
         </button>
       </div>
 
-      <select
-        className={s.select}
+      <DropdownFilter
         value={params.resultStatus ?? ""}
-        onChange={(e) => onChange({ resultStatus: e.target.value || undefined })}
-      >
-        <option value="">처리상태 전체</option>
-        {RESULT_STATUS_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
-      </select>
-
-      <select
-        className={s.select}
+        placeholder="처리상태"
+        options={RESULT_STATUS_OPTIONS}
+        onChange={(v) => onChange({ resultStatus: v })}
+      />
+      <DropdownFilter
         value={params.summaryStatus ?? ""}
-        onChange={(e) => onChange({ summaryStatus: e.target.value || undefined })}
-      >
-        <option value="">요약상태 전체</option>
-        {SUMMARY_STATUS_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
-      </select>
-
-      <select
-        className={s.select}
-        value={params.categoryCode ?? ""}
-        onChange={(e) => onChange({ categoryCode: e.target.value || undefined })}
-      >
-        <option value="">유형 전체</option>
-        {CATEGORY_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
-      </select>
-
-      <select
-        className={s.select}
+        placeholder="요약상태"
+        options={SUMMARY_STATUS_OPTIONS}
+        onChange={(v) => onChange({ summaryStatus: v })}
+      />
+      <DropdownFilter
         value={params.channel ?? ""}
-        onChange={(e) => onChange({ channel: e.target.value || undefined })}
-      >
-        <option value="">채널 전체</option>
-        {CHANNEL_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
-      </select>
-
-      <span className={s.filterStatus}>
-        {hasFilter ? "필터 적용 중" : "필터 적용 중 없음"}
-      </span>
+        placeholder="채널"
+        options={CHANNEL_OPTIONS}
+        onChange={(v) => onChange({ channel: v })}
+      />
     </div>
   );
 }
