@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppMypageRouteImport } from './routes/_app/mypage'
+import { Route as AppConsultationListRouteImport } from './routes/_app/consultation-list'
 
 const OauthRoute = OauthRouteImport.update({
   id: '/oauth',
@@ -39,16 +40,23 @@ const AppMypageRoute = AppMypageRouteImport.update({
   path: '/mypage',
   getParentRoute: () => AppRoute,
 } as any)
+const AppConsultationListRoute = AppConsultationListRouteImport.update({
+  id: '/consultation-list',
+  path: '/consultation-list',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
+  '/consultation-list': typeof AppConsultationListRoute
   '/mypage': typeof AppMypageRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
+  '/consultation-list': typeof AppConsultationListRoute
   '/mypage': typeof AppMypageRoute
   '/': typeof AppIndexRoute
 }
@@ -57,15 +65,23 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
+  '/_app/consultation-list': typeof AppConsultationListRoute
   '/_app/mypage': typeof AppMypageRoute
   '/_app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/oauth' | '/mypage'
+  fullPaths: '/' | '/login' | '/oauth' | '/consultation-list' | '/mypage'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/oauth' | '/mypage' | '/'
-  id: '__root__' | '/_app' | '/login' | '/oauth' | '/_app/mypage' | '/_app/'
+  to: '/login' | '/oauth' | '/consultation-list' | '/mypage' | '/'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/login'
+    | '/oauth'
+    | '/_app/consultation-list'
+    | '/_app/mypage'
+    | '/_app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -111,15 +127,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMypageRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/consultation-list': {
+      id: '/_app/consultation-list'
+      path: '/consultation-list'
+      fullPath: '/consultation-list'
+      preLoaderRoute: typeof AppConsultationListRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppConsultationListRoute: typeof AppConsultationListRoute
   AppMypageRoute: typeof AppMypageRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppConsultationListRoute: AppConsultationListRoute,
   AppMypageRoute: AppMypageRoute,
   AppIndexRoute: AppIndexRoute,
 }
