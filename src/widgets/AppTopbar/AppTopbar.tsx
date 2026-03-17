@@ -4,7 +4,6 @@ import {
   ConsultationIcon,
   HomeIcon,
   OnlineIndicator,
-  SettingsIcon,
   UPlusLogoIcon,
 } from "../../shared/ui/icons";
 import { NavTab } from "../../shared/ui/NavTab/NavTab";
@@ -21,9 +20,8 @@ export function AppTopbar() {
 
       <nav className={s.tabs}>
         <NavTab to={ROUTES.HOME} icon={<HomeIcon />} label="홈" />
-        <NavTab icon={<ConsultationIcon />} label="상담 업무" />
+        <NavTab icon={<ConsultationIcon />} label="상담 업무" to={ROUTES.CONSULT} />
         <NavTab icon={<AnalysisIcon />} label="대시보드" />
-        <NavTab icon={<SettingsIcon />} label="관리" />
       </nav>
 
       <div className={s.topbarRight}>
