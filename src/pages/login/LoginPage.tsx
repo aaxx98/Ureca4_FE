@@ -1,6 +1,7 @@
 import { useId, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutationPostLoginQuery } from "../../shared/api/generated/auth";
+import { setRole } from "../../shared/api/roleStore";
 import { setAccessToken } from "../../shared/api/tokenStore";
 import { ROUTES } from "../../shared/config/routes";
 import { Button } from "../../shared/ui/Button/Button";
@@ -21,6 +22,7 @@ export function LoginPage() {
     mutation: {
       onSuccess: (data) => {
         if (data.accessToken) setAccessToken(data.accessToken);
+        setRole(data.role);
         navigate({ to: ROUTES.HOME });
       },
       onError: () => {
