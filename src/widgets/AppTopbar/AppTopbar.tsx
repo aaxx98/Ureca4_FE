@@ -7,8 +7,8 @@ import {
   UPlusLogoIcon,
 } from "../../shared/ui/icons";
 import { NavTab } from "../../shared/ui/NavTab/NavTab";
-import { UserDropdown } from "./UserDropdown";
 import * as s from "./AppTopbar.css";
+import { UserDropdown } from "./UserDropdown";
 
 export function AppTopbar() {
   return (
@@ -21,7 +21,7 @@ export function AppTopbar() {
       <nav className={s.tabs}>
         <NavTab to={ROUTES.HOME} icon={<HomeIcon />} label="홈" />
         <NavTab icon={<ConsultationIcon />} label="상담 업무" to={ROUTES.CONSULT} />
-        <NavTab icon={<AnalysisIcon />} label="대시보드" />
+        <NavTab icon={<AnalysisIcon />} label="대시보드" to={ROUTES.EXCELLENT} />
       </nav>
 
       <div className={s.topbarRight}>
