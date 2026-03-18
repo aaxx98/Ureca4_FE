@@ -29,6 +29,9 @@ function ConsultLayout() {
         {role && hasAccess(role, MENU_KEYS.ADMIN_REPORT) && (
           <ContextNavItem icon={<AnalysisIcon />} label="분석 리포트" to={ROUTES.ADMIN_REPORT} />
         )}
+        {role && hasAccess(role, MENU_KEYS.ADMIN_REPORT) && (
+          <ContextNavItem icon={<AnalysisIcon />} label="아웃바운드" to={ROUTES.OUTBOUND_REPORT} />
+        )}
         {role === "관리자" ? (
           <SidebarNavGroup icon={<BookIcon />} label="메뉴얼">
             <Link
