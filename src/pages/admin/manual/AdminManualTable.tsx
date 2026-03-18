@@ -7,16 +7,12 @@ import {
 
 interface AdminManualTableProps {
 	items: ManualHistoryItem[];
-	pendingDeactivateId: number | null;
 	onOpenDetail: (manual: ManualHistoryItem) => void;
-	onDeactivate: (manual: ManualHistoryItem) => void;
 }
 
 export function AdminManualTable({
 	items,
-	pendingDeactivateId,
 	onOpenDetail,
-	onDeactivate,
 }: AdminManualTableProps) {
 	return (
 		<div className={s.tableWrap}>
@@ -34,65 +30,43 @@ export function AdminManualTable({
 						</tr>
 					</thead>
 					<tbody>
-						{items.map((item) => {
-							const isPendingDeactivate = pendingDeactivateId === item.manualId;
-							const canDeactivate = item.isActive && !isPendingDeactivate;
-
-							return (
-								<tr key={item.manualId} className={s.tr}>
-									<td className={s.td}>
-										<span className={s.categoryPill}>
-											{extractSmallCategory(item.categoryName)}
-										</span>
-									</td>
-									<td className={s.td}>
-										<div className={s.titleCell}>{item.title}</div>
-									</td>
-									<td className={s.td}>
-										<div className={s.contentPreview}>{item.content}</div>
-									</td>
-									<td className={s.td}>{item.empName || "-"}</td>
-									<td className={s.tdCenter}>
-										<button
-											type="button"
-											className={
-												item.isActive ? s.switchButtonOn : s.switchButtonOff
-											}
-											onClick={() => {
-												if (canDeactivate) {
-													onDeactivate(item);
-												}
-											}}
-											disabled={!canDeactivate}
-											aria-label={
-												item.isActive
-													? `${item.title} 비활성화`
-													: `${item.title} 비활성 상태`
-											}
-										>
-											<span className={s.switchThumb} />
-											<span className={s.switchLabel}>
-												{isPendingDeactivate
-													? "처리 중"
-													: item.isActive
-														? "ON"
-														: "OFF"}
-											</span>
-										</button>
-									</td>
-									<td className={s.td}>{formatManualDate(item.updatedAt)}</td>
-									<td className={s.tdCenter}>
-										<button
-											type="button"
-											className={s.detailButton}
-											onClick={() => onOpenDetail(item)}
-										>
-											상세보기
-										</button>
-									</td>
-								</tr>
-							);
-						})}
+						{items.map((item) => (
+							<tr key={item.manualId} className={s.tr}>
+								<td className={s.td}>
+									<span className={s.categoryPill}>
+										{extractSmallCategory(item.categoryName)}
+									</span>
+								</td>
+								<td className={s.td}>
+									<div className={s.titleCell}>{item.title}</div>
+								</td>
+								<td className={s.td}>
+									<div className={s.contentPreview}>{item.content}</div>
+								</td>
+								<td className={s.td}>{item.empName || "-"}</td>
+								<td className={s.tdCenter}>
+									<span
+										className={
+											item.isActive
+												? s.statusBadgeActive
+												: s.statusBadgeInactive
+										}
+									>
+										{item.isActive ? "활성화" : "비활성화"}
+									</span>
+								</td>
+								<td className={s.td}>{formatManualDate(item.updatedAt)}</td>
+								<td className={s.tdCenter}>
+									<button
+										type="button"
+										className={s.detailButton}
+										onClick={() => onOpenDetail(item)}
+									>
+										상세보기
+									</button>
+								</td>
+							</tr>
+						))}
 					</tbody>
 				</table>
 			</div>

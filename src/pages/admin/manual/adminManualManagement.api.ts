@@ -149,3 +149,10 @@ export function deactivateManual(manualId: number) {
 		method: "PATCH",
 	});
 }
+
+export function activateManual(manualId: number) {
+	return apiClient<void>({
+		url: `/admin/manuals/${manualId}/activate`,
+		method: "PATCH",
+	});
+}

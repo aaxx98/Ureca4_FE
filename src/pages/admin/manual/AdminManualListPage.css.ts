@@ -277,6 +277,28 @@ export const switchThumb = style({
 
 export const switchLabel = style({ position: "relative", zIndex: 1 });
 
+export const statusBadgeActive = style({
+	display: "inline-flex",
+	alignItems: "center",
+	padding: `2px ${vars.spacing["2"]}`,
+	borderRadius: vars.radius.full,
+	fontSize: "11px",
+	fontWeight: vars.fontWeight.semibold,
+	backgroundColor: "#DCFCE7",
+	color: "#166534",
+});
+
+export const statusBadgeInactive = style({
+	display: "inline-flex",
+	alignItems: "center",
+	padding: `2px ${vars.spacing["2"]}`,
+	borderRadius: vars.radius.full,
+	fontSize: "11px",
+	fontWeight: vars.fontWeight.semibold,
+	backgroundColor: "#F1F5F9",
+	color: "#64748B",
+});
+
 export const detailButton = style({
 	padding: `${vars.spacing["2"]} ${vars.spacing["3"]}`,
 	border: `1px solid ${vars.color.border}`,
@@ -446,6 +468,21 @@ export const detailValue = style({
 	fontSize: vars.fontSize.sm,
 	color: vars.color.textPrimary,
 });
+export const modalSwitchRow = style({
+	display: "flex",
+	alignItems: "center",
+	gap: vars.spacing["3"],
+	flexWrap: "wrap",
+});
+
+export const modalSwitchMeta = style({
+	display: "flex",
+	flexDirection: "column",
+	gap: vars.spacing["1"],
+	fontSize: vars.fontSize.xs,
+	color: vars.color.textSecondary,
+});
+
 export const modalFieldGrid = style({
 	display: "flex",
 	flexDirection: "column",

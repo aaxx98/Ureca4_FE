@@ -25,17 +25,14 @@ export function AdminManualListPage() {
 		pagination,
 		modalState,
 		selectedManual,
-		pendingDeactivateId,
 		isSaving,
-		isDeactivating,
 		updateDraftFilter,
 		submitSearch,
 		openCreateModal,
 		openDetailModal,
 		closeModal,
 		submitCreate,
-		submitUpdate,
-		deactivate,
+		submitDetail,
 	} = useAdminManualManagement();
 
 	function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
@@ -154,9 +151,7 @@ export function AdminManualListPage() {
 							<>
 								<AdminManualTable
 									items={items}
-									pendingDeactivateId={pendingDeactivateId}
 									onOpenDetail={openDetailModal}
-									onDeactivate={(manual) => deactivate(manual.manualId)}
 								/>
 
 								<div className={s.paginationCard}>
@@ -248,10 +243,8 @@ export function AdminManualListPage() {
 					categoriesLoading={categoriesLoading}
 					onClose={closeModal}
 					onSubmitCreate={submitCreate}
-					onSubmitUpdate={submitUpdate}
-					onDeactivate={deactivate}
+					onSubmitDetail={submitDetail}
 					isSaving={isSaving}
-					isDeactivating={isDeactivating}
 				/>
 			)}
 		</>

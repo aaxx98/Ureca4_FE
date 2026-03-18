@@ -21,13 +21,12 @@ interface AdminManualModalProps {
 	categoriesLoading: boolean;
 	onClose: () => void;
 	onSubmitCreate: (payload: ManualCreatePayload) => Promise<void>;
-	onSubmitUpdate: (
-		manualId: number,
+	onSubmitDetail: (
+		manual: ManualHistoryItem,
 		payload: ManualUpdatePayload,
+		nextIsActive: boolean,
 	) => Promise<void>;
-	onDeactivate: (manualId: number) => Promise<void>;
 	isSaving: boolean;
-	isDeactivating: boolean;
 }
 
 export function AdminManualModal({
@@ -37,14 +36,13 @@ export function AdminManualModal({
 	categoriesLoading,
 	onClose,
 	onSubmitCreate,
-	onSubmitUpdate,
-	onDeactivate,
+	onSubmitDetail,
 	isSaving,
-	isDeactivating,
 }: AdminManualModalProps) {
 	const [categoryCode, setCategoryCode] = useState("");
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
+	const [isActive, setIsActive] = useState(true);
 	const formId = useId();
 	const categoryInputId = useId();
 	const titleInputId = useId();
@@ -55,12 +53,14 @@ export function AdminManualModal({
 			setCategoryCode("");
 			setTitle("");
 			setContent("");
+			setIsActive(true);
 			return;
 		}
 
 		setCategoryCode(manual?.categoryCode ?? "");
 		setTitle(manual?.title ?? "");
 		setContent(manual?.content ?? "");
+		setIsActive(manual?.isActive ?? false);
 	}, [manual, mode]);
 
 	const selectedCategory = useMemo(
@@ -93,14 +93,18 @@ export function AdminManualModal({
 			return;
 		}
 
-		if (!manual?.manualId) {
+		if (!manual) {
 			return;
 		}
 
-		await onSubmitUpdate(manual.manualId, {
-			title: trimmedTitle,
-			content: trimmedContent,
-		});
+		await onSubmitDetail(
+			manual,
+			{
+				title: trimmedTitle,
+				content: trimmedContent,
+			},
+			isActive,
+		);
 	}
 
 	const footer = (
@@ -108,16 +112,6 @@ export function AdminManualModal({
 			<Button variant="secondary" type="button" onClick={onClose}>
 				닫기
 			</Button>
-			{mode === "detail" && manual?.manualId && manual.isActive && (
-				<Button
-					variant="secondary"
-					type="button"
-					onClick={() => onDeactivate(manual.manualId)}
-					disabled={isDeactivating}
-				>
-					{isDeactivating ? "비활성화 중..." : "비활성화"}
-				</Button>
-			)}
 			<Button type="submit" form={formId} disabled={isSaving}>
 				{mode === "create"
 					? isSaving
@@ -160,10 +154,24 @@ export function AdminManualModal({
 								</strong>
 							</div>
 							<div className={s.detailItem}>
-								<span className={s.detailLabel}>상태</span>
-								<strong className={s.detailValue}>
-									{manual.isActive ? "활성화" : "비활성화"}
-								</strong>
+								<span className={s.detailLabel}>상태 변경</span>
+								<div className={s.modalSwitchRow}>
+									<button
+										type="button"
+										className={isActive ? s.switchButtonOn : s.switchButtonOff}
+										onClick={() => setIsActive((current) => !current)}
+										aria-label={isActive ? "활성화 상태" : "비활성화 상태"}
+									>
+										<span className={s.switchThumb} />
+										<span className={s.switchLabel}>
+											{isActive ? "ON" : "OFF"}
+										</span>
+									</button>
+									<div className={s.modalSwitchMeta}>
+										<strong>{isActive ? "활성화" : "비활성화"}</strong>
+										<span>저장 시 목록 상태도 함께 갱신됩니다.</span>
+									</div>
+								</div>
 							</div>
 							<div className={s.detailItem}>
 								<span className={s.detailLabel}>수정일</span>
@@ -236,6 +244,9 @@ export function AdminManualModal({
 									: extractSmallCategory(manual?.categoryName ?? "")}
 							</span>
 							{mode === "detail" && <span>{manual?.empName || "-"}</span>}
+							{mode === "detail" && (
+								<span>{isActive ? "활성화" : "비활성화"}</span>
+							)}
 						</div>
 						<div
 							className={s.previewContent}

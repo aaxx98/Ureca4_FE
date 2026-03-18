@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import type { CategoryDto } from "../../../shared/api/generated/api.schemas";
 import {
+	activateManual,
 	createManual,
 	deactivateManual,
 	fetchAllManualHistory,
@@ -30,6 +31,12 @@ interface SearchFilters {
 interface ManualModalState {
 	mode: "create" | "detail";
 	manual?: ManualHistoryItem;
+}
+
+interface DetailSubmitPayload {
+	manual: ManualHistoryItem;
+	data: ManualUpdatePayload;
+	nextIsActive: boolean;
 }
 
 async function fetchManualPage(
@@ -79,9 +86,6 @@ export function useAdminManualManagement() {
 	});
 	const [page, setPage] = useState(0);
 	const [modalState, setModalState] = useState<ManualModalState | null>(null);
-	const [pendingDeactivateId, setPendingDeactivateId] = useState<number | null>(
-		null,
-	);
 
 	const categoriesQuery = useQuery({
 		queryKey: CATEGORY_QUERY_KEY,
@@ -105,53 +109,51 @@ export function useAdminManualManagement() {
 		},
 	});
 
-	const updateMutation = useMutation({
-		mutationFn: ({
-			manualId,
-			data,
-		}: {
-			manualId: number;
-			data: ManualUpdatePayload;
-		}) => updateManual(manualId, data),
-		onSuccess: async (_, variables) => {
+	const detailMutation = useMutation({
+		mutationFn: async ({ manual, data, nextIsActive }: DetailSubmitPayload) => {
+			const trimmedTitle = data.title.trim();
+			const trimmedContent = data.content.trim();
+			const shouldUpdateContent =
+				trimmedTitle !== manual.title || trimmedContent !== manual.content;
+			const shouldUpdateStatus = nextIsActive !== manual.isActive;
+
+			if (shouldUpdateContent) {
+				await updateManual(manual.manualId, {
+					title: trimmedTitle,
+					content: trimmedContent,
+				});
+			}
+
+			if (shouldUpdateStatus) {
+				if (nextIsActive) {
+					await activateManual(manual.manualId);
+				} else {
+					await deactivateManual(manual.manualId);
+				}
+			}
+
+			return {
+				manual,
+				data: { title: trimmedTitle, content: trimmedContent },
+				nextIsActive,
+			};
+		},
+		onSuccess: async ({ manual, data, nextIsActive }) => {
 			await queryClient.invalidateQueries({ queryKey: MANUAL_QUERY_KEY });
 			setModalState((current) =>
 				current?.mode === "detail" &&
-				current.manual?.manualId === variables.manualId
+				current.manual?.manualId === manual.manualId
 					? {
 							...current,
 							manual: {
 								...current.manual,
-								title: variables.data.title,
-								content: variables.data.content,
+								title: data.title,
+								content: data.content,
+								isActive: nextIsActive,
 							},
 						}
 					: current,
 			);
-		},
-	});
-
-	const deactivateMutation = useMutation({
-		mutationFn: (manualId: number) => deactivateManual(manualId),
-		onMutate: (manualId) => {
-			setPendingDeactivateId(manualId);
-		},
-		onSuccess: async (_, manualId) => {
-			await queryClient.invalidateQueries({ queryKey: MANUAL_QUERY_KEY });
-			setModalState((current) =>
-				current?.mode === "detail" && current.manual?.manualId === manualId
-					? {
-							...current,
-							manual: {
-								...current.manual,
-								isActive: false,
-							},
-						}
-					: current,
-			);
-		},
-		onSettled: () => {
-			setPendingDeactivateId(null);
 		},
 	});
 
@@ -238,9 +240,7 @@ export function useAdminManualManagement() {
 		},
 		modalState,
 		selectedManual,
-		pendingDeactivateId,
-		isSaving: createMutation.isPending || updateMutation.isPending,
-		isDeactivating: deactivateMutation.isPending,
+		isSaving: createMutation.isPending || detailMutation.isPending,
 		updateDraftFilter,
 		submitSearch,
 		openCreateModal,
@@ -248,8 +248,10 @@ export function useAdminManualManagement() {
 		closeModal,
 		submitCreate: (payload: ManualCreatePayload) =>
 			createMutation.mutateAsync(payload),
-		submitUpdate: (manualId: number, payload: ManualUpdatePayload) =>
-			updateMutation.mutateAsync({ manualId, data: payload }),
-		deactivate: (manualId: number) => deactivateMutation.mutateAsync(manualId),
+		submitDetail: (
+			manual: ManualHistoryItem,
+			payload: ManualUpdatePayload,
+			nextIsActive: boolean,
+		) => detailMutation.mutateAsync({ manual, data: payload, nextIsActive }),
 	};
 }
