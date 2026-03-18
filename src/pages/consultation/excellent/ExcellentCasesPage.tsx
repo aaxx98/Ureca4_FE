@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useGetWeeklyBoardQuery } from "../../../shared/api/generated/weekly-excellent-case-board";
+import { getRole } from "../../../shared/api/roleStore";
 import { ROUTES } from "../../../shared/config/routes";
+import { Link } from "@tanstack/react-router";
 import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
-import { AnalysisIcon } from "../../../shared/ui/icons";
+import { SidebarNavGroup } from "../../../shared/ui/SidebarNavGroup";
+import { AnalysisIcon, NoticeIcon, SettingsIcon } from "../../../shared/ui/icons";
 import * as layout from "../../../shared/ui/pageLayout.css";
 import { AppSidebar } from "../../../widgets/AppSidebar/AppSidebar";
 import { ExcellentCaseCard } from "./ExcellentCaseCard";
@@ -23,6 +26,8 @@ export function ExcellentCasesPage() {
   const [{ year, week }, setWeek] = useState(getCurrentISOWeek);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedId, setSelectedId]             = useState<number | null>(null);
+
+  const role = getRole();
 
   const { data, isPending, isError } = useGetWeeklyBoardQuery({ year, week });
   const items = data ?? [];
@@ -49,7 +54,29 @@ export function ExcellentCasesPage() {
   return (
     <>
       <AppSidebar label="대시보드">
-        <ContextNavItem icon={<AnalysisIcon />} label="우수 사례 게시판" to={ROUTES.EXCELLENT} isActive />
+        <ContextNavItem icon={<NoticeIcon />} label="공지사항" to={ROUTES.NOTICE} />
+        {role === "관리자" ? (
+          <SidebarNavGroup icon={<AnalysisIcon />} label="우수사례">
+            <Link
+              to={ROUTES.EXCELLENT}
+              className={layout.contextSubItem}
+              activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
+            >
+              <AnalysisIcon />
+              게시판
+            </Link>
+            <Link
+              to={ROUTES.ADMIN_EXCELLENT_CASES}
+              className={layout.contextSubItem}
+              activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
+            >
+              <SettingsIcon />
+              설정
+            </Link>
+          </SidebarNavGroup>
+        ) : (
+          <ContextNavItem icon={<AnalysisIcon />} label="우수사례 게시판" to={ROUTES.EXCELLENT} />
+        )}
       </AppSidebar>
 
       <main className={layout.main}>
