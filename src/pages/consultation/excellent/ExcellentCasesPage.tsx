@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
 import { useGetWeeklyBoardQuery } from "../../../shared/api/generated/weekly-excellent-case-board";
 import { getRole } from "../../../shared/api/roleStore";
-import { ROUTES } from "../../../shared/config/routes";
-import { Link, useSearch } from "@tanstack/react-router";
-import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
-import { SidebarNavGroup } from "../../../shared/ui/SidebarNavGroup";
-import { AnalysisIcon, NoticeIcon, SettingsIcon } from "../../../shared/ui/icons";
+import { useSearch } from "@tanstack/react-router";
 import * as layout from "../../../shared/ui/pageLayout.css";
-import { AppSidebar } from "../../../widgets/AppSidebar/AppSidebar";
+import { DashboardSidebar } from "../../../widgets/DashboardSidebar/DashboardSidebar";
 import { ExcellentCaseCard } from "./ExcellentCaseCard";
 import { ExcellentCaseDetailModal } from "./ExcellentCaseDetailModal";
 import { ExcellentCaseHeroCard } from "./ExcellentCaseHeroCard";
@@ -57,31 +53,7 @@ export function ExcellentCasesPage() {
 
   return (
     <>
-      <AppSidebar label="대시보드">
-        <ContextNavItem icon={<NoticeIcon />} label="공지사항" to={ROUTES.NOTICE} />
-        {role === "관리자" ? (
-          <SidebarNavGroup icon={<AnalysisIcon />} label="우수사례">
-            <Link
-              to={ROUTES.EXCELLENT}
-              className={layout.contextSubItem}
-              activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
-            >
-              <AnalysisIcon />
-              주간 우수사례
-            </Link>
-            <Link
-              to={ROUTES.ADMIN_EXCELLENT_CASES}
-              className={layout.contextSubItem}
-              activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
-            >
-              <SettingsIcon />
-              후보군 관리
-            </Link>
-          </SidebarNavGroup>
-        ) : (
-          <ContextNavItem icon={<AnalysisIcon />} label="주간 우수사례" to={ROUTES.EXCELLENT} />
-        )}
-      </AppSidebar>
+      <DashboardSidebar isAdmin={role === "관리자"} />
 
       <main className={layout.main}>
         <div className={s.pageWrapper}>
