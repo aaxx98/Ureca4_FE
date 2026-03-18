@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { NoticeResponse } from "../../../shared/api/generated/api.schemas";
-import { getNoticeListKey, useGetNoticeDetailQuery, useMutationDeleteNoticeQuery } from "../../../shared/api/generated/notice";
+import { getNoticeDetailKey, getNoticeListKey, useGetNoticeDetailQuery, useMutationDeleteNoticeQuery } from "../../../shared/api/generated/notice";
 import { useGetMyInfoQuery } from "../../../shared/api/generated/auth";
 import { getRole } from "../../../shared/api/roleStore";
 import { BaseModal } from "../../../shared/ui/BaseModal/BaseModal";
@@ -57,7 +57,12 @@ export function NoticeDetailModal({ noticeId, onClose }: Props) {
   const queryClient    = useQueryClient();
   const deleteMutation = useMutationDeleteNoticeQuery();
 
-  function handleClose() { setIsClosing(true); setTimeout(onClose, CLOSE_DELAY); }
+  function handleClose() {
+    setIsClosing(true);
+    queryClient.invalidateQueries({ queryKey: getNoticeDetailKey(noticeId) });
+    queryClient.invalidateQueries({ queryKey: getNoticeListKey() });
+    setTimeout(onClose, CLOSE_DELAY);
+  }
 
   function handleDelete() {
     if (!notice?.noticeId) return;
