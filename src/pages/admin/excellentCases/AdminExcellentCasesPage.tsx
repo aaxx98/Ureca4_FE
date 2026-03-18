@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetCandidatesQuery, useMutationPatchRejectExcellentCaseQuery } from "../../../shared/api/generated/admin-excellent-case";
 import {
@@ -161,6 +161,8 @@ function CandidateRow({ item, onRowClick, onSelectClick, onRejectClick, isReject
   );
 }
 
+const PAGE_SIZE = 20;
+
 export function AdminExcellentCasesPage() {
   const [activeFilter, setActiveFilter]     = useState<FilterStatus>("ALL");
   const [keyword, setKeyword]               = useState("");
@@ -170,6 +172,9 @@ export function AdminExcellentCasesPage() {
   const [direction, setDirection]           = useState<typeof GetCandidatesDirection[keyof typeof GetCandidatesDirection]>(GetCandidatesDirection.desc);
   const [modalState, setModalState]         = useState<DetailModalState | null>(null);
   const [rejectingId, setRejectingId]       = useState<number | null>(null);
+  const [page, setPage]                     = useState(0);
+
+  useEffect(() => { setPage(0); }, [activeFilter, keyword, categoryFilter, agentFilter]);
 
   const queryClient = useQueryClient();
 
@@ -228,6 +233,9 @@ export function AdminExcellentCasesPage() {
       );
     });
 
+  const totalPages    = Math.ceil(filteredItems.length / PAGE_SIZE);
+  const paginatedItems = filteredItems.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
   const STAT_BOXES: {
     key: FilterStatus;
     label: string;
@@ -258,7 +266,7 @@ export function AdminExcellentCasesPage() {
             activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
           >
             <AnalysisIcon />
-            게시판
+            주간 우수사례
           </Link>
           <Link
             to={ROUTES.ADMIN_EXCELLENT_CASES}
@@ -266,12 +274,13 @@ export function AdminExcellentCasesPage() {
             activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
           >
             <SettingsIcon />
-            설정
+            후보군 관리
           </Link>
         </SidebarNavGroup>
       </AppSidebar>
 
       <main className={layout.main}>
+        <div className={s.pageWrapper}>
         <div className={s.pageHeader}>
           <div className={s.headerBadge}>⭐ ADMIN · EXCELLENT CASES</div>
           <h1 className={s.headerTitle}>우수 상담사례 후보군 관리</h1>
@@ -371,7 +380,7 @@ export function AdminExcellentCasesPage() {
                         </td>
                       </tr>
                     ) : (
-                      filteredItems.map((item: EvaluationListResponse) => (
+                      paginatedItems.map((item: EvaluationListResponse) => (
                         <CandidateRow
                           key={item.consultId}
                           item={item}
@@ -386,10 +395,61 @@ export function AdminExcellentCasesPage() {
                 </table>
               </div>
               <div className={s.tableFooter}>
-                <span className={s.tableFooterText}>전체 {filteredItems.length}건</span>
+                <span className={s.tableFooterText}>
+                  전체 {filteredItems.length}건 · {page + 1} / {totalPages || 1} 페이지
+                </span>
+                {totalPages > 1 && (
+                  <div className={s.pagination}>
+                    <button
+                      type="button"
+                      className={s.pageBtn}
+                      disabled={page === 0}
+                      onClick={() => setPage(0)}
+                    >
+                      «
+                    </button>
+                    <button
+                      type="button"
+                      className={s.pageBtn}
+                      disabled={page === 0}
+                      onClick={() => setPage(p => p - 1)}
+                    >
+                      ‹
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i)
+                      .filter(i => Math.abs(i - page) <= 2)
+                      .map(i => (
+                        <button
+                          key={i}
+                          type="button"
+                          className={i === page ? s.pageBtnActive : s.pageBtn}
+                          onClick={() => setPage(i)}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                    <button
+                      type="button"
+                      className={s.pageBtn}
+                      disabled={page >= totalPages - 1}
+                      onClick={() => setPage(p => p + 1)}
+                    >
+                      ›
+                    </button>
+                    <button
+                      type="button"
+                      className={s.pageBtn}
+                      disabled={page >= totalPages - 1}
+                      onClick={() => setPage(totalPages - 1)}
+                    >
+                      »
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
+        </div>
         </div>
       </main>
 
