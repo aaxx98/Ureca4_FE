@@ -1,13 +1,7 @@
 import { useCallback, useState } from "react";
 import type { GetConsultationListParams } from "../../../shared/api/generated/api.schemas";
 import { useGetConsultationListQuery } from "../../../shared/api/generated/consultation-list";
-import { getRole } from "../../../shared/api/roleStore";
-import { hasAccess, MENU_KEYS } from "../../../shared/config/roles";
-import { ROUTES } from "../../../shared/config/routes";
-import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
-import { AnalysisIcon, ConsultationIcon } from "../../../shared/ui/icons";
 import * as layout from "../../../shared/ui/pageLayout.css";
-import { AppSidebar } from "../../../widgets/AppSidebar/AppSidebar";
 import { ConsultationDetailModal } from "./ConsultationDetailModal";
 import { ConsultationListFilter } from "./ConsultationListFilter";
 import * as s from "./ConsultationListPage.css";
@@ -27,14 +21,14 @@ export function ConsultationListPage() {
   const items         = listData?.content ?? [];
   const totalElements = listData?.totalElements ?? 0;
   const totalPages    = listData?.totalPages ?? 1;
-  const currentPage   = listData?.page ?? 1;
+  const currentPage   = (listData?.page ?? 0) + 1;
 
   function handleFilterChange(updates: Partial<GetConsultationListParams>) {
     setParams((prev) => ({ ...prev, ...updates, page: undefined }));
   }
 
   function handlePageChange(page: number) {
-    setParams((prev) => ({ ...prev, page }));
+    setParams((prev) => ({ ...prev, page: page - 1 }));
   }
 
   const handleOpenDetail = useCallback((consultId: number) => {
@@ -52,15 +46,6 @@ export function ConsultationListPage() {
 
   return (
     <>
-      <AppSidebar label="상담업무">
-        <ContextNavItem icon={<ConsultationIcon />} label="상담내역" to={ROUTES.CONSULT} />
-        {(() => { const r = getRole(); return r && hasAccess(r, MENU_KEYS.RESULT_WRITE); })() && (
-          <ContextNavItem icon={<ConsultationIcon />} label="결과서 작성" to={ROUTES.CONSULT_RESULT} />
-        )}
-        <ContextNavItem icon={<ConsultationIcon />} label="상담요약" />
-        <ContextNavItem icon={<AnalysisIcon />}     label="상담분석" />
-      </AppSidebar>
-
       <main className={layout.main}>
         <div className={s.pageWrapper}>
           <div className={s.header}>
@@ -76,7 +61,9 @@ export function ConsultationListPage() {
 
             {!isPending && !isError && (
               <>
-                <ConsultationListTable items={items} onDetail={handleOpenDetail} />
+                <div className={s.tableAnimate} key={currentPage}>
+                  <ConsultationListTable items={items} onDetail={handleOpenDetail} />
+                </div>
                 <ConsultationListPagination
                   currentPage={currentPage}
                   totalPages={totalPages}

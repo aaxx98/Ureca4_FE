@@ -8,10 +8,7 @@ export const pageWrapper = style({
 
 export const header = style({
   padding: `${vars.spacing["8"]} ${vars.spacing["8"]} 0`,
-  maxWidth: "960px",
-  margin: "0 auto",
-  width: "100%",
-  boxSizing: "border-box",
+  flexShrink: 0,
 });
 
 export const headerRow = style({
