@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useGetWeeklyBoardQuery } from "../../../shared/api/generated/weekly-excellent-case-board";
 import { ROUTES } from "../../../shared/config/routes";
 import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
-import { AnalysisIcon } from "../../../shared/ui/icons";
+import { AnalysisIcon, NoticeIcon } from "../../../shared/ui/icons";
 import * as layout from "../../../shared/ui/pageLayout.css";
 import { AppSidebar } from "../../../widgets/AppSidebar/AppSidebar";
 import { ExcellentCaseCard } from "./ExcellentCaseCard";
@@ -50,6 +50,7 @@ export function ExcellentCasesPage() {
     <>
       <AppSidebar label="대시보드">
         <ContextNavItem icon={<AnalysisIcon />} label="우수 사례 게시판" to={ROUTES.EXCELLENT} isActive />
+        <ContextNavItem icon={<NoticeIcon />}   label="공지사항"         to={ROUTES.NOTICE} />
       </AppSidebar>
 
       <main className={layout.main}>
