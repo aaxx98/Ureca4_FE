@@ -15,6 +15,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppMypageRouteImport } from './routes/_app/mypage'
 import { Route as AppExcellentCasesRouteImport } from './routes/_app/excellent-cases'
+import { Route as AppAdminExcellentCasesRouteImport } from './routes/_app/admin-excellent-cases'
 import { Route as AppConsultRouteImport } from './routes/_app/_consult'
 import { Route as AppConsultSummaryRouteImport } from './routes/_app/_consult/summary'
 import { Route as AppConsultConsultationResultRouteImport } from './routes/_app/_consult/consultation-result'
@@ -49,6 +50,11 @@ const AppExcellentCasesRoute = AppExcellentCasesRouteImport.update({
   path: '/excellent-cases',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminExcellentCasesRoute = AppAdminExcellentCasesRouteImport.update({
+  id: '/admin-excellent-cases',
+  path: '/admin-excellent-cases',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppConsultRoute = AppConsultRouteImport.update({
   id: '/_consult',
   getParentRoute: () => AppRoute,
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
+  '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
   '/consultation-list': typeof AppConsultConsultationListRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
   '/': typeof AppIndexRoute
+  '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
   '/consultation-list': typeof AppConsultConsultationListRoute
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
   '/_app/_consult': typeof AppConsultRouteWithChildren
+  '/_app/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/_app/excellent-cases': typeof AppExcellentCasesRoute
   '/_app/mypage': typeof AppMypageRoute
   '/_app/': typeof AppIndexRoute
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/oauth'
+    | '/admin-excellent-cases'
     | '/excellent-cases'
     | '/mypage'
     | '/consultation-list'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/oauth'
     | '/'
+    | '/admin-excellent-cases'
     | '/excellent-cases'
     | '/mypage'
     | '/consultation-list'
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/oauth'
     | '/_app/_consult'
+    | '/_app/admin-excellent-cases'
     | '/_app/excellent-cases'
     | '/_app/mypage'
     | '/_app/'
@@ -189,6 +201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppExcellentCasesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin-excellent-cases': {
+      id: '/_app/admin-excellent-cases'
+      path: '/admin-excellent-cases'
+      fullPath: '/admin-excellent-cases'
+      preLoaderRoute: typeof AppAdminExcellentCasesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/_consult': {
       id: '/_app/_consult'
       path: ''
@@ -238,6 +257,7 @@ const AppConsultRouteWithChildren = AppConsultRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppConsultRoute: typeof AppConsultRouteWithChildren
+  AppAdminExcellentCasesRoute: typeof AppAdminExcellentCasesRoute
   AppExcellentCasesRoute: typeof AppExcellentCasesRoute
   AppMypageRoute: typeof AppMypageRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -245,6 +265,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppConsultRoute: AppConsultRouteWithChildren,
+  AppAdminExcellentCasesRoute: AppAdminExcellentCasesRoute,
   AppExcellentCasesRoute: AppExcellentCasesRoute,
   AppMypageRoute: AppMypageRoute,
   AppIndexRoute: AppIndexRoute,
