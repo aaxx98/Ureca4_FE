@@ -5,9 +5,11 @@ export const ROUTES = {
   CONSULT: "/consultation-list",
   CONSULT_RESULT: "/consultation-result",
   EXCELLENT: "/excellent-cases",
+  NOTICE: "/notice",
   SUMMARY: "/summary",
   ANALYSIS: "/analysis",
   ADMIN_REPORT: "/admin-report",
+  ADMIN_EXCELLENT_CASES: "/admin-excellent-cases",
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];
