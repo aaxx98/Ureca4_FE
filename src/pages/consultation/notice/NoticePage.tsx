@@ -1,16 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearch } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { getNoticeListKey, useGetNoticeListQuery, useMutationDeleteNoticeQuery } from "../../../shared/api/generated/notice";
 import { useGetMyInfoQuery } from "../../../shared/api/generated/auth";
 import { getRole } from "../../../shared/api/roleStore";
-import { ROUTES } from "../../../shared/config/routes";
-import { Link } from "@tanstack/react-router";
-import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
-import { SidebarNavGroup } from "../../../shared/ui/SidebarNavGroup";
-import { AnalysisIcon, NoticeIcon, SettingsIcon } from "../../../shared/ui/icons";
 import * as layout from "../../../shared/ui/pageLayout.css";
 import { Button } from "../../../shared/ui/Button/Button";
-import { AppSidebar } from "../../../widgets/AppSidebar/AppSidebar";
+import { DashboardSidebar } from "../../../widgets/DashboardSidebar/DashboardSidebar";
 import { NoticeDetailModal } from "./NoticeDetailModal";
 import { NoticeFormModal } from "./NoticeFormModal";
 import { NoticeTable } from "./NoticeTable";
@@ -24,15 +20,22 @@ export function NoticePage() {
   const [selectedId,  setSelectedId]  = useState<number | null>(null);
   const [showCreate,  setShowCreate]  = useState(false);
   const [editId,      setEditId]      = useState<number | null>(null);
+  const [newBannerTitle, setNewBannerTitle] = useState<string | null>(null);
+  const bannerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { id: notifId } = useSearch({ strict: false }) as any;
+
+  useEffect(() => { if (notifId != null) setSelectedId(notifId); }, [notifId]);
+
   const isAdmin        = getRole() === "관리자";
   const myName         = useGetMyInfoQuery().data?.name;
   const queryClient    = useQueryClient();
   const deleteMutation = useMutationDeleteNoticeQuery();
 
-  const { data, isPending, isError } = useGetNoticeListQuery({
-    page: currentPage - 1,
-    size: PAGE_SIZE,
-  });
+  const { data, isPending, isError } = useGetNoticeListQuery(
+    { page: currentPage - 1, size: PAGE_SIZE },
+    { query: { staleTime: 0, refetchOnMount: "always" } },
+  );
 
   const items         = data?.data?.content ?? [];
   const totalElements = data?.data?.totalElements ?? 0;
@@ -46,7 +49,16 @@ export function NoticePage() {
   const isFirstGroup = currentGroup === 1;
   const isLastGroup  = groupStart + GROUP_SIZE > totalPages;
 
-  function handlePageChange(page: number) { setCurrentPage(page); }
+  function handleBannerDismiss() {
+    if (bannerTimerRef.current) clearTimeout(bannerTimerRef.current);
+    setNewBannerTitle(null);
+  }
+
+  function handleCreated(title: string) {
+    setNewBannerTitle(title);
+    if (bannerTimerRef.current) clearTimeout(bannerTimerRef.current);
+    bannerTimerRef.current = setTimeout(() => setNewBannerTitle(null), 7_000);
+  }
 
   function handleDelete(noticeId: number) {
     if (!window.confirm("이 공지를 삭제할까요?")) return;
@@ -57,31 +69,7 @@ export function NoticePage() {
 
   return (
     <>
-      <AppSidebar label="대시보드">
-        <ContextNavItem icon={<NoticeIcon />} label="공지사항" to={ROUTES.NOTICE} />
-        {isAdmin ? (
-          <SidebarNavGroup icon={<AnalysisIcon />} label="우수사례">
-            <Link
-              to={ROUTES.EXCELLENT}
-              className={layout.contextSubItem}
-              activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
-            >
-              <AnalysisIcon />
-              게시판
-            </Link>
-            <Link
-              to={ROUTES.ADMIN_EXCELLENT_CASES}
-              className={layout.contextSubItem}
-              activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
-            >
-              <SettingsIcon />
-              설정
-            </Link>
-          </SidebarNavGroup>
-        ) : (
-          <ContextNavItem icon={<AnalysisIcon />} label="우수사례 게시판" to={ROUTES.EXCELLENT} />
-        )}
-      </AppSidebar>
+      <DashboardSidebar isAdmin={isAdmin} />
 
       <main className={layout.main}>
         <div className={s.pageHeader}>
@@ -97,39 +85,35 @@ export function NoticePage() {
         </div>
 
         <div className={s.content}>
+          {newBannerTitle && (
+            <div className={s.newNoticeBanner}>
+              <span>🔔</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p className={s.newNoticeBannerTitle}>새 공지가 등록되었습니다</p>
+                <p className={s.newNoticeBannerSub}>{newBannerTitle}</p>
+              </div>
+              <button type="button" className={s.newNoticeDismiss} onClick={handleBannerDismiss}>×</button>
+            </div>
+          )}
           {isPending && <p className={s.stateText}>불러오는 중...</p>}
           {isError   && <p className={s.stateText}>데이터를 불러오지 못했습니다.</p>}
-
-          {!isPending && !isError && items.length === 0 && (
-            <p className={s.stateText}>등록된 공지사항이 없습니다.</p>
-          )}
-
+          {!isPending && !isError && items.length === 0 && <p className={s.stateText}>등록된 공지사항이 없습니다.</p>}
           {!isPending && !isError && items.length > 0 && (
             <>
               <div className={s.tableAnimate} key={currentPage}>
-                <NoticeTable
-                  items={items}
-                  onRowClick={setSelectedId}
-                  isAdmin={isAdmin}
-                  myName={myName}
-                  onEdit={setEditId}
-                  onDelete={handleDelete}
-                />
+                <NoticeTable items={items} onRowClick={setSelectedId} isAdmin={isAdmin} myName={myName} onEdit={setEditId} onDelete={handleDelete} />
               </div>
-
               <div className={s.tableCard}>
                 <div className={s.pagination}>
-                  <span className={s.pageInfo}>
-                    {start.toLocaleString()}–{end.toLocaleString()} / {totalElements.toLocaleString()}건
-                  </span>
+                  <span className={s.pageInfo}>{start.toLocaleString()}–{end.toLocaleString()} / {totalElements.toLocaleString()}건</span>
                   <div className={s.pageButtons}>
-                    <button type="button" className={isFirstGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => handlePageChange(1)} disabled={isFirstGroup}>«</button>
-                    <button type="button" className={isFirstGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => handlePageChange(groupStart - GROUP_SIZE)} disabled={isFirstGroup}>‹</button>
+                    <button type="button" className={isFirstGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setCurrentPage(1)} disabled={isFirstGroup}>«</button>
+                    <button type="button" className={isFirstGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setCurrentPage(groupStart - GROUP_SIZE)} disabled={isFirstGroup}>‹</button>
                     {pages.map((pg) => (
-                      <button key={pg} type="button" className={pg === currentPage ? s.pageBtnActive : s.pageBtn} onClick={() => handlePageChange(pg)}>{pg}</button>
+                      <button key={pg} type="button" className={pg === currentPage ? s.pageBtnActive : s.pageBtn} onClick={() => setCurrentPage(pg)}>{pg}</button>
                     ))}
-                    <button type="button" className={isLastGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => handlePageChange(groupStart + GROUP_SIZE)} disabled={isLastGroup}>›</button>
-                    <button type="button" className={isLastGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => handlePageChange(totalPages)} disabled={isLastGroup}>»</button>
+                    <button type="button" className={isLastGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setCurrentPage(groupStart + GROUP_SIZE)} disabled={isLastGroup}>›</button>
+                    <button type="button" className={isLastGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setCurrentPage(totalPages)} disabled={isLastGroup}>»</button>
                   </div>
                 </div>
               </div>
@@ -138,15 +122,9 @@ export function NoticePage() {
         </div>
       </main>
 
-      {selectedId != null && (
-        <NoticeDetailModal noticeId={selectedId} onClose={() => setSelectedId(null)} />
-      )}
-      {showCreate && (
-        <NoticeFormModal mode="create" onClose={() => setShowCreate(false)} />
-      )}
-      {editId != null && (
-        <NoticeFormModal mode="edit" noticeId={editId} onClose={() => setEditId(null)} />
-      )}
+      {selectedId != null && <NoticeDetailModal noticeId={selectedId} onClose={() => setSelectedId(null)} />}
+      {showCreate && <NoticeFormModal mode="create" onClose={() => setShowCreate(false)} onCreated={handleCreated} />}
+      {editId != null && <NoticeFormModal mode="edit" noticeId={editId} onClose={() => setEditId(null)} />}
     </>
   );
 }

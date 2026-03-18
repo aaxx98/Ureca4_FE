@@ -98,15 +98,22 @@ export const statChip = style({
   color: "rgba(255,255,255,0.9)",
 });
 
-/* ─── Content Area ─── */
-
-export const content = style({
+export const pageWrapper = style({
+  display: "flex",
+  flexDirection: "column",
   flex: 1,
   minHeight: 0,
   overflowY: "auto",
+  overflowX: "hidden",
+});
+
+/* ─── Content Area ─── */
+
+export const content = style({
   padding: vars.spacing["6"],
   paddingLeft: vars.spacing["8"],
   paddingRight: vars.spacing["8"],
+  paddingBottom: vars.spacing["8"],
   display: "flex",
   flexDirection: "column",
   gap: vars.spacing["6"],

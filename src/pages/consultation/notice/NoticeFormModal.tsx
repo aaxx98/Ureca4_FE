@@ -6,9 +6,8 @@ import { Button } from "../../../shared/ui/Button/Button";
 import * as ms from "../list/ConsultationDetailModal.css";
 
 const TYPE_OPTIONS = [
-  { value: "GENERAL", label: "일반" }, { value: "URGENT",  label: "긴급" },
-  { value: "SYSTEM",  label: "시스템" }, { value: "POLICY", label: "정책" },
-  { value: "EVENT",   label: "이벤트" },
+  { value: "GENERAL", label: "일반" }, { value: "URGENT", label: "긴급" }, { value: "SYSTEM", label: "시스템" },
+  { value: "POLICY",  label: "정책" }, { value: "EVENT",  label: "이벤트" },
 ];
 const ROLE_OPTIONS = [
   { value: "ALL", label: "전체" }, { value: "AGENT", label: "상담사" }, { value: "ADMIN", label: "관리자" },
@@ -19,9 +18,10 @@ interface Props {
   mode: "create" | "edit";
   noticeId?: number;
   onClose: () => void;
+  onCreated?: (title: string) => void;
 }
 
-export function NoticeFormModal({ mode, noticeId, onClose }: Props) {
+export function NoticeFormModal({ mode, noticeId, onClose, onCreated }: Props) {
   const [isClosing, setIsClosing]     = useState(false);
   const [title, setTitle]             = useState("");
   const [content, setContent]         = useState("");
@@ -59,8 +59,6 @@ export function NoticeFormModal({ mode, noticeId, onClose }: Props) {
   const postMutation = useMutationPostNoticeQuery();
   const putMutation  = useMutationPutNoticeQuery();
   const isPending    = postMutation.isPending || putMutation.isPending;
-  const isLoading    = mode === "edit" && !initialized;
-
   function handleClose() { setIsClosing(true); setTimeout(onClose, 180); }
 
   function handleSubmit() {
@@ -73,6 +71,7 @@ export function NoticeFormModal({ mode, noticeId, onClose }: Props) {
     const onSuccess = () => {
       queryClient.invalidateQueries({ queryKey: getNoticeListKey() });
       if (mode === "edit") queryClient.invalidateQueries({ queryKey: getNoticeDetailKey(noticeId!) });
+      if (mode === "create") onCreated?.(title);
       handleClose();
     };
     if (mode === "create") postMutation.mutate({ data: { ...base, sendNotification: sendNotif } }, { onSuccess, onError });
@@ -88,13 +87,13 @@ export function NoticeFormModal({ mode, noticeId, onClose }: Props) {
       footer={
         <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", width: "100%" }}>
           <Button variant="secondary" type="button" onClick={handleClose} disabled={isPending}>취소</Button>
-          <Button variant="primary"   type="button" onClick={handleSubmit} disabled={isPending || isLoading}>
+          <Button variant="primary"   type="button" onClick={handleSubmit} disabled={isPending || (mode === "edit" && !initialized)}>
             {mode === "create" ? "등록" : "저장"}
           </Button>
         </div>
       }
     >
-      {isLoading ? <p className={ms.stateText}>불러오는 중...</p> : (
+      {mode === "edit" && !initialized ? <p className={ms.stateText}>불러오는 중...</p> : (
         <div className={ms.fieldStack}>
           <div className={ms.fieldGroup}>
             <label className={ms.fieldLabel}>제목</label>

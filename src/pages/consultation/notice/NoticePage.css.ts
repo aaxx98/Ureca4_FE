@@ -114,6 +114,26 @@ export const actionBtnDanger = style([actionBtn, {
   ":hover": { backgroundColor: "#FEE2E2", color: "#DC2626" },
 }]);
 
+/* ─── New Notice Banner ─── */
+
+export const newNoticeBanner = style({
+  display: "flex",
+  alignItems: "center",
+  gap: vars.spacing["3"],
+  padding: `${vars.spacing["3"]} ${vars.spacing["4"]}`,
+  backgroundColor: "#EFF6FF",
+  border: "1px solid #BFDBFE",
+  borderLeft: `4px solid ${vars.color.primary}`,
+  borderRadius: vars.radius.lg,
+  cursor: "pointer",
+  transition: `background-color ${vars.transition.fast}`,
+  ":hover": { backgroundColor: "#DBEAFE" },
+});
+
+export const newNoticeBannerTitle = style({ fontSize: vars.fontSize.xs, fontWeight: vars.fontWeight.semibold, color: "#1E40AF", marginBottom: "2px" });
+export const newNoticeBannerSub   = style({ fontSize: vars.fontSize.sm, color: vars.color.textPrimary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" });
+export const newNoticeDismiss     = style({ marginLeft: "auto", flexShrink: 0, background: "none", border: "none", color: "#93C5FD", fontSize: "18px", cursor: "pointer", lineHeight: 1, padding: "0 4px" });
+
 /* ─── State ─── */
 
 export const stateText = style({ textAlign: "center", padding: `${vars.spacing["16"]} 0`, color: vars.color.textSecondary, fontSize: vars.fontSize.sm });
