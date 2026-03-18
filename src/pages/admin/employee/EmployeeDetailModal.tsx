@@ -7,13 +7,18 @@ import { BaseModal } from "../../../shared/ui/BaseModal/BaseModal";
 import { Button } from "../../../shared/ui/Button/Button";
 import * as ms from "../../consultation/list/ConsultationDetailModal.css";
 import { EMPLOYEE_DEPARTMENTS, EMPLOYEE_JOB_ROLES } from "./employeeConstants";
-import { EmployeeField, EmployeeViewField, formatDate } from "./employeeShared";
+import {
+	EmployeeField,
+	EmployeeStatusSwitch,
+	EmployeeViewField,
+	formatDate,
+} from "./employeeShared";
 
 interface Props {
 	empId: number;
 	myEmpId?: number;
 	onClose: () => void;
-	onToggleStatus: (empId: number, isActive: boolean) => void;
+	onToggleStatus: (empId: number, isActive: boolean) => Promise<void>;
 }
 
 export function EmployeeDetailModal({
@@ -35,6 +40,8 @@ export function EmployeeDetailModal({
 	const [isActiveEdit, setIsActiveEdit] = useState(true);
 	const [initialized, setInitialized] = useState(false);
 	const [errorMsg, setErrorMsg] = useState("");
+	const [statusErrorMsg, setStatusErrorMsg] = useState("");
+	const [isStatusUpdating, setIsStatusUpdating] = useState(false);
 
 	const {
 		data: emp,
@@ -82,14 +89,30 @@ export function EmployeeDetailModal({
 			},
 			{
 				onSuccess: () => {
-					if (emp && isActiveEdit !== emp.isActive)
-						onToggleStatus(empId, !!emp.isActive);
 					setIsEditing(false);
 					setInitialized(false);
 				},
 				onError: () => setErrorMsg("저장에 실패했습니다. 다시 시도해주세요."),
 			},
 		);
+	}
+
+	async function handleStatusToggle() {
+		if (isStatusUpdating || isOwnAccount) return;
+
+		const nextIsActive = !isActiveEdit;
+		setStatusErrorMsg("");
+		setIsActiveEdit(nextIsActive);
+		setIsStatusUpdating(true);
+
+		try {
+			await onToggleStatus(empId, nextIsActive);
+		} catch {
+			setIsActiveEdit(!nextIsActive);
+			setStatusErrorMsg("상태 변경에 실패했습니다. 다시 시도해주세요.");
+		} finally {
+			setIsStatusUpdating(false);
+		}
 	}
 
 	const isOwnAccount = empId === myEmpId;
@@ -100,24 +123,10 @@ export function EmployeeDetailModal({
 				display: "flex",
 				gap: "8px",
 				width: "100%",
-				justifyContent: "space-between",
+				justifyContent: "flex-end",
 				alignItems: "center",
 			}}
 		>
-			<div>
-				{isEditing && emp && (
-					<Button
-						variant="ghost"
-						type="button"
-						style={{ color: isActiveEdit ? "#059669" : "#DC2626" }}
-						onClick={() => setIsActiveEdit(!isActiveEdit)}
-						disabled={isOwnAccount}
-						title={isOwnAccount ? "본인 계정은 변경할 수 없습니다" : undefined}
-					>
-						{isActiveEdit ? "활성화" : "비활성화"}
-					</Button>
-				)}
-			</div>
 			<div style={{ display: "flex", gap: "8px" }}>
 				{isEditing ? (
 					<>
@@ -127,6 +136,8 @@ export function EmployeeDetailModal({
 							onClick={() => {
 								setIsEditing(false);
 								setInitialized(false);
+								setErrorMsg("");
+								setStatusErrorMsg("");
 							}}
 							disabled={isSaving}
 						>
@@ -136,7 +147,7 @@ export function EmployeeDetailModal({
 							variant="primary"
 							type="button"
 							onClick={handleSave}
-							disabled={isSaving || !initialized}
+							disabled={isSaving || !initialized || isStatusUpdating}
 						>
 							저장
 						</Button>
@@ -147,6 +158,7 @@ export function EmployeeDetailModal({
 						type="button"
 						onClick={() => {
 							setIsActiveEdit(emp?.isActive ?? false);
+							setStatusErrorMsg("");
 							setIsEditing(true);
 						}}
 						disabled={!initialized}
@@ -265,6 +277,14 @@ export function EmployeeDetailModal({
 									value={formatDate(emp.createdAt)}
 									dimmed
 								/>
+								<EmployeeField label="계정 활성화 여부">
+									<EmployeeStatusSwitch
+										checked={isActiveEdit}
+										onToggle={handleStatusToggle}
+										disabled={isOwnAccount}
+										loading={isStatusUpdating}
+									/>
+								</EmployeeField>
 							</>
 						) : (
 							<>
@@ -293,9 +313,23 @@ export function EmployeeDetailModal({
 									label="등록일"
 									value={formatDate(emp.createdAt)}
 								/>
+								<EmployeeViewField
+									label="계정 상태"
+									value={isActiveEdit ? "활성" : "비활성"}
+								/>
 							</>
 						)}
 					</div>
+					{isOwnAccount && isEditing && (
+						<p style={{ fontSize: "13px", color: "#6B7280", margin: 0 }}>
+							본인 계정의 활성화 상태는 변경할 수 없습니다.
+						</p>
+					)}
+					{statusErrorMsg && (
+						<p style={{ fontSize: "13px", color: "#DC2626", margin: 0 }}>
+							{statusErrorMsg}
+						</p>
+					)}
 					{errorMsg && (
 						<p style={{ fontSize: "13px", color: "#DC2626", margin: 0 }}>
 							{errorMsg}
