@@ -12,6 +12,7 @@ export const ROUTES = {
   ADMIN_EXCELLENT_CASES: "/admin-excellent-cases",
   NOTIFICATIONS: "/notifications",
   ADMIN_EMPLOYEES: "/admin-employees",
+  OUTBOUND_REPORT: "/outbound-report",
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];
