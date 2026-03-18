@@ -32,11 +32,11 @@ export function ExcellentCasesPage() {
   const { data, isPending, isError } = useGetWeeklyBoardQuery({ year, week });
   const items = data ?? [];
 
-  const categories = Array.from(new Set(items.map((i) => i.smallCategory).filter(Boolean))) as string[];
-  const sorted      = [...items].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-  const heroCase    = sorted[0];
-  const otherCases  = sorted.slice(1);
-  const filtered    = selectedCategory
+  const categories     = Array.from(new Set(items.map((i) => i.smallCategory).filter(Boolean))) as string[];
+  const sorted         = [...items].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  const heroCase       = sorted[0];
+  const otherCases     = sorted.slice(1);
+  const filteredOthers = selectedCategory
     ? otherCases.filter(i => i.smallCategory === selectedCategory)
     : otherCases;
 
@@ -94,14 +94,6 @@ export function ExcellentCasesPage() {
               <button type="button" className={s.weekNavBtn} onClick={() => navigate(1)}>›</button>
             </div>
           </div>
-          {items.length > 0 && (
-            <div className={s.statsRow}>
-              <span className={s.statChip}>전체 {items.length}건</span>
-              {categories.map(cat => (
-                <span key={cat} className={s.statChip}>{cat} {items.filter((i) => i.smallCategory === cat).length}건</span>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className={s.content}>
@@ -113,6 +105,7 @@ export function ExcellentCasesPage() {
 
           {!isPending && !isError && heroCase && (
             <>
+              {/* ─── 1. 이번 주 톱 케이스 ─── */}
               <div>
                 <p className={s.sectionTitle}>🌟 이번 주 톱 케이스</p>
                 <ExcellentCaseHeroCard
@@ -121,42 +114,43 @@ export function ExcellentCasesPage() {
                 />
               </div>
 
-              {otherCases.length > 0 && (
-                <div>
-                  <p className={s.sectionTitle}>
-                    전체 사례
-                    <span className={s.sectionSub}>{otherCases.length}건</span>
-                  </p>
-                  <div className={s.filterRow} style={{ marginBottom: "16px" }}>
+              {/* ─── 2. 카테고리 필터 ─── */}
+              {categories.length > 0 && (
+                <div className={s.filterRow}>
+                  <button
+                    type="button"
+                    className={selectedCategory === null ? s.filterPillActive : s.filterPill}
+                    onClick={() => setSelectedCategory(null)}
+                  >
+                    전체
+                  </button>
+                  {categories.map(cat => (
                     <button
+                      key={cat}
                       type="button"
-                      className={selectedCategory === null ? s.filterPillActive : s.filterPill}
-                      onClick={() => setSelectedCategory(null)}
+                      className={selectedCategory === cat ? s.filterPillActive : s.filterPill}
+                      onClick={() => setSelectedCategory(prev => prev === cat ? null : cat)}
                     >
-                      전체
+                      {cat}
                     </button>
-                    {categories.map(cat => (
-                      <button
-                        key={cat}
-                        type="button"
-                        className={selectedCategory === cat ? s.filterPillActive : s.filterPill}
-                        onClick={() => setSelectedCategory(prev => prev === cat ? null : cat)}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                  <div className={s.casesGrid}>
-                    {filtered.map(item => (
-                      <ExcellentCaseCard
-                        key={item.snapshotId ?? item.consultId}
-                        item={item}
-                        onClick={() => item.consultId != null && setSelectedId(item.consultId)}
-                      />
-                    ))}
-                  </div>
+                  ))}
                 </div>
               )}
+
+              {/* ─── 3. 필터된 케이스 그리드 ─── */}
+              {filteredOthers.length === 0 && selectedCategory !== null ? (
+                <p className={s.stateText}>해당 카테고리의 우수 사례가 없습니다.</p>
+              ) : filteredOthers.length > 0 ? (
+                <div className={s.casesGrid}>
+                  {filteredOthers.map(item => (
+                    <ExcellentCaseCard
+                      key={item.snapshotId ?? item.consultId}
+                      item={item}
+                      onClick={() => item.consultId != null && setSelectedId(item.consultId)}
+                    />
+                  ))}
+                </div>
+              ) : null}
             </>
           )}
         </div>

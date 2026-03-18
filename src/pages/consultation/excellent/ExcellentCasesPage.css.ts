@@ -101,19 +101,19 @@ export const statChip = style({
 export const pageWrapper = style({
   display: "flex",
   flexDirection: "column",
-  height: "100%",
-  overflow: "hidden",
+  flex: 1,
+  minHeight: 0,
+  overflowY: "auto",
+  overflowX: "hidden",
 });
 
 /* ─── Content Area ─── */
 
 export const content = style({
-  flex: 1,
-  minHeight: 0,
-  overflowY: "auto",
   padding: vars.spacing["6"],
   paddingLeft: vars.spacing["8"],
   paddingRight: vars.spacing["8"],
+  paddingBottom: vars.spacing["8"],
   display: "flex",
   flexDirection: "column",
   gap: vars.spacing["6"],
