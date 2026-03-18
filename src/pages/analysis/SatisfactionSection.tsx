@@ -23,15 +23,15 @@ export function SatisfactionSection({ satisfaction, isPending }: Props) {
         ))}
       </div>
 
-      {/* 점수: 별 아래 오른쪽 */}
-      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end", gap: "4px", marginTop: "8px" }}>
-        <span className={s.satScoreBig}>{satisfactionScore?.toFixed(1) ?? "-"}</span>
-        <div className={s.satScoreMeta}>
+      {/* 점수: 별 아래 오른쪽 정렬로 세로 나열 */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "2px", marginTop: "8px" }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
+          <span className={s.satScoreBig}>{satisfactionScore?.toFixed(1) ?? "-"}</span>
           <span className={s.satOutOf}>/ 5.0점</span>
-          {teamAvgSatisfactionScore != null && (
-            <span className={s.satTeam}>팀 평균 {teamAvgSatisfactionScore.toFixed(1)}점</span>
-          )}
         </div>
+        {teamAvgSatisfactionScore != null && (
+          <span className={s.satTeam}>팀 평균 {teamAvgSatisfactionScore.toFixed(1)}점</span>
+        )}
       </div>
 
       <div className={s.satResponseRow} style={{ marginTop: "20px" }}>

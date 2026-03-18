@@ -8,6 +8,7 @@ import {
   useGetWeeklyQualityQuery,
 } from "../../shared/api/generated/agent-report";
 import * as layout from "../../shared/ui/pageLayout.css";
+import { AdminDatePicker, PERIOD_COLOR } from "../admin-report/AdminDatePicker";
 import * as s from "./AnalysisPage.css";
 import { CategorySection } from "./CategorySection";
 import { MetricsSection } from "./MetricsSection";
@@ -28,15 +29,15 @@ export function AnalysisPage() {
   const { data: satisfaction, isPending: satPending } = useGetSatisfactionQuery(period, params);
   const { data: categories, isPending: catPending } = useGetCategories1Query(period, params);
 
-  const qualityParams = { date };
-  const { data: dailyQuality, isPending: dailyPending } = useGetDailyQualityQuery(qualityParams);
-  const { data: weeklyQuality, isPending: weeklyPending } = useGetWeeklyQualityQuery(qualityParams);
-  const { data: monthlyQuality, isPending: monthlyPending } = useGetMonthlyQualityQuery(qualityParams);
+  const { data: rawDailyQuality, isPending: dailyQualityPending } = useGetDailyQualityQuery(params);
+  const { data: rawWeeklyQuality, isPending: weeklyQualityPending } = useGetWeeklyQualityQuery(params);
+  const { data: rawMonthlyQuality, isPending: monthlyQualityPending } = useGetMonthlyQualityQuery(params);
 
-  const qualityPendingMap = { daily: dailyPending, weekly: weeklyPending, monthly: monthlyPending };
-  const qualityPending = qualityPendingMap[period];
-  const rawQuality = { daily: dailyQuality, weekly: weeklyQuality, monthly: monthlyQuality }[period];
+  const qualityDataMap = { daily: rawDailyQuality, weekly: rawWeeklyQuality, monthly: rawMonthlyQuality };
+  const qualityPendingMap = { daily: dailyQualityPending, weekly: weeklyQualityPending, monthly: monthlyQualityPending };
+  const rawQuality = qualityDataMap[period];
   const quality = Array.isArray(rawQuality) ? rawQuality[0] : rawQuality;
+  const qualityPending = qualityPendingMap[period];
 
   return (
     <main className={layout.main}>
@@ -53,7 +54,12 @@ export function AnalysisPage() {
               date={date}
               onPeriodChange={setPeriod}
               onDateChange={setDate}
+              hideDateInput
+              activeColor={PERIOD_COLOR[period]}
             />
+          </div>
+          <div className={s.sectionCard} style={{ alignSelf: "flex-start" }}>
+            <AdminDatePicker period={period} date={date} onDateChange={setDate} />
           </div>
 
           <div className={s.twoCol}>
@@ -68,7 +74,7 @@ export function AnalysisPage() {
           </div>
 
           <div className={s.twoCol}>
-            <div className={s.sectionCard}>
+            <div className={s.sectionCard} style={{ alignSelf: "flex-start" }}>
               <p className={s.sectionTitle}>응대 품질 분석</p>
               <QualitySection quality={quality} isPending={qualityPending} />
             </div>
