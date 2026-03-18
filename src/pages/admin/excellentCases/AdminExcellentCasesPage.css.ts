@@ -10,6 +10,49 @@ export const pageHeader = style({
   flexShrink: 0,
 });
 
+export const headerTop = style({
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "space-between",
+  gap: vars.spacing["4"],
+});
+
+export const weekNav = style({
+  display: "flex",
+  alignItems: "center",
+  gap: vars.spacing["3"],
+  backgroundColor: "rgba(255,255,255,0.12)",
+  border: "1px solid rgba(255,255,255,0.2)",
+  borderRadius: vars.radius.lg,
+  padding: `${vars.spacing["2"]} ${vars.spacing["4"]}`,
+  backdropFilter: "blur(4px)",
+  flexShrink: 0,
+});
+
+export const weekNavBtn = style({
+  width: "28px",
+  height: "28px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: "1px solid rgba(255,255,255,0.3)",
+  borderRadius: vars.radius.md,
+  backgroundColor: "rgba(255,255,255,0.1)",
+  color: "#FFFFFF",
+  cursor: "pointer",
+  fontSize: "14px",
+  transition: `all ${vars.transition.fast}`,
+  ":hover": { backgroundColor: "rgba(255,255,255,0.25)" },
+});
+
+export const weekLabel = style({
+  fontSize: vars.fontSize.sm,
+  fontWeight: vars.fontWeight.semibold,
+  color: "#FFFFFF",
+  minWidth: "120px",
+  textAlign: "center",
+});
+
 export const headerBadge = style({
   display: "inline-flex",
   alignItems: "center",

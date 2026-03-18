@@ -33,7 +33,9 @@ export function OutboundRejectSection({ data, isPending }: Props) {
             ))}
             <Label
               content={({ viewBox }: any) => {
-                const { cx, cy } = viewBox;
+                const cx = viewBox?.cx;
+                const cy = viewBox?.cy;
+                if (cx == null || cy == null) return null;
                 return (
                   <text textAnchor="middle">
                     <tspan x={cx} y={cy - 4} fontSize="20" fontWeight="700" fill="#e6007e">

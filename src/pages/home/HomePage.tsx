@@ -1,7 +1,7 @@
 import { useGetUnreadCountQuery } from "../../shared/api/generated/notification";
 import { ROUTES } from "../../shared/config/routes";
 import { ContextNavItem } from "../../shared/ui/ContextNavItem";
-import { CalendarIcon, EmptyIcon, HomeIcon, NoticeIcon } from "../../shared/ui/icons";
+import { EmptyIcon, HomeIcon, NoticeIcon } from "../../shared/ui/icons";
 import * as layout from "../../shared/ui/pageLayout.css";
 import { AppSidebar } from "../../widgets/AppSidebar/AppSidebar";
 import * as s from "./HomePage.css";
@@ -21,7 +21,7 @@ export function HomePage() {
       <AppSidebar label="홈">
         <ContextNavItem to={ROUTES.HOME} icon={<HomeIcon />} label="개요" />
         <ContextNavItem to={ROUTES.NOTIFICATIONS} icon={<NoticeIcon />} label="알림" badge={unreadCount > 0 ? unreadCount : undefined} />
-        <ContextNavItem icon={<CalendarIcon />} label="내 일정" />
+
       </AppSidebar>
 
       <main className={layout.main}>
