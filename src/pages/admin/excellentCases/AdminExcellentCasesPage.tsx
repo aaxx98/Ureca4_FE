@@ -11,13 +11,8 @@ import {
   GetCandidatesStatus,
   type EvaluationListResponse,
 } from "../../../shared/api/generated/api.schemas";
-import { ROUTES } from "../../../shared/config/routes";
-import { Link } from "@tanstack/react-router";
-import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
-import { SidebarNavGroup } from "../../../shared/ui/SidebarNavGroup";
-import { AnalysisIcon, NoticeIcon, SettingsIcon } from "../../../shared/ui/icons";
 import * as layout from "../../../shared/ui/pageLayout.css";
-import { AppSidebar } from "../../../widgets/AppSidebar/AppSidebar";
+import { DashboardSidebar } from "../../../widgets/DashboardSidebar/DashboardSidebar";
 import { AdminExcellentCaseDetailModal } from "./AdminExcellentCaseDetailModal";
 import * as s from "./AdminExcellentCasesPage.css";
 
@@ -257,27 +252,7 @@ export function AdminExcellentCasesPage() {
 
   return (
     <>
-      <AppSidebar label="대시보드">
-        <ContextNavItem icon={<NoticeIcon />} label="공지사항" to={ROUTES.NOTICE} />
-        <SidebarNavGroup icon={<AnalysisIcon />} label="우수사례">
-          <Link
-            to={ROUTES.EXCELLENT}
-            className={layout.contextSubItem}
-            activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
-          >
-            <AnalysisIcon />
-            주간 우수사례
-          </Link>
-          <Link
-            to={ROUTES.ADMIN_EXCELLENT_CASES}
-            className={layout.contextSubItem}
-            activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
-          >
-            <SettingsIcon />
-            후보군 관리
-          </Link>
-        </SidebarNavGroup>
-      </AppSidebar>
+      <DashboardSidebar isAdmin />
 
       <main className={layout.main}>
         <div className={s.pageWrapper}>
