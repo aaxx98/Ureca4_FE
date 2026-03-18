@@ -1,3 +1,4 @@
+import { useGetUnreadCountQuery } from "../../shared/api/generated/notification";
 import { ROUTES } from "../../shared/config/routes";
 import { ContextNavItem } from "../../shared/ui/ContextNavItem";
 import { CalendarIcon, EmptyIcon, HomeIcon, NoticeIcon } from "../../shared/ui/icons";
@@ -13,11 +14,13 @@ const today = new Date().toLocaleDateString("ko-KR", {
 });
 
 export function HomePage() {
+  const unreadCount = useGetUnreadCountQuery({ query: { staleTime: 0, refetchOnMount: "always" } }).data?.data ?? 0;
+
   return (
     <>
       <AppSidebar label="홈">
         <ContextNavItem to={ROUTES.HOME} icon={<HomeIcon />} label="개요" />
-        <ContextNavItem icon={<NoticeIcon />} label="공지사항" badge={2} />
+        <ContextNavItem to={ROUTES.NOTIFICATIONS} icon={<NoticeIcon />} label="알림" badge={unreadCount > 0 ? unreadCount : undefined} />
         <ContextNavItem icon={<CalendarIcon />} label="내 일정" />
       </AppSidebar>
 
