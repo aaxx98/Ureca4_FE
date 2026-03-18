@@ -13,6 +13,7 @@ import { Route as OauthRouteImport } from './routes/oauth'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppNotificationsRouteImport } from './routes/_app/notifications'
 import { Route as AppNoticeRouteImport } from './routes/_app/notice'
 import { Route as AppMypageRouteImport } from './routes/_app/mypage'
 import { Route as AppExcellentCasesRouteImport } from './routes/_app/excellent-cases'
@@ -41,6 +42,11 @@ const AppRoute = AppRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNoticeRoute = AppNoticeRouteImport.update({
@@ -102,9 +108,10 @@ export interface FileRoutesByFullPath {
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
+  '/notice': typeof AppNoticeRoute
+  '/notifications': typeof AppNotificationsRoute
   '/admin-report': typeof AppConsultAdminReportRoute
   '/analysis': typeof AppConsultAnalysisRoute
-  '/notice': typeof AppNoticeRoute
   '/consultation-list': typeof AppConsultConsultationListRoute
   '/consultation-result': typeof AppConsultConsultationResultRoute
   '/summary': typeof AppConsultSummaryRoute
@@ -116,9 +123,10 @@ export interface FileRoutesByTo {
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
+  '/notice': typeof AppNoticeRoute
+  '/notifications': typeof AppNotificationsRoute
   '/admin-report': typeof AppConsultAdminReportRoute
   '/analysis': typeof AppConsultAnalysisRoute
-  '/notice': typeof AppNoticeRoute
   '/consultation-list': typeof AppConsultConsultationListRoute
   '/consultation-result': typeof AppConsultConsultationResultRoute
   '/summary': typeof AppConsultSummaryRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/_app/excellent-cases': typeof AppExcellentCasesRoute
   '/_app/mypage': typeof AppMypageRoute
   '/_app/notice': typeof AppNoticeRoute
+  '/_app/notifications': typeof AppNotificationsRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_consult/admin-report': typeof AppConsultAdminReportRoute
   '/_app/_consult/analysis': typeof AppConsultAnalysisRoute
@@ -149,9 +158,10 @@ export interface FileRouteTypes {
     | '/admin-excellent-cases'
     | '/excellent-cases'
     | '/mypage'
+    | '/notice'
+    | '/notifications'
     | '/admin-report'
     | '/analysis'
-    | '/notice'
     | '/consultation-list'
     | '/consultation-result'
     | '/summary'
@@ -163,9 +173,10 @@ export interface FileRouteTypes {
     | '/admin-excellent-cases'
     | '/excellent-cases'
     | '/mypage'
+    | '/notice'
+    | '/notifications'
     | '/admin-report'
     | '/analysis'
-    | '/notice'
     | '/consultation-list'
     | '/consultation-result'
     | '/summary'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/_app/excellent-cases'
     | '/_app/mypage'
     | '/_app/notice'
+    | '/_app/notifications'
     | '/_app/'
     | '/_app/_consult/admin-report'
     | '/_app/_consult/analysis'
@@ -221,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/notifications': {
+      id: '/_app/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/notice': {
@@ -322,6 +341,7 @@ interface AppRouteChildren {
   AppExcellentCasesRoute: typeof AppExcellentCasesRoute
   AppMypageRoute: typeof AppMypageRoute
   AppNoticeRoute: typeof AppNoticeRoute
+  AppNotificationsRoute: typeof AppNotificationsRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
@@ -331,6 +351,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppExcellentCasesRoute: AppExcellentCasesRoute,
   AppMypageRoute: AppMypageRoute,
   AppNoticeRoute: AppNoticeRoute,
+  AppNotificationsRoute: AppNotificationsRoute,
   AppIndexRoute: AppIndexRoute,
 }
 

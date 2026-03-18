@@ -91,10 +91,13 @@ export const contextItemDisabled = style({
 export const contextBadge = style({
   marginLeft: "auto",
   fontSize: "10px",
-  backgroundColor: "rgba(255,255,255,0.12)",
-  color: "rgba(255,255,255,0.75)",
+  backgroundColor: "#E1006A",
+  color: "#FFFFFF",
   padding: `1px ${vars.spacing["2"]}`,
-  borderRadius: vars.radius.sm,
+  borderRadius: vars.radius.full,
+  fontWeight: 600,
+  minWidth: "18px",
+  textAlign: "center",
 });
 
 export const contextGroupLabel = style({

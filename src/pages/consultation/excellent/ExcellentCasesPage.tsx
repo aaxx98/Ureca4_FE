@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetWeeklyBoardQuery } from "../../../shared/api/generated/weekly-excellent-case-board";
 import { getRole } from "../../../shared/api/roleStore";
 import { ROUTES } from "../../../shared/config/routes";
-import { Link } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
 import { SidebarNavGroup } from "../../../shared/ui/SidebarNavGroup";
 import { AnalysisIcon, NoticeIcon, SettingsIcon } from "../../../shared/ui/icons";
@@ -28,6 +28,10 @@ export function ExcellentCasesPage() {
   const [selectedId, setSelectedId]             = useState<number | null>(null);
 
   const role = getRole();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { id: notifId } = useSearch({ strict: false }) as any;
+
+  useEffect(() => { if (notifId != null) setSelectedId(notifId); }, [notifId]);
 
   const { data, isPending, isError } = useGetWeeklyBoardQuery({ year, week });
   const items = data ?? [];
