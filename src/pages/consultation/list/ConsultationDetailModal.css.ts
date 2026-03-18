@@ -464,7 +464,6 @@ export const fieldBox = style({
 });
 
 export const fieldBoxMultiline = style([fieldBox, {
-  minHeight: "80px",
   whiteSpace: "pre-wrap",
 }]);
 

@@ -2394,6 +2394,10 @@ page?: number;
  * 한 페이지당 개수
  */
 size?: number;
+/** 조회 연도 */
+year?: number;
+/** 조회 주차 (ISO week) */
+week?: number;
 };
 
 export type GetCandidatesStatus = typeof GetCandidatesStatus[keyof typeof GetCandidatesStatus];
