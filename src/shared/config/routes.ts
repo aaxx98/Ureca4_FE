@@ -7,6 +7,8 @@ export const ROUTES = {
   EXCELLENT: "/excellent-cases",
   NOTICE: "/notice",
   SUMMARY: "/summary",
+  ANALYSIS: "/analysis",
+  ADMIN_REPORT: "/admin-report",
   ADMIN_EXCELLENT_CASES: "/admin-excellent-cases",
 } as const;
 

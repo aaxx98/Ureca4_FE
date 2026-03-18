@@ -21,7 +21,12 @@ function ConsultLayout() {
           <ContextNavItem icon={<ConsultationIcon />} label="결과서 작성" to={ROUTES.CONSULT_RESULT} />
         )}
         <ContextNavItem icon={<ConsultationIcon />} label="상담요약"    to={ROUTES.SUMMARY} />
-        <ContextNavItem icon={<AnalysisIcon />}     label="상담분석" />
+        {role && hasAccess(role, MENU_KEYS.CONSULTATION_ANALYSIS) && (
+          <ContextNavItem icon={<AnalysisIcon />} label="상담분석" to={ROUTES.ANALYSIS} />
+        )}
+        {role && hasAccess(role, MENU_KEYS.ADMIN_REPORT) && (
+          <ContextNavItem icon={<AnalysisIcon />} label="분석 리포트" to={ROUTES.ADMIN_REPORT} />
+        )}
       </AppSidebar>
       <Outlet />
     </>

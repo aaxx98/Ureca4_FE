@@ -18,6 +18,7 @@ export const MENU_KEYS = {
   // 관리
   EMPLOYEE_MANAGEMENT: 'employee_management',
   MY_ACCOUNT:          'my_account',
+  ADMIN_REPORT:        'admin_report',
 } as const;
 
 export type MenuKey = (typeof MENU_KEYS)[keyof typeof MENU_KEYS];
@@ -25,7 +26,6 @@ export type MenuKey = (typeof MENU_KEYS)[keyof typeof MENU_KEYS];
 const ADMIN_MENUS: MenuKey[] = [
   MENU_KEYS.CONSULTATION_LIST,
   MENU_KEYS.CONSULTATION_SUMMARY,
-  MENU_KEYS.CONSULTATION_ANALYSIS,
   MENU_KEYS.OPERATION_POLICY,
   MENU_KEYS.MANUAL,
   MENU_KEYS.CUSTOMER_TYPE_RESPONSE,
@@ -33,6 +33,7 @@ const ADMIN_MENUS: MenuKey[] = [
   MENU_KEYS.NOTICE,
   MENU_KEYS.EMPLOYEE_MANAGEMENT,
   MENU_KEYS.MY_ACCOUNT,
+  MENU_KEYS.ADMIN_REPORT,
 ];
 
 const COUNSELOR_MENUS: MenuKey[] = [
