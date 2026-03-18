@@ -2,6 +2,8 @@ import type { AgentRankingResponse } from "../../shared/api/generated/api.schema
 import * as s from "./AdminReportPage.css";
 import { ReportSection } from "./ReportSection";
 
+const MEDALS: Record<number, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
+
 interface Props {
   data: AgentRankingResponse | undefined;
   isPending: boolean;
@@ -24,16 +26,28 @@ export function AgentRankingSection({ data, isPending }: Props) {
             </tr>
           </thead>
           <tbody>
-            {agents.map((a) => (
-              <tr key={a.agentId}>
-                <td className={s.td}><span className={s.rankBadge}>{a.rank}</span></td>
-                <td className={s.td}>{a.agentName ?? "-"}</td>
-                <td className={s.td}>{a.consultCount?.toLocaleString() ?? "-"}건</td>
-                <td className={s.td}>{a.avgDurationMinutes?.toFixed(0) ?? "-"}초</td>
-                <td className={s.td}>{a.avgSatisfiedScore?.toFixed(1) ?? "-"}</td>
-                <td className={s.td}>{a.qualityScore?.toFixed(1) ?? "-"}</td>
-              </tr>
-            ))}
+            {agents.map((a) => {
+              const isTop3 = (a.rank ?? 99) <= 3;
+              const cell = isTop3 ? s.tdTop3 : s.td;
+              const medal = a.rank != null ? MEDALS[a.rank] : undefined;
+              return (
+                <tr key={a.agentId}>
+                  <td className={cell}>
+                    <span className={s.rankNum}>{a.rank}</span>
+                    {medal && <span style={{ marginLeft: "4px" }}>{medal}</span>}
+                  </td>
+                  <td className={cell}>{a.agentName ?? "-"}</td>
+                  <td className={cell}>{a.consultCount?.toLocaleString() ?? "-"}건</td>
+                  <td className={cell}>{a.avgDurationMinutes ?? "-"}분</td>
+                  <td className={cell} style={{ fontWeight: "bold" }}>
+                    {a.avgSatisfiedScore?.toFixed(1) ?? "-"}<span style={{ fontWeight: "normal", color: "#6B7280" }}>/5.0</span>
+                  </td>
+                  <td className={cell} style={{ fontWeight: "bold" }}>
+                    {a.qualityScore?.toFixed(1) ?? "-"}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -4,11 +4,11 @@ import { vars } from "../../shared/design";
 const fadeIn = keyframes({ from: { opacity: 0, transform: "translateY(4px)" }, to: { opacity: 1, transform: "translateY(0)" } });
 
 export const pageWrapper = style({ display: "flex", flexDirection: "column", height: "100%", overflowY: "auto" });
-export const header = style({ padding: `${vars.spacing["8"]} ${vars.spacing["8"]} 0`, flexShrink: 0 });
+export const header = style({ padding: `${vars.spacing["6"]} ${vars.spacing["4"]} 0`, flexShrink: 0 });
 export const title = style({ fontSize: vars.fontSize["2xl"], fontWeight: vars.fontWeight.bold, color: vars.color.textPrimary, letterSpacing: "-0.4px", margin: "0 0 4px 0" });
 export const subtitle = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
-export const body = style({ padding: `${vars.spacing["4"]} ${vars.spacing["8"]} ${vars.spacing["6"]}`, display: "flex", flexDirection: "column", gap: vars.spacing["4"], animation: `${fadeIn} 0.35s ease` });
-export const sectionCard = style({ backgroundColor: vars.color.surface, borderRadius: vars.radius.lg, padding: vars.spacing["6"], boxShadow: vars.shadow.card });
+export const body = style({ padding: `${vars.spacing["3"]} ${vars.spacing["4"]} ${vars.spacing["4"]}`, display: "flex", flexDirection: "column", gap: vars.spacing["3"], animation: `${fadeIn} 0.35s ease` });
+export const sectionCard = style({ backgroundColor: vars.color.surface, borderRadius: vars.radius.lg, padding: vars.spacing["4"], boxShadow: vars.shadow.card });
 export const sectionTitle = style({ fontSize: vars.fontSize.md, fontWeight: vars.fontWeight.semibold, color: vars.color.textPrimary, margin: `0 0 ${vars.spacing["4"]} 0` });
 export const twoCol = style({ display: "grid", gridTemplateColumns: "1fr 1fr", gap: vars.spacing["4"] });
 export const stateText = style({ textAlign: "center", padding: `${vars.spacing["8"]} 0`, color: vars.color.textSecondary, fontSize: vars.fontSize.sm });
@@ -19,18 +19,27 @@ const periodBtnBase = style({ padding: `${vars.spacing["2"]} ${vars.spacing["4"]
 export const periodBtnVariant = styleVariants({ active: [periodBtnBase, { backgroundColor: vars.color.primary, borderColor: vars.color.primary, color: "#fff" }], default: [periodBtnBase, { backgroundColor: vars.color.surface, color: vars.color.textPrimary, ":hover": { backgroundColor: "#F9FAFB" } }] });
 export const dateInput = style({ padding: `${vars.spacing["2"]} ${vars.spacing["3"]}`, border: `1px solid ${vars.color.border}`, borderRadius: vars.radius.md, fontSize: vars.fontSize.sm, color: vars.color.textPrimary, outline: "none", marginLeft: "auto", ":focus": { borderColor: vars.color.primary } });
 
-/* ── Stat Card ── */
-export const statGrid = style({ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: vars.spacing["3"] });
-export const statCard = style({ backgroundColor: "#F9FAFB", borderRadius: vars.radius.md, border: `1px solid ${vars.color.border}`, padding: vars.spacing["4"] });
-export const statLabel = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary, marginBottom: vars.spacing["1"] });
-export const statValue = style({ fontSize: vars.fontSize["2xl"], fontWeight: vars.fontWeight.bold, color: vars.color.textPrimary, marginBottom: "2px" });
-export const statTeam = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
+/* ── Stat Card (4×1 rectangle) ── */
+export const statGrid = style({ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: vars.spacing["3"] });
+export const statCard = style({ backgroundColor: "#F9FAFB", borderRadius: vars.radius.md, border: `1px solid ${vars.color.border}`, padding: vars.spacing["4"], display: "flex", flexDirection: "column", minHeight: "160px" });
+export const statLabel = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
+export const statNumRow = style({ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" });
+export const statValue = style({ fontSize: "44px", fontWeight: vars.fontWeight.bold, color: vars.color.textPrimary, lineHeight: "1" });
+export const statUnit = style({ fontSize: vars.fontSize["2xl"], fontWeight: vars.fontWeight.semibold, color: vars.color.textSecondary, paddingBottom: "4px" });
+export const statTeam = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary, marginTop: "auto", paddingTop: vars.spacing["2"] });
+export const durationRow = style({ display: "flex", alignItems: "center", justifyContent: "space-between", padding: `${vars.spacing["1"]} ${vars.spacing["2"]}`, backgroundColor: "#F9FAFB", borderRadius: vars.radius.md, border: `1px solid ${vars.color.border}`, marginTop: vars.spacing["3"] });
+export const durationLabel = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
+export const durationValue = style({ fontSize: vars.fontSize.lg, fontWeight: vars.fontWeight.bold, color: vars.color.textPrimary });
+export const durationTeam = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
 
 /* ── Satisfaction ── */
-export const satMain = style({ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: vars.spacing["4"] });
-export const satScore = style({ fontSize: vars.fontSize["3xl"], fontWeight: vars.fontWeight.bold, color: vars.color.primary });
-export const satUnit = style({ fontSize: vars.fontSize.sm, color: vars.color.textSecondary, marginLeft: vars.spacing["1"] });
+export const satWrap = style({ display: "flex", flexDirection: "column", gap: vars.spacing["3"] });
+export const satScoreBlock = style({ display: "flex", alignItems: "flex-end", gap: vars.spacing["2"] });
+export const satScoreBig = style({ fontSize: vars.fontSize["2xl"], fontWeight: vars.fontWeight.bold, color: vars.color.primary, lineHeight: "1" });
+export const satScoreMeta = style({ display: "flex", flexDirection: "column", paddingBottom: "2px", gap: "2px" });
+export const satOutOf = style({ fontSize: vars.fontSize.sm, fontWeight: vars.fontWeight.semibold, color: vars.color.textSecondary });
 export const satTeam = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
+export const satStars = style({ display: "flex", gap: "4px" });
 export const satResponseRow = style({ display: "flex", alignItems: "center", justifyContent: "space-between", padding: vars.spacing["3"], backgroundColor: "#F9FAFB", borderRadius: vars.radius.md, border: `1px solid ${vars.color.border}` });
 export const satResponseLabel = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
 export const satResponseValue = style({ fontSize: vars.fontSize.sm, fontWeight: vars.fontWeight.semibold, color: vars.color.textPrimary });

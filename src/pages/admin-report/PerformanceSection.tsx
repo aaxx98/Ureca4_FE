@@ -7,27 +7,29 @@ interface Props {
   isPending: boolean;
 }
 
+function PerfCard({ label, value, unit }: { label: string; value: string | number; unit: string }) {
+  return (
+    <div className={s.perfCard}>
+      <p className={s.perfLabel}>{label}</p>
+      <div className={s.perfNumArea}>
+        <div className={s.perfNumRow}>
+          <span className={s.perfNum}>{value}</span>
+          <span className={s.perfUnit}>{unit}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function PerformanceSection({ data, isPending }: Props) {
   return (
     <ReportSection title="전체 상담 성과" isPending={isPending} hasData={!!data}>
       {data && (
-        <div className={s.statGrid}>
-          <div className={s.statCard}>
-            <p className={s.statLabel}>총 상담 건수</p>
-            <p className={s.statValue}>{data.totalConsultCount?.toLocaleString() ?? "-"}</p>
-          </div>
-          <div className={s.statCard}>
-            <p className={s.statLabel}>상담사 평균 처리</p>
-            <p className={s.statValue}>{data.avgConsultCountPerAgent?.toFixed(1) ?? "-"}</p>
-          </div>
-          <div className={s.statCard}>
-            <p className={s.statLabel}>평균 처리 시간</p>
-            <p className={s.statValue}>{data.avgDurationMinutes?.toFixed(0) ?? "-"}초</p>
-          </div>
-          <div className={s.statCard}>
-            <p className={s.statLabel}>평균 만족도</p>
-            <p className={s.statValue}>{data.avgSatisfiedScore?.toFixed(1) ?? "-"}</p>
-          </div>
+        <div className={s.perfGrid}>
+          <PerfCard label="📞 총 상담 건수" value={data.totalConsultCount?.toLocaleString() ?? "-"} unit="건" />
+          <PerfCard label="👤 상담사 평균 처리 건수" value={data.avgConsultCountPerAgent?.toFixed(1) ?? "-"} unit="건" />
+          <PerfCard label="⏱ 평균 처리 시간" value={data.avgDurationMinutes ?? "-"} unit="분" />
+          <PerfCard label="⭐ 평균 만족도" value={data.avgSatisfiedScore?.toFixed(1) ?? "-"} unit="/5.0" />
         </div>
       )}
     </ReportSection>
