@@ -370,29 +370,15 @@ export function AdminManualListPage() {
 			<main className={layout.main}>
 				<div className={s.pageWrapper}>
 					<div className={s.pageHeader}>
-						<div className={s.headerBadge}>📖 ADMIN · MANUAL</div>
 						<h1 className={s.headerTitle}>매뉴얼 관리</h1>
 						<p className={s.headerSubtitle}>
-							카테고리와 키워드로 매뉴얼 이력을 조회하고 최신 수정 현황을
-							확인하세요.
+							매뉴얼 이력을 조회하고 최신 수정 현황을 관리합니다.
 						</p>
 					</div>
 
 					<div className={s.content}>
 						<form className={s.searchCard} onSubmit={handleSearchSubmit}>
 							<div className={s.searchGrid}>
-								<div className={s.searchField}>
-									<label className={s.searchLabel} htmlFor={categoryInputId}>
-										카테고리
-									</label>
-									<CategoryAutocomplete
-										categories={categories}
-										selectedCategoryCode={selectedCategoryCode}
-										onSelect={handleCategoryChange}
-										disabled={categoriesLoading}
-									/>
-								</div>
-
 								<div className={s.searchField}>
 									<label className={s.searchLabel} htmlFor={keywordInputId}>
 										키워드
@@ -404,6 +390,18 @@ export function AdminManualListPage() {
 										placeholder="제목 키워드를 입력하세요"
 										className={s.searchInput}
 										onChange={(event) => setKeywordInput(event.target.value)}
+									/>
+								</div>
+
+								<div className={s.searchField}>
+									<label className={s.searchLabel} htmlFor={categoryInputId}>
+										카테고리
+									</label>
+									<CategoryAutocomplete
+										categories={categories}
+										selectedCategoryCode={selectedCategoryCode}
+										onSelect={handleCategoryChange}
+										disabled={categoriesLoading}
 									/>
 								</div>
 							</div>

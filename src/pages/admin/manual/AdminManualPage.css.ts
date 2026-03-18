@@ -13,10 +13,7 @@ export const pageWrapper = style({
 });
 
 export const pageHeader = style({
-	backgroundImage:
-		"linear-gradient(135deg, #0F2557 0%, #1D4ED8 60%, #6D28D9 100%)",
-	backgroundColor: "#0F2557",
-	padding: `${vars.spacing["8"]} ${vars.spacing["8"]} ${vars.spacing["6"]}`,
+	padding: `${vars.spacing["8"]} ${vars.spacing["8"]} 0`,
 	flexShrink: 0,
 });
 
@@ -25,26 +22,27 @@ export const headerBadge = style({
 	alignItems: "center",
 	gap: "6px",
 	padding: `3px ${vars.spacing["3"]}`,
-	border: "1px solid rgba(255,255,255,0.3)",
+	border: `1px solid ${vars.color.border}`,
 	borderRadius: vars.radius.full,
 	fontSize: vars.fontSize.xs,
-	color: "rgba(255,255,255,0.85)",
-	backgroundColor: "rgba(255,255,255,0.1)",
+	color: vars.color.textSecondary,
+	backgroundColor: vars.color.surface,
 	marginBottom: vars.spacing["2"],
 });
 
 export const headerTitle = style({
-	fontSize: vars.fontSize["3xl"],
+	fontSize: vars.fontSize["2xl"],
 	fontWeight: vars.fontWeight.bold,
-	color: "#FFFFFF",
-	margin: `0 0 4px 0`,
-	letterSpacing: "-0.6px",
+	color: vars.color.textPrimary,
+	letterSpacing: "-0.4px",
+	margin: 0,
 });
 
 export const headerSubtitle = style({
-	fontSize: vars.fontSize.sm,
-	color: "rgba(255,255,255,0.65)",
-	margin: 0,
+	fontSize: vars.fontSize.xs,
+	color: vars.color.textSecondary,
+	marginTop: "5px",
+	marginBottom: 0,
 });
 
 export const content = style({
@@ -385,7 +383,7 @@ export const searchCard = style({
 
 export const searchGrid = style({
 	display: "grid",
-	gridTemplateColumns: "minmax(260px, 1.1fr) minmax(220px, 1fr)",
+	gridTemplateColumns: "minmax(320px, 2fr) minmax(180px, 1fr)",
 	gap: vars.spacing["4"],
 	alignItems: "end",
 	"@media": {
