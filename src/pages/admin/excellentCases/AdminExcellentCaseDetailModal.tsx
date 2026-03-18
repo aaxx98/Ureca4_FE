@@ -48,6 +48,9 @@ export function AdminExcellentCaseDetailModal({ consultId, onClose, initialSelec
         setIsSelectMode(false);
         onClose();
       },
+      onError: () => {
+        alert("선정 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      },
     },
   });
 
@@ -57,6 +60,9 @@ export function AdminExcellentCaseDetailModal({ consultId, onClose, initialSelec
         queryClient.invalidateQueries({ queryKey: ["/admin/excellent-cases/candidates"] });
         queryClient.invalidateQueries({ queryKey: getDetailKey(consultId) });
         onClose();
+      },
+      onError: () => {
+        alert("후보 제외 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
       },
     },
   });
