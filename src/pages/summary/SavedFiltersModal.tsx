@@ -30,11 +30,9 @@ const FILTER_LABEL: Record<number, string> = {
 
 /* ─── 옵션 목록 ─── */
 
-const CHANNEL_OPTS       = [{ value: "CALL", label: "전화" }, { value: "CHATTING", label: "채팅" }];
-const CUSTOMER_TYPE_OPTS = [{ value: "개인", label: "개인" }, { value: "법인", label: "법인" }];
-const SATISFACTION_OPTS  = ["1","2","3","4","5"].map((v) => ({ value: v, label: `${v}점` }));
-const GRADE_OPTS         = Object.entries(GRADE_MAP).map(([v, l]) => ({ value: v, label: l }));
-const RISK_TYPE_OPTS     = Object.entries(RISK_TYPE_MAP).map(([v, l]) => ({ value: v, label: l }));
+const CHANNEL_OPTS   = [{ value: "CALL", label: "전화" }, { value: "CHATTING", label: "채팅" }];
+const GRADE_OPTS     = Object.entries(GRADE_MAP).map(([v, l]) => ({ value: v, label: l }));
+const RISK_TYPE_OPTS = Object.entries(RISK_TYPE_MAP).map(([v, l]) => ({ value: v, label: l }));
 
 /* ─── 드롭다운 (단일) ─── */
 
@@ -170,7 +168,6 @@ function EditForm({ id, initialDraft, initialName, onSaved, onCancel }: {
 			<div className={fp.filterRow}>
 				<input className={fp.textInput} placeholder="키워드" value={draft.keyword} onChange={(e) => set("keyword", e.target.value)} />
 				<Dropdown placeholder="채널" options={CHANNEL_OPTS} value={draft.channel} onChange={(v) => set("channel", v)} />
-				<Dropdown placeholder="고객 만족도" options={SATISFACTION_OPTS} value={draft.satisfaction} onChange={(v) => set("satisfaction", v)} />
 			</div>
 
 			{/* 날짜 */}
@@ -187,19 +184,16 @@ function EditForm({ id, initialDraft, initialName, onSaved, onCancel }: {
 			<div className={fp.filterRow}>
 				<input className={fp.textInput} placeholder="고객명" value={draft.customerName} onChange={(e) => set("customerName", e.target.value)} />
 				<input className={fp.textInput} placeholder="고객 연락처" value={draft.customerPhone} onChange={(e) => set("customerPhone", e.target.value)} />
-				<Dropdown placeholder="고객 유형" options={CUSTOMER_TYPE_OPTS} value={draft.customerType} onChange={(v) => set("customerType", v)} />
 			</div>
 
-			{/* 상담사 / 카테고리 / 상품명 */}
+			{/* 상담사 */}
 			<div className={fp.filterRow}>
 				<input className={fp.textInput} placeholder="상담사 이름" value={draft.agentName} onChange={(e) => set("agentName", e.target.value)} />
-				<input className={fp.textInput} placeholder="카테고리명" value={draft.categoryName} onChange={(e) => set("categoryName", e.target.value)} />
-				<input className={fp.textInput} placeholder="상품명" value={draft.productName} onChange={(e) => set("productName", e.target.value)} />
 			</div>
 
 			{/* 등급 / 리스크 */}
 			<div className={fp.filterRow}>
-				<MultiDropdown placeholder="고객 등급" options={GRADE_OPTS} value={draft.grade} onChange={(v) => set("grade", v)} />
+				<Dropdown placeholder="고객 등급" options={GRADE_OPTS} value={draft.grade} onChange={(v) => set("grade", v)} />
 				<MultiDropdown placeholder="리스크 유형" options={RISK_TYPE_OPTS} value={draft.riskType} onChange={(v) => set("riskType", v)} />
 			</div>
 
