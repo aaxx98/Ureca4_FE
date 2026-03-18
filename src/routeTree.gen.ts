@@ -19,8 +19,10 @@ import { Route as AppMypageRouteImport } from './routes/_app/mypage'
 import { Route as AppExcellentCasesRouteImport } from './routes/_app/excellent-cases'
 import { Route as AppAdminExcellentCasesRouteImport } from './routes/_app/admin-excellent-cases'
 import { Route as AppAdminEmployeesRouteImport } from './routes/_app/admin-employees'
+import { Route as AppAdminAnalysisFailedRouteImport } from './routes/_app/admin-analysis-failed'
 import { Route as AppConsultRouteImport } from './routes/_app/_consult'
 import { Route as AppConsultSummaryRouteImport } from './routes/_app/_consult/summary'
+import { Route as AppConsultOutboundReportRouteImport } from './routes/_app/_consult/outbound-report'
 import { Route as AppConsultManualRouteImport } from './routes/_app/_consult/manual'
 import { Route as AppConsultConsultationResultRouteImport } from './routes/_app/_consult/consultation-result'
 import { Route as AppConsultConsultationListRouteImport } from './routes/_app/_consult/consultation-list'
@@ -78,6 +80,11 @@ const AppAdminEmployeesRoute = AppAdminEmployeesRouteImport.update({
   path: '/admin-employees',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminAnalysisFailedRoute = AppAdminAnalysisFailedRouteImport.update({
+  id: '/admin-analysis-failed',
+  path: '/admin-analysis-failed',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppConsultRoute = AppConsultRouteImport.update({
   id: '/_consult',
   getParentRoute: () => AppRoute,
@@ -87,6 +94,12 @@ const AppConsultSummaryRoute = AppConsultSummaryRouteImport.update({
   path: '/summary',
   getParentRoute: () => AppConsultRoute,
 } as any)
+const AppConsultOutboundReportRoute =
+  AppConsultOutboundReportRouteImport.update({
+    id: '/outbound-report',
+    path: '/outbound-report',
+    getParentRoute: () => AppConsultRoute,
+  } as any)
 const AppConsultManualRoute = AppConsultManualRouteImport.update({
   id: '/manual',
   path: '/manual',
@@ -130,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
+  '/admin-analysis-failed': typeof AppAdminAnalysisFailedRoute
   '/admin-employees': typeof AppAdminEmployeesRoute
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
@@ -143,12 +157,14 @@ export interface FileRoutesByFullPath {
   '/consultation-list': typeof AppConsultConsultationListRoute
   '/consultation-result': typeof AppConsultConsultationResultRoute
   '/manual': typeof AppConsultManualRoute
+  '/outbound-report': typeof AppConsultOutboundReportRoute
   '/summary': typeof AppConsultSummaryRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
   '/': typeof AppIndexRoute
+  '/admin-analysis-failed': typeof AppAdminAnalysisFailedRoute
   '/admin-employees': typeof AppAdminEmployeesRoute
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
@@ -162,6 +178,7 @@ export interface FileRoutesByTo {
   '/consultation-list': typeof AppConsultConsultationListRoute
   '/consultation-result': typeof AppConsultConsultationResultRoute
   '/manual': typeof AppConsultManualRoute
+  '/outbound-report': typeof AppConsultOutboundReportRoute
   '/summary': typeof AppConsultSummaryRoute
 }
 export interface FileRoutesById {
@@ -170,6 +187,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
   '/_app/_consult': typeof AppConsultRouteWithChildren
+  '/_app/admin-analysis-failed': typeof AppAdminAnalysisFailedRoute
   '/_app/admin-employees': typeof AppAdminEmployeesRoute
   '/_app/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/_app/excellent-cases': typeof AppExcellentCasesRoute
@@ -184,6 +202,7 @@ export interface FileRoutesById {
   '/_app/_consult/consultation-list': typeof AppConsultConsultationListRoute
   '/_app/_consult/consultation-result': typeof AppConsultConsultationResultRoute
   '/_app/_consult/manual': typeof AppConsultManualRoute
+  '/_app/_consult/outbound-report': typeof AppConsultOutboundReportRoute
   '/_app/_consult/summary': typeof AppConsultSummaryRoute
 }
 export interface FileRouteTypes {
@@ -192,6 +211,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/oauth'
+    | '/admin-analysis-failed'
     | '/admin-employees'
     | '/admin-excellent-cases'
     | '/excellent-cases'
@@ -205,12 +225,14 @@ export interface FileRouteTypes {
     | '/consultation-list'
     | '/consultation-result'
     | '/manual'
+    | '/outbound-report'
     | '/summary'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/oauth'
     | '/'
+    | '/admin-analysis-failed'
     | '/admin-employees'
     | '/admin-excellent-cases'
     | '/excellent-cases'
@@ -224,6 +246,7 @@ export interface FileRouteTypes {
     | '/consultation-list'
     | '/consultation-result'
     | '/manual'
+    | '/outbound-report'
     | '/summary'
   id:
     | '__root__'
@@ -231,6 +254,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/oauth'
     | '/_app/_consult'
+    | '/_app/admin-analysis-failed'
     | '/_app/admin-employees'
     | '/_app/admin-excellent-cases'
     | '/_app/excellent-cases'
@@ -245,6 +269,7 @@ export interface FileRouteTypes {
     | '/_app/_consult/consultation-list'
     | '/_app/_consult/consultation-result'
     | '/_app/_consult/manual'
+    | '/_app/_consult/outbound-report'
     | '/_app/_consult/summary'
   fileRoutesById: FileRoutesById
 }
@@ -326,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminEmployeesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin-analysis-failed': {
+      id: '/_app/admin-analysis-failed'
+      path: '/admin-analysis-failed'
+      fullPath: '/admin-analysis-failed'
+      preLoaderRoute: typeof AppAdminAnalysisFailedRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/_consult': {
       id: '/_app/_consult'
       path: ''
@@ -338,6 +370,13 @@ declare module '@tanstack/react-router' {
       path: '/summary'
       fullPath: '/summary'
       preLoaderRoute: typeof AppConsultSummaryRouteImport
+      parentRoute: typeof AppConsultRoute
+    }
+    '/_app/_consult/outbound-report': {
+      id: '/_app/_consult/outbound-report'
+      path: '/outbound-report'
+      fullPath: '/outbound-report'
+      preLoaderRoute: typeof AppConsultOutboundReportRouteImport
       parentRoute: typeof AppConsultRoute
     }
     '/_app/_consult/manual': {
@@ -400,6 +439,7 @@ interface AppConsultRouteChildren {
   AppConsultConsultationListRoute: typeof AppConsultConsultationListRoute
   AppConsultConsultationResultRoute: typeof AppConsultConsultationResultRoute
   AppConsultManualRoute: typeof AppConsultManualRoute
+  AppConsultOutboundReportRoute: typeof AppConsultOutboundReportRoute
   AppConsultSummaryRoute: typeof AppConsultSummaryRoute
 }
 
@@ -411,6 +451,7 @@ const AppConsultRouteChildren: AppConsultRouteChildren = {
   AppConsultConsultationListRoute: AppConsultConsultationListRoute,
   AppConsultConsultationResultRoute: AppConsultConsultationResultRoute,
   AppConsultManualRoute: AppConsultManualRoute,
+  AppConsultOutboundReportRoute: AppConsultOutboundReportRoute,
   AppConsultSummaryRoute: AppConsultSummaryRoute,
 }
 
@@ -420,6 +461,7 @@ const AppConsultRouteWithChildren = AppConsultRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppConsultRoute: typeof AppConsultRouteWithChildren
+  AppAdminAnalysisFailedRoute: typeof AppAdminAnalysisFailedRoute
   AppAdminEmployeesRoute: typeof AppAdminEmployeesRoute
   AppAdminExcellentCasesRoute: typeof AppAdminExcellentCasesRoute
   AppExcellentCasesRoute: typeof AppExcellentCasesRoute
@@ -431,6 +473,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppConsultRoute: AppConsultRouteWithChildren,
+  AppAdminAnalysisFailedRoute: AppAdminAnalysisFailedRoute,
   AppAdminEmployeesRoute: AppAdminEmployeesRoute,
   AppAdminExcellentCasesRoute: AppAdminExcellentCasesRoute,
   AppExcellentCasesRoute: AppExcellentCasesRoute,

@@ -15,6 +15,7 @@ export const ROUTES = {
   ADMIN_MANUAL_SETTINGS: "/admin-manual-settings",
   NOTIFICATIONS: "/notifications",
   ADMIN_EMPLOYEES: "/admin-employees",
+  ADMIN_ANALYSIS_FAILED: "/admin-analysis-failed",
   OUTBOUND_REPORT: "/outbound-report",
 } as const;
 
