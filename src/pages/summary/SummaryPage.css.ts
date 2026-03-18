@@ -46,6 +46,8 @@ export const badgeVariant = styleVariants({
 
 export const actionBtnDetail = style({ padding: `${vars.spacing["2"]} ${vars.spacing["3"]}`, border: `1px solid ${vars.color.border}`, borderRadius: vars.radius.sm, fontSize: vars.fontSize.xs, fontWeight: vars.fontWeight.medium, color: vars.color.textPrimary, backgroundColor: vars.color.surface, cursor: "pointer", whiteSpace: "nowrap", transition: `all ${vars.transition.fast}`, ":hover": { backgroundColor: vars.color.primary, borderColor: vars.color.primary, color: "#FFFFFF" } });
 
+export const bookmarkBtn = style({ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "28px", height: "28px", border: "none", background: "none", cursor: "pointer", color: vars.color.textSecondary, borderRadius: vars.radius.sm, transition: `color ${vars.transition.fast}`, ":hover": { color: "#F59E0B" }, ":disabled": { opacity: 0.4, cursor: "not-allowed" } });
+
 /* ─── State ─── */
 
 export const stateText = style({ textAlign: "center", padding: `${vars.spacing["16"]} 0`, color: vars.color.textSecondary, fontSize: vars.fontSize.sm });

@@ -16,6 +16,7 @@ export const ROUTES = {
   NOTIFICATIONS: "/notifications",
   ADMIN_EMPLOYEES: "/admin-employees",
   OUTBOUND_REPORT: "/outbound-report",
+  MY_BOOKMARKS: "/my-bookmarks",
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];
