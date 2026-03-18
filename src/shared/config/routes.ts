@@ -6,6 +6,8 @@ export const ROUTES = {
   CONSULT_RESULT: "/consultation-result",
   EXCELLENT: "/excellent-cases",
   SUMMARY: "/summary",
+  ANALYSIS: "/analysis",
+  ADMIN_REPORT: "/admin-report",
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];

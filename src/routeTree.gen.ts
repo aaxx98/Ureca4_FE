@@ -19,6 +19,8 @@ import { Route as AppConsultRouteImport } from './routes/_app/_consult'
 import { Route as AppConsultSummaryRouteImport } from './routes/_app/_consult/summary'
 import { Route as AppConsultConsultationResultRouteImport } from './routes/_app/_consult/consultation-result'
 import { Route as AppConsultConsultationListRouteImport } from './routes/_app/_consult/consultation-list'
+import { Route as AppConsultAnalysisRouteImport } from './routes/_app/_consult/analysis'
+import { Route as AppConsultAdminReportRouteImport } from './routes/_app/_consult/admin-report'
 
 const OauthRoute = OauthRouteImport.update({
   id: '/oauth',
@@ -70,6 +72,16 @@ const AppConsultConsultationListRoute =
     path: '/consultation-list',
     getParentRoute: () => AppConsultRoute,
   } as any)
+const AppConsultAnalysisRoute = AppConsultAnalysisRouteImport.update({
+  id: '/analysis',
+  path: '/analysis',
+  getParentRoute: () => AppConsultRoute,
+} as any)
+const AppConsultAdminReportRoute = AppConsultAdminReportRouteImport.update({
+  id: '/admin-report',
+  path: '/admin-report',
+  getParentRoute: () => AppConsultRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -77,6 +89,8 @@ export interface FileRoutesByFullPath {
   '/oauth': typeof OauthRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
+  '/admin-report': typeof AppConsultAdminReportRoute
+  '/analysis': typeof AppConsultAnalysisRoute
   '/consultation-list': typeof AppConsultConsultationListRoute
   '/consultation-result': typeof AppConsultConsultationResultRoute
   '/summary': typeof AppConsultSummaryRoute
@@ -87,6 +101,8 @@ export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
+  '/admin-report': typeof AppConsultAdminReportRoute
+  '/analysis': typeof AppConsultAnalysisRoute
   '/consultation-list': typeof AppConsultConsultationListRoute
   '/consultation-result': typeof AppConsultConsultationResultRoute
   '/summary': typeof AppConsultSummaryRoute
@@ -100,6 +116,8 @@ export interface FileRoutesById {
   '/_app/excellent-cases': typeof AppExcellentCasesRoute
   '/_app/mypage': typeof AppMypageRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/_consult/admin-report': typeof AppConsultAdminReportRoute
+  '/_app/_consult/analysis': typeof AppConsultAnalysisRoute
   '/_app/_consult/consultation-list': typeof AppConsultConsultationListRoute
   '/_app/_consult/consultation-result': typeof AppConsultConsultationResultRoute
   '/_app/_consult/summary': typeof AppConsultSummaryRoute
@@ -112,6 +130,8 @@ export interface FileRouteTypes {
     | '/oauth'
     | '/excellent-cases'
     | '/mypage'
+    | '/admin-report'
+    | '/analysis'
     | '/consultation-list'
     | '/consultation-result'
     | '/summary'
@@ -122,6 +142,8 @@ export interface FileRouteTypes {
     | '/'
     | '/excellent-cases'
     | '/mypage'
+    | '/admin-report'
+    | '/analysis'
     | '/consultation-list'
     | '/consultation-result'
     | '/summary'
@@ -134,6 +156,8 @@ export interface FileRouteTypes {
     | '/_app/excellent-cases'
     | '/_app/mypage'
     | '/_app/'
+    | '/_app/_consult/admin-report'
+    | '/_app/_consult/analysis'
     | '/_app/_consult/consultation-list'
     | '/_app/_consult/consultation-result'
     | '/_app/_consult/summary'
@@ -217,16 +241,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppConsultConsultationListRouteImport
       parentRoute: typeof AppConsultRoute
     }
+    '/_app/_consult/analysis': {
+      id: '/_app/_consult/analysis'
+      path: '/analysis'
+      fullPath: '/analysis'
+      preLoaderRoute: typeof AppConsultAnalysisRouteImport
+      parentRoute: typeof AppConsultRoute
+    }
+    '/_app/_consult/admin-report': {
+      id: '/_app/_consult/admin-report'
+      path: '/admin-report'
+      fullPath: '/admin-report'
+      preLoaderRoute: typeof AppConsultAdminReportRouteImport
+      parentRoute: typeof AppConsultRoute
+    }
   }
 }
 
 interface AppConsultRouteChildren {
+  AppConsultAdminReportRoute: typeof AppConsultAdminReportRoute
+  AppConsultAnalysisRoute: typeof AppConsultAnalysisRoute
   AppConsultConsultationListRoute: typeof AppConsultConsultationListRoute
   AppConsultConsultationResultRoute: typeof AppConsultConsultationResultRoute
   AppConsultSummaryRoute: typeof AppConsultSummaryRoute
 }
 
 const AppConsultRouteChildren: AppConsultRouteChildren = {
+  AppConsultAdminReportRoute: AppConsultAdminReportRoute,
+  AppConsultAnalysisRoute: AppConsultAnalysisRoute,
   AppConsultConsultationListRoute: AppConsultConsultationListRoute,
   AppConsultConsultationResultRoute: AppConsultConsultationResultRoute,
   AppConsultSummaryRoute: AppConsultSummaryRoute,
