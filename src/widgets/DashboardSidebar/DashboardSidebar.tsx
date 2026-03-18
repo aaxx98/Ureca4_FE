@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ROUTES } from "../../shared/config/routes";
 import { ContextNavItem } from "../../shared/ui/ContextNavItem";
 import { SidebarNavGroup } from "../../shared/ui/SidebarNavGroup";
-import { AnalysisIcon, NoticeIcon, SettingsIcon } from "../../shared/ui/icons";
+import { AnalysisIcon, BookmarkIcon, NoticeIcon, SettingsIcon } from "../../shared/ui/icons";
 import * as layout from "../../shared/ui/pageLayout.css";
 import { AppSidebar } from "../AppSidebar/AppSidebar";
 
@@ -33,6 +33,9 @@ export function DashboardSidebar({ isAdmin }: Props) {
         </SidebarNavGroup>
       ) : (
         <ContextNavItem icon={<AnalysisIcon />} label="주간 우수사례" to={ROUTES.EXCELLENT} />
+      )}
+      {!isAdmin && (
+        <ContextNavItem icon={<BookmarkIcon />} label="내 북마크" to={ROUTES.MY_BOOKMARKS} />
       )}
     </AppSidebar>
   );

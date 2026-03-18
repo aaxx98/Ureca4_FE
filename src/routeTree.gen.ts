@@ -16,6 +16,7 @@ import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppNotificationsRouteImport } from './routes/_app/notifications'
 import { Route as AppNoticeRouteImport } from './routes/_app/notice'
 import { Route as AppMypageRouteImport } from './routes/_app/mypage'
+import { Route as AppMyBookmarksRouteImport } from './routes/_app/my-bookmarks'
 import { Route as AppExcellentCasesRouteImport } from './routes/_app/excellent-cases'
 import { Route as AppAdminManualRouteImport } from './routes/_app/admin-manual'
 import { Route as AppAdminExcellentCasesRouteImport } from './routes/_app/admin-excellent-cases'
@@ -62,6 +63,11 @@ const AppNoticeRoute = AppNoticeRouteImport.update({
 const AppMypageRoute = AppMypageRouteImport.update({
   id: '/mypage',
   path: '/mypage',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMyBookmarksRoute = AppMyBookmarksRouteImport.update({
+  id: '/my-bookmarks',
+  path: '/my-bookmarks',
   getParentRoute: () => AppRoute,
 } as any)
 const AppExcellentCasesRoute = AppExcellentCasesRouteImport.update({
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/admin-manual': typeof AppAdminManualRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
+  '/my-bookmarks': typeof AppMyBookmarksRoute
   '/mypage': typeof AppMypageRoute
   '/notice': typeof AppNoticeRoute
   '/notifications': typeof AppNotificationsRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/admin-manual': typeof AppAdminManualRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
+  '/my-bookmarks': typeof AppMyBookmarksRoute
   '/mypage': typeof AppMypageRoute
   '/notice': typeof AppNoticeRoute
   '/notifications': typeof AppNotificationsRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/_app/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/_app/admin-manual': typeof AppAdminManualRoute
   '/_app/excellent-cases': typeof AppExcellentCasesRoute
+  '/_app/my-bookmarks': typeof AppMyBookmarksRoute
   '/_app/mypage': typeof AppMypageRoute
   '/_app/notice': typeof AppNoticeRoute
   '/_app/notifications': typeof AppNotificationsRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/admin-excellent-cases'
     | '/admin-manual'
     | '/excellent-cases'
+    | '/my-bookmarks'
     | '/mypage'
     | '/notice'
     | '/notifications'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/admin-excellent-cases'
     | '/admin-manual'
     | '/excellent-cases'
+    | '/my-bookmarks'
     | '/mypage'
     | '/notice'
     | '/notifications'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/_app/admin-excellent-cases'
     | '/_app/admin-manual'
     | '/_app/excellent-cases'
+    | '/_app/my-bookmarks'
     | '/_app/mypage'
     | '/_app/notice'
     | '/_app/notifications'
@@ -316,6 +328,13 @@ declare module '@tanstack/react-router' {
       path: '/mypage'
       fullPath: '/mypage'
       preLoaderRoute: typeof AppMypageRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/my-bookmarks': {
+      id: '/_app/my-bookmarks'
+      path: '/my-bookmarks'
+      fullPath: '/my-bookmarks'
+      preLoaderRoute: typeof AppMyBookmarksRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/excellent-cases': {
@@ -444,6 +463,7 @@ interface AppRouteChildren {
   AppAdminExcellentCasesRoute: typeof AppAdminExcellentCasesRoute
   AppAdminManualRoute: typeof AppAdminManualRoute
   AppExcellentCasesRoute: typeof AppExcellentCasesRoute
+  AppMyBookmarksRoute: typeof AppMyBookmarksRoute
   AppMypageRoute: typeof AppMypageRoute
   AppNoticeRoute: typeof AppNoticeRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
@@ -456,6 +476,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminExcellentCasesRoute: AppAdminExcellentCasesRoute,
   AppAdminManualRoute: AppAdminManualRoute,
   AppExcellentCasesRoute: AppExcellentCasesRoute,
+  AppMyBookmarksRoute: AppMyBookmarksRoute,
   AppMypageRoute: AppMypageRoute,
   AppNoticeRoute: AppNoticeRoute,
   AppNotificationsRoute: AppNotificationsRoute,
