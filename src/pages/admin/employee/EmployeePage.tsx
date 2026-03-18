@@ -5,7 +5,7 @@ import {
   useMutationPatchEmployeeStatusQuery,
 } from "../../../shared/api/generated/admin-employee-management";
 import { useGetMyInfoQuery } from "../../../shared/api/generated/auth";
-import { getEmployeesKey } from "../../../shared/api/generated/admin-employee-management/admin-employee-management.keys";
+import { getEmployeeDetailKey, getEmployeesKey } from "../../../shared/api/generated/admin-employee-management/admin-employee-management.keys";
 import * as layout from "../../../shared/ui/pageLayout.css";
 import { Button } from "../../../shared/ui/Button/Button";
 import { AdminSidebar } from "../../../widgets/AdminSidebar/AdminSidebar";
@@ -27,16 +27,17 @@ export function EmployeePage() {
   const queryClient    = useQueryClient();
   const statusMutation = useMutationPatchEmployeeStatusQuery();
   const myEmpId        = useGetMyInfoQuery().data?.empId;
+  const employeeListParams = { page: page - 1, size: PAGE_SIZE, status: status !== "전체" ? status : undefined, keyword: keyword || undefined };
 
   const { data, isPending, isError } = useGetEmployeesQuery(
-    { page: page - 1, size: PAGE_SIZE, status: status !== "전체" ? status : undefined, keyword: keyword || undefined },
+    employeeListParams,
     { query: { staleTime: 0, refetchOnMount: "always" } },
   );
 
   const items         = data?.content ?? [];
   const totalElements = data?.totalElements ?? 0;
-  const totalPages    = data?.totalPages    ?? 1;
-  const start         = (page - 1) * PAGE_SIZE + 1;
+  const totalPages    = Math.max(1, data?.totalPages ?? (Math.ceil(totalElements / PAGE_SIZE) || 1));
+  const start         = totalElements === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
   const end           = Math.min(page * PAGE_SIZE, totalElements);
   const currentGroup  = Math.ceil(page / GROUP_SIZE);
   const groupStart    = (currentGroup - 1) * GROUP_SIZE + 1;
@@ -47,8 +48,31 @@ export function EmployeePage() {
 
   function invalidate() { queryClient.invalidateQueries({ queryKey: getEmployeesKey() }); }
 
-  function handleToggleStatus(empId: number, isActive: boolean) {
-    statusMutation.mutate({ empId, data: { isActive: !isActive } }, { onSuccess: invalidate });
+  async function handleToggleStatus(empId: number, isActive: boolean) {
+    const listSnapshots = queryClient.getQueriesData({ queryKey: getEmployeesKey() });
+    const detailKey = getEmployeeDetailKey(empId);
+    const detailSnapshot = queryClient.getQueryData(detailKey);
+
+    queryClient.setQueriesData({ queryKey: getEmployeesKey() }, (current: any) => {
+      if (!current?.content) return current;
+      return {
+        ...current,
+        content: current.content.map((item: any) => item?.empId === empId ? { ...item, isActive } : item),
+      };
+    });
+
+    queryClient.setQueryData(detailKey, (current: any) => current ? { ...current, isActive } : current);
+
+    try {
+      await statusMutation.mutateAsync({ empId, data: { isActive } });
+      invalidate();
+    } catch (error) {
+      listSnapshots.forEach(([queryKey, queryData]) => {
+        queryClient.setQueryData(queryKey, queryData);
+      });
+      queryClient.setQueryData(detailKey, detailSnapshot);
+      throw error;
+    }
   }
 
   return (
