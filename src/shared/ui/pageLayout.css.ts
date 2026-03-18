@@ -95,6 +95,49 @@ export const contextBadge = style({
   borderRadius: vars.radius.sm,
 });
 
+export const contextGroupLabel = style({
+  fontSize: "10px",
+  fontWeight: vars.fontWeight.semibold,
+  color: "rgba(255,255,255,0.4)",
+  letterSpacing: "0.07em",
+  textTransform: "uppercase",
+  padding: `${vars.spacing["3"]} ${vars.spacing["2"]} ${vars.spacing["1"]}`,
+  marginTop: vars.spacing["1"],
+});
+
+export const contextGroupToggle = style([contextItem, {
+  marginTop: vars.spacing["1"],
+  justifyContent: "space-between",
+  color: "rgba(255,255,255,0.85)",
+  fontSize: vars.fontSize.sm,
+  fontWeight: vars.fontWeight.semibold,
+  border: "none",
+  width: "100%",
+  textAlign: "left",
+}]);
+
+export const contextSubWrap = style({
+  maxHeight: "0",
+  overflow: "hidden",
+  transition: "max-height 0.25s ease",
+});
+
+export const contextSubWrapOpen = style({
+  maxHeight: "200px",
+});
+
+export const contextSubItem = style([contextItem, {
+  paddingLeft: "40px",
+  fontSize: vars.fontSize.sm,
+  color: "rgba(255,255,255,0.7)",
+  gap: "8px",
+  selectors: {
+    [`&:hover`]: {
+      color: "rgba(255,255,255,0.95)",
+    },
+  },
+}]);
+
 /* ─── Main ─── */
 
 export const main = style({
