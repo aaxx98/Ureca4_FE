@@ -20,7 +20,7 @@ export const layout = style({
 
 export const body = style({
   display: "flex",
-  flex: 1,
+  height: "calc(100vh - 52px)",
   overflow: "hidden",
 });
 
@@ -35,6 +35,8 @@ export const contextPanel = style({
   flexDirection: "column",
   padding: `${vars.spacing["4"]} ${vars.spacing["2"]}`,
   gap: "2px",
+  overflowY: "auto",
+  overflowX: "hidden",
 });
 
 export const contextLabel = style({
@@ -145,6 +147,8 @@ export const contextSubItem = style([contextItem, {
 
 export const main = style({
   flex: 1,
+  width: 0,
+  height: "100%",
   display: "flex",
   flexDirection: "column",
   overflow: "hidden",
