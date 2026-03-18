@@ -10,6 +10,9 @@ export const ROUTES = {
   ANALYSIS: "/analysis",
   ADMIN_REPORT: "/admin-report",
   ADMIN_EXCELLENT_CASES: "/admin-excellent-cases",
+  MANUAL: "/manual",
+  ADMIN_MANUAL: "/admin-manual",
+  ADMIN_MANUAL_SETTINGS: "/admin-manual-settings",
   NOTIFICATIONS: "/notifications",
   ADMIN_EMPLOYEES: "/admin-employees",
 } as const;
