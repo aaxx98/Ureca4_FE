@@ -50,13 +50,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 					content: "width=device-width, initial-scale=1",
 				},
 				{
-					title: "App",
+					title: "상담4조",
 				},
 			],
 			links: [
 				{
 					rel: "stylesheet",
 					href: appCss,
+				},
+				{
+					rel: "icon",
+					type: "image/svg+xml",
+					href: "/favicon.svg",
 				},
 			],
 		}),
