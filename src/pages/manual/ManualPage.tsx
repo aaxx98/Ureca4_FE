@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../shared/api/client";
 import type { ManualResponse } from "../../shared/api/generated/api.schemas";
@@ -32,6 +32,134 @@ function useManualHistoryQuery(params: { categoryCode?: string; page: number; si
   });
 }
 
+/* ─── CategoryAutocomplete ─── */
+interface CategoryOption {
+  code: string;
+  label: string;
+}
+
+function CategoryAutocomplete({
+  options,
+  value,
+  onChange,
+}: {
+  options: CategoryOption[];
+  value: string;       // currently selected code
+  onChange: (code: string) => void;
+}) {
+  const [inputValue, setInputValue] = useState("");
+  const [open, setOpen]             = useState(false);
+  const [highlighted, setHighlighted] = useState(-1);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  // inputValue를 표시 레이블과 동기화
+  const selectedLabel = options.find((o) => o.code === value)?.label ?? "";
+  useEffect(() => {
+    setInputValue(selectedLabel);
+  }, [selectedLabel]);
+
+  const filtered = inputValue
+    ? options.filter((o) => o.label.toLowerCase().includes(inputValue.toLowerCase()))
+    : options;
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setInputValue(e.target.value);
+    setOpen(true);
+    setHighlighted(-1);
+    // 직접 입력 중이면 선택값 해제
+    if (value) onChange("");
+  }
+
+  function handleSelect(opt: CategoryOption) {
+    onChange(opt.code);
+    setInputValue(opt.label);
+    setOpen(false);
+    setHighlighted(-1);
+  }
+
+  function handleClear() {
+    onChange("");
+    setInputValue("");
+    setOpen(false);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (!open) {
+      if (e.key === "ArrowDown" || e.key === "Enter") setOpen(true);
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlighted((h) => Math.min(h + 1, filtered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlighted((h) => Math.max(h - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (highlighted >= 0 && filtered[highlighted]) handleSelect(filtered[highlighted]);
+    } else if (e.key === "Escape") {
+      setOpen(false);
+    }
+  }
+
+  // 외부 클릭 시 닫기
+  useEffect(() => {
+    function onMouseDown(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        // 선택 없이 닫으면 입력값 원래대로 복구
+        setInputValue(selectedLabel);
+      }
+    }
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, [selectedLabel]);
+
+  return (
+    <div ref={wrapRef} className={s.autocompleteWrap}>
+      <div className={s.autocompleteInputWrap}>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onFocus={() => setOpen(true)}
+          onKeyDown={handleKeyDown}
+          placeholder="카테고리 검색..."
+          className={s.autocompleteInput}
+          autoComplete="off"
+        />
+        {(inputValue || value) && (
+          <button type="button" className={s.autocompleteClear} onClick={handleClear} tabIndex={-1}>
+            ×
+          </button>
+        )}
+      </div>
+
+      {open && filtered.length > 0 && (
+        <ul className={s.autocompleteDropdown}>
+          {filtered.map((opt, idx) => (
+            <li
+              key={opt.code}
+              className={idx === highlighted ? s.autocompleteItemHighlighted : s.autocompleteItem}
+              onMouseDown={(e) => { e.preventDefault(); handleSelect(opt); }}
+              onMouseEnter={() => setHighlighted(idx)}
+            >
+              {opt.label}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {open && filtered.length === 0 && inputValue && (
+        <ul className={s.autocompleteDropdown}>
+          <li className={s.autocompleteEmpty}>일치하는 카테고리가 없습니다</li>
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/* ─── ManualPage ─── */
 const PAGE_SIZE = 20;
 
 export function ManualPage() {
@@ -45,14 +173,20 @@ export function ManualPage() {
     size: PAGE_SIZE,
   });
 
-  const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: rawCategories = [] } = useGetCategoriesQuery();
+  const categoryOptions: CategoryOption[] = rawCategories
+    .filter((c) => c.categoryCode)
+    .map((c) => ({
+      code:  c.categoryCode!,
+      label: c.smallCategory ?? c.mediumCategory ?? c.largeCategory ?? c.categoryCode!,
+    }));
 
   const items         = data?.content ?? [];
   const totalPages    = data?.totalPages ?? 1;
   const totalElements = data?.totalElements ?? 0;
 
-  function handleCategoryChange(value: string) {
-    setSelectedCategory(value);
+  function handleCategoryChange(code: string) {
+    setSelectedCategory(code);
     setPage(0);
     setExpandedId(null);
   }
@@ -71,30 +205,12 @@ export function ManualPage() {
           <div className={s.filterBar}>
             <div className={s.filterGroup}>
               <label className={s.filterLabel}>카테고리</label>
-              <select
+              <CategoryAutocomplete
+                options={categoryOptions}
                 value={selectedCategory}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-                className={s.filterSelect}
-              >
-                <option value="">전체 카테고리</option>
-                {categories.map((cat) => (
-                  <option key={cat.categoryCode} value={cat.categoryCode ?? ""}>
-                    {cat.smallCategory ?? cat.mediumCategory ?? cat.largeCategory ?? cat.categoryCode}
-                  </option>
-                ))}
-              </select>
+                onChange={handleCategoryChange}
+              />
             </div>
-
-            {selectedCategory && (
-              <button
-                type="button"
-                className={s.resetBtn}
-                onClick={() => { setSelectedCategory(""); setPage(0); setExpandedId(null); }}
-              >
-                필터 초기화
-              </button>
-            )}
-
             <span className={s.totalCount}>총 {totalElements.toLocaleString()}건</span>
           </div>
 
@@ -148,48 +264,21 @@ export function ManualPage() {
           {/* ─── 페이지네이션 ─── */}
           {!isPending && !isError && totalPages > 1 && (
             <div className={s.pagination}>
-              <button
-                type="button"
-                className={s.pageBtn}
-                disabled={page === 0}
-                onClick={() => { setPage(0); setExpandedId(null); }}
-              >
-                «
-              </button>
-              <button
-                type="button"
-                className={s.pageBtn}
-                disabled={page === 0}
-                onClick={() => { setPage(p => p - 1); setExpandedId(null); }}
-              >
-                ‹
-              </button>
+              <button type="button" className={s.pageBtn} disabled={page === 0}
+                onClick={() => { setPage(0); setExpandedId(null); }}>«</button>
+              <button type="button" className={s.pageBtn} disabled={page === 0}
+                onClick={() => { setPage(p => p - 1); setExpandedId(null); }}>‹</button>
               {Array.from({ length: totalPages }, (_, i) => i).map((p) => (
-                <button
-                  key={p}
-                  type="button"
+                <button key={p} type="button"
                   className={p === page ? s.pageBtnActive : s.pageBtn}
-                  onClick={() => { setPage(p); setExpandedId(null); }}
-                >
+                  onClick={() => { setPage(p); setExpandedId(null); }}>
                   {p + 1}
                 </button>
               ))}
-              <button
-                type="button"
-                className={s.pageBtn}
-                disabled={page === totalPages - 1}
-                onClick={() => { setPage(p => p + 1); setExpandedId(null); }}
-              >
-                ›
-              </button>
-              <button
-                type="button"
-                className={s.pageBtn}
-                disabled={page === totalPages - 1}
-                onClick={() => { setPage(totalPages - 1); setExpandedId(null); }}
-              >
-                »
-              </button>
+              <button type="button" className={s.pageBtn} disabled={page === totalPages - 1}
+                onClick={() => { setPage(p => p + 1); setExpandedId(null); }}>›</button>
+              <button type="button" className={s.pageBtn} disabled={page === totalPages - 1}
+                onClick={() => { setPage(totalPages - 1); setExpandedId(null); }}>»</button>
             </div>
           )}
         </div>

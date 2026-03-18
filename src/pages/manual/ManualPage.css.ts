@@ -93,30 +93,88 @@ export const filterSelect = style({
   ":focus": { borderColor: vars.color.primary },
 });
 
-export const statusPills = style({
+/* ─── Autocomplete ─── */
+
+export const autocompleteWrap = style({
+  position: "relative",
+  width: "280px",
+});
+
+export const autocompleteInputWrap = style({
+  position: "relative",
   display: "flex",
-  gap: "4px",
+  alignItems: "center",
 });
 
-export const statusPill = style({
-  padding: `${vars.spacing["1"]} ${vars.spacing["3"]}`,
-  borderRadius: vars.radius.full,
-  fontSize: vars.fontSize.xs,
-  fontWeight: vars.fontWeight.medium,
-  cursor: "pointer",
+export const autocompleteInput = style({
+  width: "100%",
+  padding: `${vars.spacing["2"]} ${vars.spacing["8"]} ${vars.spacing["2"]} ${vars.spacing["3"]}`,
   border: `1px solid ${vars.color.border}`,
+  borderRadius: vars.radius.md,
+  fontSize: vars.fontSize.sm,
+  color: vars.color.textPrimary,
   backgroundColor: vars.color.surface,
-  color: vars.color.textSecondary,
-  transition: `all ${vars.transition.fast}`,
-  ":hover": { borderColor: vars.color.textSecondary },
+  outline: "none",
+  transition: `border-color ${vars.transition.fast}`,
+  ":focus": { borderColor: vars.color.primary },
+  "::placeholder": { color: vars.color.textSecondary },
 });
 
-export const statusPillActive = style([statusPill, {
-  backgroundColor: vars.color.primary,
-  borderColor: vars.color.primary,
+export const autocompleteClear = style({
+  position: "absolute",
+  right: "8px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "18px",
+  height: "18px",
+  borderRadius: vars.radius.full,
+  border: "none",
+  backgroundColor: "#CBD5E1",
   color: "#FFFFFF",
-  ":hover": { backgroundColor: vars.color.primaryHover, borderColor: vars.color.primaryHover },
+  fontSize: "12px",
+  lineHeight: 1,
+  cursor: "pointer",
+  flexShrink: 0,
+  ":hover": { backgroundColor: "#94A3B8" },
+});
+
+export const autocompleteDropdown = style({
+  position: "absolute",
+  top: "calc(100% + 4px)",
+  left: 0,
+  right: 0,
+  backgroundColor: vars.color.surface,
+  border: `1px solid ${vars.color.border}`,
+  borderRadius: vars.radius.md,
+  boxShadow: vars.shadow.md,
+  maxHeight: "240px",
+  overflowY: "auto",
+  zIndex: 50,
+  listStyle: "none",
+  margin: 0,
+  padding: "4px 0",
+});
+
+export const autocompleteItem = style({
+  padding: `${vars.spacing["2"]} ${vars.spacing["3"]}`,
+  fontSize: vars.fontSize.sm,
+  color: vars.color.textPrimary,
+  cursor: "pointer",
+  ":hover": { backgroundColor: "#F8FAFC" },
+});
+
+export const autocompleteItemHighlighted = style([autocompleteItem, {
+  backgroundColor: "#EFF6FF",
+  color: vars.color.primary,
 }]);
+
+export const autocompleteEmpty = style({
+  padding: `${vars.spacing["3"]} ${vars.spacing["3"]}`,
+  fontSize: vars.fontSize.sm,
+  color: vars.color.textSecondary,
+  textAlign: "center",
+});
 
 export const resetBtn = style({
   padding: `${vars.spacing["1"]} ${vars.spacing["3"]}`,
