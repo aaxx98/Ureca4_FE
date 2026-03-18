@@ -5,7 +5,10 @@ import {
   useMutationPatchEmployeeStatusQuery,
 } from "../../../shared/api/generated/admin-employee-management";
 import { useGetMyInfoQuery } from "../../../shared/api/generated/auth";
-import { getEmployeesKey } from "../../../shared/api/generated/admin-employee-management/admin-employee-management.keys";
+import {
+  getEmployeeDetailKey,
+  getEmployeesKey,
+} from "../../../shared/api/generated/admin-employee-management/admin-employee-management.keys";
 import * as layout from "../../../shared/ui/pageLayout.css";
 import { Button } from "../../../shared/ui/Button/Button";
 import { AdminSidebar } from "../../../widgets/AdminSidebar/AdminSidebar";
@@ -28,27 +31,39 @@ export function EmployeePage() {
   const statusMutation = useMutationPatchEmployeeStatusQuery();
   const myEmpId        = useGetMyInfoQuery().data?.empId;
 
+  const params = { page: page - 1, size: PAGE_SIZE, status: status !== "전체" ? status : undefined, keyword: keyword || undefined };
+
   const { data, isPending, isError } = useGetEmployeesQuery(
-    { page: page - 1, size: PAGE_SIZE, status: status !== "전체" ? status : undefined, keyword: keyword || undefined },
+    params,
     { query: { staleTime: 0, refetchOnMount: "always" } },
   );
 
-  const items         = data?.content ?? [];
-  const totalElements = data?.totalElements ?? 0;
-  const totalPages    = data?.totalPages    ?? 1;
-  const start         = (page - 1) * PAGE_SIZE + 1;
-  const end           = Math.min(page * PAGE_SIZE, totalElements);
-  const currentGroup  = Math.ceil(page / GROUP_SIZE);
-  const groupStart    = (currentGroup - 1) * GROUP_SIZE + 1;
-  const groupEnd      = Math.min(groupStart + GROUP_SIZE - 1, totalPages);
-  const pages         = Array.from({ length: groupEnd - groupStart + 1 }, (_, i) => groupStart + i);
-  const isFirstGroup  = currentGroup === 1;
-  const isLastGroup   = groupStart + GROUP_SIZE > totalPages;
+  const items              = data?.content ?? [];
+  const totalElements      = data?.totalElements ?? 0;
+  const resolvedTotalPages = Math.max(1, data?.totalPages ?? Math.ceil(totalElements / PAGE_SIZE) || 1);
+  const start              = totalElements === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const end                = totalElements === 0 ? 0 : Math.min(page * PAGE_SIZE, totalElements);
+  const currentGroup       = Math.ceil(page / GROUP_SIZE);
+  const groupStart         = (currentGroup - 1) * GROUP_SIZE + 1;
+  const groupEnd           = Math.min(groupStart + GROUP_SIZE - 1, resolvedTotalPages);
+  const pages              = Array.from({ length: Math.max(0, groupEnd - groupStart + 1) }, (_, i) => groupStart + i);
+  const isFirstGroup       = currentGroup === 1;
+  const isLastGroup        = groupStart + GROUP_SIZE > resolvedTotalPages;
 
-  function invalidate() { queryClient.invalidateQueries({ queryKey: getEmployeesKey() }); }
+  function invalidate() {
+    queryClient.invalidateQueries({ queryKey: getEmployeesKey() });
+  }
 
-  function handleToggleStatus(empId: number, isActive: boolean) {
-    statusMutation.mutate({ empId, data: { isActive: !isActive } }, { onSuccess: invalidate });
+  async function handleToggleStatus(empId: number, nextIsActive: boolean) {
+    await statusMutation.mutateAsync(
+      { empId, data: { isActive: nextIsActive } },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: getEmployeesKey() });
+          queryClient.invalidateQueries({ queryKey: getEmployeeDetailKey(empId) });
+        },
+      },
+    );
   }
 
   return (
@@ -84,25 +99,25 @@ export function EmployeePage() {
           {isError   && <p className={s.stateText}>데이터를 불러오지 못했습니다.</p>}
           {!isPending && !isError && items.length === 0 && <p className={s.stateText}>등록된 직원이 없습니다.</p>}
           {!isPending && !isError && items.length > 0 && (
-            <>
-              <div className={s.tableAnimate}>
-                <EmployeeTable items={items} onRowClick={setEditId} onEdit={setEditId} />
-              </div>
-              <div className={s.tableCard}>
-                <div className={s.pagination}>
-                  <span className={s.pageInfo}>{start.toLocaleString()}–{end.toLocaleString()} / {totalElements.toLocaleString()}건</span>
-                  <div className={s.pageButtons}>
-                    <button type="button" className={isFirstGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setPage(1)} disabled={isFirstGroup}>«</button>
-                    <button type="button" className={isFirstGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setPage(groupStart - GROUP_SIZE)} disabled={isFirstGroup}>‹</button>
-                    {pages.map((pg) => (
-                      <button key={pg} type="button" className={pg === page ? s.pageBtnActive : s.pageBtn} onClick={() => setPage(pg)}>{pg}</button>
-                    ))}
-                    <button type="button" className={isLastGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setPage(groupStart + GROUP_SIZE)} disabled={isLastGroup}>›</button>
-                    <button type="button" className={isLastGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setPage(totalPages)} disabled={isLastGroup}>»</button>
-                  </div>
+            <div className={s.tableAnimate}>
+              <EmployeeTable items={items} onRowClick={setEditId} onEdit={setEditId} />
+            </div>
+          )}
+          {!isPending && !isError && totalElements > 0 && (
+            <div className={s.tableCard}>
+              <div className={s.pagination}>
+                <span className={s.pageInfo}>{start.toLocaleString()}–{end.toLocaleString()} / {totalElements.toLocaleString()}건</span>
+                <div className={s.pageButtons}>
+                  <button type="button" className={isFirstGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setPage(1)} disabled={isFirstGroup}>«</button>
+                  <button type="button" className={isFirstGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setPage(Math.max(1, groupStart - GROUP_SIZE))} disabled={isFirstGroup}>‹</button>
+                  {pages.map((pg) => (
+                    <button key={pg} type="button" className={pg === page ? s.pageBtnActive : s.pageBtn} onClick={() => setPage(pg)}>{pg}</button>
+                  ))}
+                  <button type="button" className={isLastGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setPage(Math.min(resolvedTotalPages, groupStart + GROUP_SIZE))} disabled={isLastGroup}>›</button>
+                  <button type="button" className={isLastGroup ? s.pageBtnDisabled : s.pageBtn} onClick={() => setPage(resolvedTotalPages)} disabled={isLastGroup}>»</button>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
       </main>

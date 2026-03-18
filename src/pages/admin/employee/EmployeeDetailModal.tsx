@@ -6,13 +6,18 @@ import {
 import { BaseModal } from "../../../shared/ui/BaseModal/BaseModal";
 import { Button } from "../../../shared/ui/Button/Button";
 import * as ms from "../../consultation/list/ConsultationDetailModal.css";
-import { EmployeeField, EmployeeViewField, formatDate } from "./employeeShared";
+import {
+  EmployeeField,
+  EmployeeStatusSwitchField,
+  EmployeeViewField,
+  formatDate,
+} from "./employeeShared";
 
 interface Props {
   empId: number;
   myEmpId?: number;
   onClose: () => void;
-  onToggleStatus: (empId: number, isActive: boolean) => void;
+  onToggleStatus: (empId: number, nextIsActive: boolean) => Promise<void>;
 }
 
 export function EmployeeDetailModal({ empId, myEmpId, onClose, onToggleStatus }: Props) {
@@ -29,6 +34,8 @@ export function EmployeeDetailModal({ empId, myEmpId, onClose, onToggleStatus }:
   const [isActiveEdit, setIsActiveEdit] = useState(true);
   const [initialized, setInitialized]   = useState(false);
   const [errorMsg, setErrorMsg]         = useState("");
+  const [statusErrorMsg, setStatusErrorMsg] = useState("");
+  const [isStatusSaving, setIsStatusSaving] = useState(false);
 
   const { data: emp, isPending, isError } = useGetEmployeeDetailQuery(empId, { query: { staleTime: 0 } });
   const putMutation = useMutationPutEmployeeQuery();
@@ -42,6 +49,7 @@ export function EmployeeDetailModal({ empId, myEmpId, onClose, onToggleStatus }:
       setDeptId(String(emp.deptId ?? "")); setJobRoleId(String(emp.jobRoleId ?? ""));
       setJoinedAt(emp.joinedAt?.slice(0, 10) ?? "");
       setInitialized(true);
+      setStatusErrorMsg("");
     }
   }, [emp, initialized]);
 
@@ -57,37 +65,40 @@ export function EmployeeDetailModal({ empId, myEmpId, onClose, onToggleStatus }:
         joined_at: joinedAt || undefined },
     }, {
       onSuccess: () => {
-        if (emp && isActiveEdit !== emp.isActive) onToggleStatus(empId, !!emp.isActive);
         setIsEditing(false); setInitialized(false);
       },
       onError: () => setErrorMsg("저장에 실패했습니다. 다시 시도해주세요."),
     });
   }
 
+  async function handleStatusChange(nextIsActive: boolean) {
+    const prevIsActive = isActiveEdit;
+    setStatusErrorMsg("");
+    setIsActiveEdit(nextIsActive);
+    setIsStatusSaving(true);
+
+    try {
+      await onToggleStatus(empId, nextIsActive);
+    } catch {
+      setIsActiveEdit(prevIsActive);
+      setStatusErrorMsg("상태 변경에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsStatusSaving(false);
+    }
+  }
+
   const isOwnAccount = empId === myEmpId;
 
   const footer = (
-    <div style={{ display: "flex", gap: "8px", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
-      <div>
-        {isEditing && emp && (
-          <Button variant="ghost" type="button"
-            style={{ color: isActiveEdit ? "#059669" : "#DC2626" }}
-            onClick={() => setIsActiveEdit(!isActiveEdit)}
-            disabled={isOwnAccount}
-            title={isOwnAccount ? "본인 계정은 변경할 수 없습니다" : undefined}
-          >
-            {isActiveEdit ? "활성화" : "비활성화"}
-          </Button>
-        )}
-      </div>
+    <div style={{ display: "flex", gap: "8px", width: "100%", justifyContent: "flex-end", alignItems: "center" }}>
       <div style={{ display: "flex", gap: "8px" }}>
         {isEditing ? (
           <>
-            <Button variant="secondary" type="button" onClick={() => { setIsEditing(false); setInitialized(false); }} disabled={isSaving}>취소</Button>
-            <Button variant="primary" type="button" onClick={handleSave} disabled={isSaving || !initialized}>저장</Button>
+            <Button variant="secondary" type="button" onClick={() => { setIsEditing(false); setInitialized(false); setStatusErrorMsg(""); }} disabled={isSaving || isStatusSaving}>취소</Button>
+            <Button variant="primary" type="button" onClick={handleSave} disabled={isSaving || !initialized || isStatusSaving}>저장</Button>
           </>
         ) : (
-          <Button variant="secondary" type="button" onClick={() => { setIsActiveEdit(emp?.isActive ?? false); setIsEditing(true); }} disabled={!initialized}>수정</Button>
+          <Button variant="secondary" type="button" onClick={() => { setIsActiveEdit(emp?.isActive ?? false); setIsEditing(true); setStatusErrorMsg(""); }} disabled={!initialized}>수정</Button>
         )}
       </div>
     </div>
@@ -137,6 +148,18 @@ export function EmployeeDetailModal({ empId, myEmpId, onClose, onToggleStatus }:
               </>
             )}
           </div>
+          {isEditing ? (
+            <EmployeeStatusSwitchField
+              checked={isActiveEdit}
+              onChange={handleStatusChange}
+              disabled={isOwnAccount}
+              loading={isStatusSaving}
+              helperText={isOwnAccount ? "본인 계정 상태는 변경할 수 없습니다." : "스위치를 변경하면 즉시 상태가 반영됩니다."}
+              errorText={statusErrorMsg}
+            />
+          ) : (
+            <EmployeeViewField label="계정 상태" value={emp.isActive ? "활성" : "비활성"} />
+          )}
           {errorMsg && <p style={{ fontSize: "13px", color: "#DC2626", margin: 0 }}>{errorMsg}</p>}
         </div>
       )}
