@@ -20,7 +20,7 @@ export function DashboardSidebar({ isAdmin }: Props) {
             activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
           >
             <AnalysisIcon />
-            게시판
+            주간 우수사례
           </Link>
           <Link
             to={ROUTES.ADMIN_EXCELLENT_CASES}
@@ -28,11 +28,11 @@ export function DashboardSidebar({ isAdmin }: Props) {
             activeProps={{ className: `${layout.contextSubItem} ${layout.contextItemActive}` }}
           >
             <SettingsIcon />
-            설정
+            후보군 관리
           </Link>
         </SidebarNavGroup>
       ) : (
-        <ContextNavItem icon={<AnalysisIcon />} label="우수사례 게시판" to={ROUTES.EXCELLENT} />
+        <ContextNavItem icon={<AnalysisIcon />} label="주간 우수사례" to={ROUTES.EXCELLENT} />
       )}
     </AppSidebar>
   );
