@@ -49,6 +49,8 @@ export const actionBtnDetail = style({ padding: `${vars.spacing["2"]} ${vars.spa
 /* ─── State ─── */
 
 export const stateText = style({ textAlign: "center", padding: `${vars.spacing["16"]} 0`, color: vars.color.textSecondary, fontSize: vars.fontSize.sm });
+export const closeBtn = style({ padding: `${vars.spacing["2"]} ${vars.spacing["4"]}`, border: `1px solid ${vars.color.border}`, borderRadius: vars.radius.md, fontSize: vars.fontSize.sm, color: vars.color.textSecondary, backgroundColor: vars.color.surface, cursor: "pointer" });
+export const viewConsultBtn = style({ padding: `${vars.spacing["2"]} ${vars.spacing["4"]}`, border: "none", borderRadius: vars.radius.md, fontSize: vars.fontSize.sm, fontWeight: vars.fontWeight.semibold, color: "#fff", backgroundColor: vars.color.primary, cursor: "pointer" });
 
 /* ─── Modal: Info Section ─── */
 

@@ -4,6 +4,7 @@ import type { ListParams } from "../../shared/api/generated/api.schemas";
 import type { FilterDraft } from "./filterDraft";
 import { useGetSummaryListQuery } from "../../shared/api/generated/summary-controller";
 import * as layout from "../../shared/ui/pageLayout.css";
+import { ConsultationDetailModal } from "../consultation/list/ConsultationDetailModal";
 import { SavedFiltersModal } from "./SavedFiltersModal";
 import { SummaryDetailModal } from "./SummaryDetailModal";
 import { SummaryFilterPanel } from "./SummaryFilterPanel";
@@ -17,9 +18,11 @@ const CLOSE_DELAY = 180;
 export function SummaryPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterParams, setFilterParams] = useState<Omit<ListParams, "page" | "size">>({});
-  const [selectedId, setSelectedId]         = useState<number | null>(null);
-  const [isClosing, setIsClosing]           = useState(false);
-  const [showSaved, setShowSaved]           = useState(false);
+  const [selectedId, setSelectedId]             = useState<number | null>(null);
+  const [isClosing, setIsClosing]               = useState(false);
+  const [consultDetailId, setConsultDetailId]   = useState<number | null>(null);
+  const [isConsultClosing, setIsConsultClosing] = useState(false);
+  const [showSaved, setShowSaved]               = useState(false);
   const [isSavedClosing, setIsSavedClosing] = useState(false);
   const [forceDraft, setForceDraft]         = useState<FilterDraft | null>(null);
 
@@ -49,6 +52,24 @@ export function SummaryPage() {
     setTimeout(() => {
       setSelectedId(null);
       setIsClosing(false);
+    }, CLOSE_DELAY);
+  }, []);
+
+  const handleViewConsult = useCallback((consultId: number) => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedId(null);
+      setIsClosing(false);
+      setConsultDetailId(consultId);
+      setIsConsultClosing(false);
+    }, CLOSE_DELAY);
+  }, []);
+
+  const handleCloseConsultDetail = useCallback(() => {
+    setIsConsultClosing(true);
+    setTimeout(() => {
+      setConsultDetailId(null);
+      setIsConsultClosing(false);
     }, CLOSE_DELAY);
   }, []);
 
@@ -94,6 +115,15 @@ export function SummaryPage() {
           consultId={selectedId}
           onClose={handleCloseDetail}
           isClosing={isClosing}
+          onViewConsult={handleViewConsult}
+        />
+      )}
+
+      {consultDetailId != null && (
+        <ConsultationDetailModal
+          consultId={consultDetailId}
+          onClose={handleCloseConsultDetail}
+          isClosing={isConsultClosing}
         />
       )}
 

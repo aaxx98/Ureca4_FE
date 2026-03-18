@@ -22,6 +22,14 @@ function toBirthInputValue(birth?: string) {
   return birth.split("T")[0];
 }
 
+function normalizeGender(gender?: string) {
+  if (!gender) return "";
+  const g = gender.toUpperCase();
+  if (g === "M" || g === "MALE" || g === "남" || g === "남성") return "MALE";
+  if (g === "F" || g === "FEMALE" || g === "여" || g === "여성") return "FEMALE";
+  return gender;
+}
+
 export function InfoPane({ data }: { data: MyInfoResponseDto }) {
   const uid = useId();
   const [form, setForm] = useState<MyInfoUpdateRequestDto>({
@@ -29,7 +37,7 @@ export function InfoPane({ data }: { data: MyInfoResponseDto }) {
     email: data.email ?? "",
     phone: data.phone ?? "",
     birth: toBirthInputValue(data.birth),
-    gender: data.gender ?? "",
+    gender: normalizeGender(data.gender),
   });
   const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null);
 
