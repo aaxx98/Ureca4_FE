@@ -44,6 +44,7 @@ export const statBoxGrid = style({
   gridTemplateColumns: "repeat(4, 1fr)",
   gap: vars.spacing["3"],
   marginBottom: vars.spacing["2"],
+  flexShrink: 0,
 });
 
 export const statBox = style({
@@ -108,6 +109,13 @@ export const statBoxLabel = style({
   fontWeight: vars.fontWeight.medium,
 });
 
+export const pageWrapper = style({
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+  overflow: "hidden",
+});
+
 /* ─── Content Area ─── */
 
 export const content = style({
@@ -130,6 +138,7 @@ export const toolbar = style({
   justifyContent: "space-between",
   gap: vars.spacing["3"],
   flexWrap: "wrap",
+  flexShrink: 0,
 });
 
 export const toolbarLeft = style({
@@ -206,6 +215,7 @@ export const tableWrap = style({
   borderRadius: vars.radius.lg,
   border: `1px solid ${vars.color.border}`,
   overflow: "hidden",
+  flexShrink: 0,
 });
 
 export const tableScroll = style({
@@ -256,7 +266,50 @@ export const tableFooter = style({
   justifyContent: "space-between",
   padding: `${vars.spacing["3"]} ${vars.spacing["4"]}`,
   borderTop: `1px solid ${vars.color.border}`,
+  flexShrink: 0,
 });
+
+export const pagination = style({
+  display: "flex",
+  alignItems: "center",
+  gap: "4px",
+});
+
+export const pageBtn = style({
+  minWidth: "30px",
+  height: "30px",
+  padding: `0 ${vars.spacing["2"]}`,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: `1px solid ${vars.color.border}`,
+  borderRadius: vars.radius.sm,
+  backgroundColor: vars.color.surface,
+  color: vars.color.textSecondary,
+  fontSize: vars.fontSize.xs,
+  fontWeight: vars.fontWeight.medium,
+  cursor: "pointer",
+  transition: `all ${vars.transition.fast}`,
+  ":hover": {
+    borderColor: "#94A3B8",
+    color: vars.color.textPrimary,
+  },
+  ":disabled": {
+    opacity: 0.4,
+    cursor: "default",
+    pointerEvents: "none",
+  },
+});
+
+export const pageBtnActive = style([pageBtn, {
+  backgroundColor: vars.color.primary,
+  borderColor: vars.color.primary,
+  color: "#FFFFFF",
+  ":hover": {
+    backgroundColor: vars.color.primaryHover,
+    borderColor: vars.color.primaryHover,
+  },
+}]);
 
 export const tableFooterText = style({
   fontSize: vars.fontSize.xs,

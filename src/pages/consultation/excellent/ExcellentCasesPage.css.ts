@@ -98,6 +98,13 @@ export const statChip = style({
   color: "rgba(255,255,255,0.9)",
 });
 
+export const pageWrapper = style({
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+  overflow: "hidden",
+});
+
 /* ─── Content Area ─── */
 
 export const content = style({
