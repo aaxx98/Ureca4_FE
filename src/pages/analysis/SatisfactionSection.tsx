@@ -13,21 +13,24 @@ export function SatisfactionSection({ satisfaction, isPending }: Props) {
   const { satisfactionScore, teamAvgSatisfactionScore, responseRate } = satisfaction;
 
   return (
-    <div>
-      <div className={s.satMain}>
-        <div>
-          <span className={s.satScore}>{satisfactionScore?.toFixed(1) ?? "-"}</span>
-          <span className={s.satUnit}>/ 5.0점</span>
+    <div className={s.satWrap}>
+      <div className={s.satScoreBlock}>
+        <span className={s.satScoreBig}>{satisfactionScore?.toFixed(1) ?? "-"}</span>
+        <div className={s.satScoreMeta}>
+          <span className={s.satOutOf}>/ 5.0점</span>
+          {teamAvgSatisfactionScore != null && (
+            <span className={s.satTeam}>팀 평균 {teamAvgSatisfactionScore.toFixed(1)}점</span>
+          )}
         </div>
-        {teamAvgSatisfactionScore != null && (
-          <p className={s.satTeam}>팀 평균: {teamAvgSatisfactionScore.toFixed(1)}점</p>
-        )}
+      </div>
+      <div className={s.satStars}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span key={star} style={{ color: (satisfactionScore ?? 0) >= star ? "#E1006A" : "#E5E7EB", fontSize: "24px" }}>★</span>
+        ))}
       </div>
       <div className={s.satResponseRow}>
         <span className={s.satResponseLabel}>응답률</span>
-        <span className={s.satResponseValue}>
-          {responseRate != null ? `${responseRate.toFixed(1)}%` : "-"}
-        </span>
+        <span className={s.satResponseValue}>{responseRate?.toFixed(1) ?? "-"}%</span>
       </div>
     </div>
   );
