@@ -102,9 +102,9 @@ export interface FileRoutesByFullPath {
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
+  '/notice': typeof AppNoticeRoute
   '/admin-report': typeof AppConsultAdminReportRoute
   '/analysis': typeof AppConsultAnalysisRoute
-  '/notice': typeof AppNoticeRoute
   '/consultation-list': typeof AppConsultConsultationListRoute
   '/consultation-result': typeof AppConsultConsultationResultRoute
   '/summary': typeof AppConsultSummaryRoute
@@ -116,9 +116,9 @@ export interface FileRoutesByTo {
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
+  '/notice': typeof AppNoticeRoute
   '/admin-report': typeof AppConsultAdminReportRoute
   '/analysis': typeof AppConsultAnalysisRoute
-  '/notice': typeof AppNoticeRoute
   '/consultation-list': typeof AppConsultConsultationListRoute
   '/consultation-result': typeof AppConsultConsultationResultRoute
   '/summary': typeof AppConsultSummaryRoute
@@ -149,9 +149,9 @@ export interface FileRouteTypes {
     | '/admin-excellent-cases'
     | '/excellent-cases'
     | '/mypage'
+    | '/notice'
     | '/admin-report'
     | '/analysis'
-    | '/notice'
     | '/consultation-list'
     | '/consultation-result'
     | '/summary'
@@ -163,9 +163,9 @@ export interface FileRouteTypes {
     | '/admin-excellent-cases'
     | '/excellent-cases'
     | '/mypage'
+    | '/notice'
     | '/admin-report'
     | '/analysis'
-    | '/notice'
     | '/consultation-list'
     | '/consultation-result'
     | '/summary'

@@ -19,15 +19,15 @@ const periodBtnBase = style({ padding: `${vars.spacing["2"]} ${vars.spacing["4"]
 export const periodBtnVariant = styleVariants({ active: [periodBtnBase, { backgroundColor: vars.color.primary, borderColor: vars.color.primary, color: "#fff" }], default: [periodBtnBase, { backgroundColor: vars.color.surface, color: vars.color.textPrimary, ":hover": { backgroundColor: "#F9FAFB" } }] });
 export const dateInput = style({ padding: `${vars.spacing["2"]} ${vars.spacing["3"]}`, border: `1px solid ${vars.color.border}`, borderRadius: vars.radius.md, fontSize: vars.fontSize.sm, color: vars.color.textPrimary, outline: "none", marginLeft: "auto", ":focus": { borderColor: vars.color.primary } });
 
-/* ── Stat Card (3×1 square) ── */
+/* ── Stat Card (4×1 rectangle) ── */
 export const statGrid = style({ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: vars.spacing["3"] });
-export const statCard = style({ backgroundColor: "#F9FAFB", borderRadius: vars.radius.md, border: `1px solid ${vars.color.border}`, padding: vars.spacing["4"], display: "flex", flexDirection: "column", aspectRatio: "1" });
+export const statCard = style({ backgroundColor: "#F9FAFB", borderRadius: vars.radius.md, border: `1px solid ${vars.color.border}`, padding: vars.spacing["4"], display: "flex", flexDirection: "column", minHeight: "160px" });
 export const statLabel = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
-export const statNumRow = style({ flex: 1, display: "flex", alignItems: "flex-end", gap: "6px", paddingTop: vars.spacing["2"] });
+export const statNumRow = style({ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" });
 export const statValue = style({ fontSize: "44px", fontWeight: vars.fontWeight.bold, color: vars.color.textPrimary, lineHeight: "1" });
 export const statUnit = style({ fontSize: vars.fontSize["2xl"], fontWeight: vars.fontWeight.semibold, color: vars.color.textSecondary, paddingBottom: "4px" });
-export const statTeam = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary, marginTop: vars.spacing["2"] });
-export const durationRow = style({ display: "flex", alignItems: "center", justifyContent: "space-between", padding: `${vars.spacing["3"]} ${vars.spacing["4"]}`, backgroundColor: "#F9FAFB", borderRadius: vars.radius.md, border: `1px solid ${vars.color.border}`, marginTop: vars.spacing["3"] });
+export const statTeam = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary, marginTop: "auto", paddingTop: vars.spacing["2"] });
+export const durationRow = style({ display: "flex", alignItems: "center", justifyContent: "space-between", padding: `${vars.spacing["1"]} ${vars.spacing["2"]}`, backgroundColor: "#F9FAFB", borderRadius: vars.radius.md, border: `1px solid ${vars.color.border}`, marginTop: vars.spacing["3"] });
 export const durationLabel = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
 export const durationValue = style({ fontSize: vars.fontSize.lg, fontWeight: vars.fontWeight.bold, color: vars.color.textPrimary });
 export const durationTeam = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
@@ -35,9 +35,9 @@ export const durationTeam = style({ fontSize: vars.fontSize.xs, color: vars.colo
 /* ── Satisfaction ── */
 export const satWrap = style({ display: "flex", flexDirection: "column", gap: vars.spacing["3"] });
 export const satScoreBlock = style({ display: "flex", alignItems: "flex-end", gap: vars.spacing["2"] });
-export const satScoreBig = style({ fontSize: "52px", fontWeight: vars.fontWeight.bold, color: vars.color.primary, lineHeight: "1" });
-export const satScoreMeta = style({ display: "flex", flexDirection: "column", paddingBottom: "4px", gap: "2px" });
-export const satOutOf = style({ fontSize: vars.fontSize.lg, fontWeight: vars.fontWeight.semibold, color: vars.color.textSecondary });
+export const satScoreBig = style({ fontSize: vars.fontSize["2xl"], fontWeight: vars.fontWeight.bold, color: vars.color.primary, lineHeight: "1" });
+export const satScoreMeta = style({ display: "flex", flexDirection: "column", paddingBottom: "2px", gap: "2px" });
+export const satOutOf = style({ fontSize: vars.fontSize.sm, fontWeight: vars.fontWeight.semibold, color: vars.color.textSecondary });
 export const satTeam = style({ fontSize: vars.fontSize.xs, color: vars.color.textSecondary });
 export const satStars = style({ display: "flex", gap: "4px" });
 export const satResponseRow = style({ display: "flex", alignItems: "center", justifyContent: "space-between", padding: vars.spacing["3"], backgroundColor: "#F9FAFB", borderRadius: vars.radius.md, border: `1px solid ${vars.color.border}` });
