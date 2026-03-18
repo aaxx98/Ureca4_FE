@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useGetMyInfoQuery, useMutationPostLogoutQuery } from "../../shared/api/generated/auth";
 import { clearRole } from "../../shared/api/roleStore";
-import { setAccessToken } from "../../shared/api/tokenStore";
+import { clearAllStorage } from "../../shared/api/tokenStore";
 import { ROUTES } from "../../shared/config/routes";
 import { LogoutIcon, UserIcon } from "../../shared/ui/icons";
 import * as s from "./UserDropdown.css";
@@ -16,7 +16,7 @@ export function UserDropdown() {
   const { mutate: logout } = useMutationPostLogoutQuery({
     mutation: {
       onSuccess: () => {
-        setAccessToken(null);
+        clearAllStorage();
         clearRole();
         navigate({ to: ROUTES.LOGIN });
       },
