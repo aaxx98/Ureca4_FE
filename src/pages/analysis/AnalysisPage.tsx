@@ -67,14 +67,15 @@ export function AnalysisPage() {
             </div>
           </div>
 
-          <div className={s.sectionCard}>
-            <p className={s.sectionTitle}>응대 품질 분석</p>
-            <QualitySection quality={quality} isPending={qualityPending} />
-          </div>
-
-          <div className={s.sectionCard}>
-            <p className={s.sectionTitle}>카테고리 순위</p>
-            <CategorySection categories={categories ?? []} isPending={catPending} />
+          <div className={s.twoCol}>
+            <div className={s.sectionCard}>
+              <p className={s.sectionTitle}>응대 품질 분석</p>
+              <QualitySection quality={quality} isPending={qualityPending} />
+            </div>
+            <div className={s.sectionCard}>
+              <p className={s.sectionTitle}>카테고리 순위</p>
+              <CategorySection categories={categories ?? []} isPending={catPending} />
+            </div>
           </div>
         </div>
       </div>

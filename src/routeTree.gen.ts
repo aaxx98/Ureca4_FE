@@ -18,6 +18,7 @@ import { Route as AppNoticeRouteImport } from './routes/_app/notice'
 import { Route as AppMypageRouteImport } from './routes/_app/mypage'
 import { Route as AppExcellentCasesRouteImport } from './routes/_app/excellent-cases'
 import { Route as AppAdminExcellentCasesRouteImport } from './routes/_app/admin-excellent-cases'
+import { Route as AppAdminEmployeesRouteImport } from './routes/_app/admin-employees'
 import { Route as AppConsultRouteImport } from './routes/_app/_consult'
 import { Route as AppConsultSummaryRouteImport } from './routes/_app/_consult/summary'
 import { Route as AppConsultManualRouteImport } from './routes/_app/_consult/manual'
@@ -72,6 +73,11 @@ const AppAdminExcellentCasesRoute = AppAdminExcellentCasesRouteImport.update({
   path: '/admin-excellent-cases',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminEmployeesRoute = AppAdminEmployeesRouteImport.update({
+  id: '/admin-employees',
+  path: '/admin-employees',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppConsultRoute = AppConsultRouteImport.update({
   id: '/_consult',
   getParentRoute: () => AppRoute,
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
+  '/admin-employees': typeof AppAdminEmployeesRoute
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
   '/': typeof AppIndexRoute
+  '/admin-employees': typeof AppAdminEmployeesRoute
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
   '/_app/_consult': typeof AppConsultRouteWithChildren
+  '/_app/admin-employees': typeof AppAdminEmployeesRoute
   '/_app/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/_app/excellent-cases': typeof AppExcellentCasesRoute
   '/_app/mypage': typeof AppMypageRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/oauth'
+    | '/admin-employees'
     | '/admin-excellent-cases'
     | '/excellent-cases'
     | '/mypage'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/oauth'
     | '/'
+    | '/admin-employees'
     | '/admin-excellent-cases'
     | '/excellent-cases'
     | '/mypage'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/oauth'
     | '/_app/_consult'
+    | '/_app/admin-employees'
     | '/_app/admin-excellent-cases'
     | '/_app/excellent-cases'
     | '/_app/mypage'
@@ -305,6 +317,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-excellent-cases'
       fullPath: '/admin-excellent-cases'
       preLoaderRoute: typeof AppAdminExcellentCasesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin-employees': {
+      id: '/_app/admin-employees'
+      path: '/admin-employees'
+      fullPath: '/admin-employees'
+      preLoaderRoute: typeof AppAdminEmployeesRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/_consult': {
@@ -401,6 +420,7 @@ const AppConsultRouteWithChildren = AppConsultRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppConsultRoute: typeof AppConsultRouteWithChildren
+  AppAdminEmployeesRoute: typeof AppAdminEmployeesRoute
   AppAdminExcellentCasesRoute: typeof AppAdminExcellentCasesRoute
   AppExcellentCasesRoute: typeof AppExcellentCasesRoute
   AppMypageRoute: typeof AppMypageRoute
@@ -411,6 +431,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppConsultRoute: AppConsultRouteWithChildren,
+  AppAdminEmployeesRoute: AppAdminEmployeesRoute,
   AppAdminExcellentCasesRoute: AppAdminExcellentCasesRoute,
   AppExcellentCasesRoute: AppExcellentCasesRoute,
   AppMypageRoute: AppMypageRoute,
