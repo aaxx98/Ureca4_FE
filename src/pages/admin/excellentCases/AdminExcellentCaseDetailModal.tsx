@@ -14,6 +14,8 @@ import { ConsultationDetailRawChat } from "../../consultation/list/ConsultationD
 interface Props {
   consultId: number;
   onClose: () => void;
+  /** 테이블의 '선정' 버튼 클릭 시 바로 선정 입력 모드로 열기 */
+  initialSelectMode?: boolean;
 }
 
 type Tab = "summary" | "chat";
@@ -30,9 +32,9 @@ const STATUS_STYLE: Record<string, React.CSSProperties> = {
   REJECTED: { backgroundColor: "#FEF2F2", color: "#991B1B" },
 };
 
-export function AdminExcellentCaseDetailModal({ consultId, onClose }: Props) {
+export function AdminExcellentCaseDetailModal({ consultId, onClose, initialSelectMode = false }: Props) {
   const [tab, setTab] = useState<Tab>("summary");
-  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [isSelectMode, setIsSelectMode] = useState(initialSelectMode);
   const [adminReason, setAdminReason] = useState("");
 
   const queryClient = useQueryClient();

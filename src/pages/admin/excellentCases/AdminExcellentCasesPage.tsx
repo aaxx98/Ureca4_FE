@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { useGetCandidatesQuery } from "../../../shared/api/generated/admin-excellent-case";
+import { useQueryClient } from "@tanstack/react-query";
+import { useGetCandidatesQuery, useMutationPatchRejectExcellentCaseQuery } from "../../../shared/api/generated/admin-excellent-case";
+import { getDetailKey } from "../../../shared/api/generated/admin-excellent-case/admin-excellent-case.keys";
 import {
   useGetAgentsQuery,
   useGetCategoriesQuery,
@@ -20,11 +22,11 @@ import * as s from "./AdminExcellentCasesPage.css";
 
 type FilterStatus = "ALL" | "PENDING" | "SELECTED" | "REJECTED";
 
-const STRIP_COLOR: Record<string, string> = {
-  PENDING:  "#F59E0B",
-  SELECTED: "#10B981",
-  REJECTED: "#EF4444",
-};
+// 선정 모달 열 때 초기 탭을 select 모드로 고정하기 위한 prop
+interface DetailModalState {
+  consultId: number;
+  openSelectMode: boolean;
+}
 
 function getScoreColor(score?: number) {
   if (!score) return "#94A3B8";
@@ -38,60 +40,116 @@ function formatDate(iso?: string) {
   return iso.slice(0, 10).replace(/-/g, ".");
 }
 
-interface CandidateCardProps {
+const STATUS_LABEL: Record<string, string> = {
+  PENDING:  "후보군",
+  SELECTED: "이달의 사례로 게시중",
+  REJECTED: "후보군 제외",
+};
+
+const STATUS_BADGE_STYLE: Record<string, React.CSSProperties> = {
+  PENDING:  { backgroundColor: "#FEF3C7", color: "#92400E" },
+  SELECTED: { backgroundColor: "#DCFCE7", color: "#166534" },
+  REJECTED: { backgroundColor: "#FEF2F2", color: "#991B1B" },
+};
+
+interface RowProps {
   item: EvaluationListResponse;
-  onClick: () => void;
+  onRowClick: () => void;
+  onSelectClick: () => void;
+  onRejectClick: (e: React.MouseEvent) => void;
+  isRejecting: boolean;
 }
 
-function CandidateCard({ item, onClick }: CandidateCardProps) {
-  const status = item.selectionStatus ?? EvaluationListResponseSelectionStatus.PENDING;
+function CandidateRow({ item, onRowClick, onSelectClick, onRejectClick, isRejecting }: RowProps) {
+  const status  = item.selectionStatus ?? EvaluationListResponseSelectionStatus.PENDING;
   const initial = item.counselorName?.charAt(0) ?? "?";
 
+  const canSelect = status === EvaluationListResponseSelectionStatus.PENDING
+    || status === EvaluationListResponseSelectionStatus.REJECTED;
+  const canReject = status === EvaluationListResponseSelectionStatus.PENDING
+    || status === EvaluationListResponseSelectionStatus.SELECTED;
+
   return (
-    <div
-      className={s.caseCard}
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onClick()}
-    >
-      <div className={s.caseCardStrip} style={{ backgroundColor: STRIP_COLOR[status] ?? "#94A3B8" }} />
-      <div className={s.caseCardBody}>
-        <div className={s.caseCardHeader}>
-          <span className={s.categoryPill}>{item.categoryName ?? "기타"}</span>
-          <div
-            className={s.scoreBadge}
-            style={{
-              background: `linear-gradient(135deg, ${getScoreColor(item.score)}, ${getScoreColor(item.score)}CC)`,
-            }}
-          >
-            {item.score ?? "-"}
+    <tr onClick={onRowClick}>
+      {/* 카테고리 */}
+      <td className={s.td}>
+        <span className={s.categoryPill}>{item.categoryName ?? "기타"}</span>
+      </td>
+
+      {/* 제목 */}
+      <td className={s.td}>
+        <div className={s.titleCell}>
+          <div className={s.titleText} title={item.title ?? ""}>
+            {item.title ?? "제목 없음"}
           </div>
         </div>
+      </td>
 
-        <p className={s.caseTitle}>{item.title ?? "제목 없음"}</p>
+      {/* 상담사 */}
+      <td className={s.td}>
+        <div className={s.counselorChip}>
+          <div className={s.counselorAvatar}>{initial}</div>
+          {item.counselorName ?? "-"}
+        </div>
+      </td>
 
-        <div>
-          {status === EvaluationListResponseSelectionStatus.PENDING && (
-            <span className={s.statusBadgePending}>후보군</span>
+      {/* AI 점수 */}
+      <td className={s.tdCenter}>
+        <div
+          className={s.scoreBadge}
+          style={{
+            background: `linear-gradient(135deg, ${getScoreColor(item.score)}, ${getScoreColor(item.score)}CC)`,
+            margin: "0 auto",
+          }}
+        >
+          {item.score ?? "-"}
+        </div>
+      </td>
+
+      {/* 상태 */}
+      <td className={s.td}>
+        <span style={{
+          display: "inline-flex",
+          padding: "3px 8px",
+          borderRadius: "999px",
+          fontSize: "11px",
+          fontWeight: 600,
+          ...STATUS_BADGE_STYLE[status],
+        }}>
+          {STATUS_LABEL[status]}
+        </span>
+      </td>
+
+      {/* 등록일 */}
+      <td className={s.td}>
+        <span className={s.dateText}>{formatDate(item.createdAt)}</span>
+      </td>
+
+      {/* 관리 */}
+      <td className={s.tdCenter} onClick={(e) => e.stopPropagation()}>
+        <div className={s.actionCell}>
+          {canSelect && (
+            <button
+              type="button"
+              className={s.btnSelect}
+              onClick={(e) => { e.stopPropagation(); onSelectClick(); }}
+            >
+              선정
+            </button>
           )}
-          {status === EvaluationListResponseSelectionStatus.SELECTED && (
-            <span className={s.statusBadgeSelected}>이달의 사례로 게시중</span>
-          )}
-          {status === EvaluationListResponseSelectionStatus.REJECTED && (
-            <span className={s.statusBadgeRejected}>후보군 제외</span>
+          {canReject && (
+            <button
+              type="button"
+              className={s.btnReject}
+              disabled={isRejecting}
+              onClick={onRejectClick}
+            >
+              {isRejecting ? "처리중" : "제외"}
+            </button>
           )}
         </div>
-
-        <div className={s.caseCardFooter}>
-          <div className={s.counselorChip}>
-            <div className={s.counselorAvatar}>{initial}</div>
-            {item.counselorName}
-          </div>
-          <span className={s.dateText}>{formatDate(item.createdAt)}</span>
-        </div>
-      </div>
-    </div>
+      </td>
+    </tr>
   );
 }
 
@@ -102,7 +160,10 @@ export function AdminExcellentCasesPage() {
   const [agentFilter, setAgentFilter]       = useState("");
   const [sortBy, setSortBy]                 = useState("");
   const [direction, setDirection]           = useState<typeof GetCandidatesDirection[keyof typeof GetCandidatesDirection]>(GetCandidatesDirection.desc);
-  const [selectedId, setSelectedId]         = useState<number | null>(null);
+  const [modalState, setModalState]         = useState<DetailModalState | null>(null);
+  const [rejectingId, setRejectingId]       = useState<number | null>(null);
+
+  const queryClient = useQueryClient();
 
   // ─── API 호출 ───
   const { data, isPending, isError } = useGetCandidatesQuery({
@@ -110,30 +171,38 @@ export function AdminExcellentCasesPage() {
     sortBy: sortBy || undefined,
     direction,
   });
-
-  // 메타 API: 카테고리 & 상담사 목록
   const { data: categoryData } = useGetCategoriesQuery();
   const { data: agentData }    = useGetAgentsQuery();
 
-  const allItems  = data?.content ?? [];
-  const categories = categoryData ?? [];
-  const agents     = agentData    ?? [];
+  const rejectMutation = useMutationPatchRejectExcellentCaseQuery({
+    mutation: {
+      onSuccess: (_, { consultId }) => {
+        queryClient.invalidateQueries({ queryKey: ["/admin/excellent-cases/candidates"] });
+        queryClient.invalidateQueries({ queryKey: getDetailKey(consultId) });
+        setRejectingId(null);
+      },
+      onError: () => setRejectingId(null),
+    },
+  });
 
-  // 소분류(smallCategory) 중복 제거
+  const allItems = data?.content ?? [];
+
   const uniqueSmallCategories = Array.from(
     new Map(
-      categories
+      (categoryData ?? [])
         .filter(c => c.smallCategory)
         .map(c => [c.smallCategory, c])
     ).values()
   );
 
-  // ─── 상태별 카운트 (원본 기준) ───
+  const agents = agentData ?? [];
+
+  // 상태별 카운트
   const pendingItems  = allItems.filter(i => i.selectionStatus === EvaluationListResponseSelectionStatus.PENDING);
   const selectedItems = allItems.filter(i => i.selectionStatus === EvaluationListResponseSelectionStatus.SELECTED);
   const rejectedItems = allItems.filter(i => i.selectionStatus === EvaluationListResponseSelectionStatus.REJECTED);
 
-  // ─── 클라이언트 필터 적용 ───
+  // 클라이언트 필터 적용
   const filteredItems = allItems
     .filter(i =>
       activeFilter === "ALL"      ? true :
@@ -164,6 +233,12 @@ export function AdminExcellentCasesPage() {
     { key: "SELECTED", label: "이달의 사례로 게시중", count: selectedItems.length, countColor: "#059669", boxClass: s.statBoxSelected },
     { key: "REJECTED", label: "후보군 제외",          count: rejectedItems.length, countColor: "#DC2626", boxClass: s.statBoxRejected },
   ];
+
+  function handleReject(e: React.MouseEvent, consultId: number) {
+    e.stopPropagation();
+    setRejectingId(consultId);
+    rejectMutation.mutate({ consultId });
+  }
 
   return (
     <>
@@ -201,7 +276,6 @@ export function AdminExcellentCasesPage() {
           {/* ─── Toolbar ─── */}
           <div className={s.toolbar}>
             <div className={s.toolbarLeft}>
-              {/* 키워드 검색 */}
               <div className={s.searchWrap}>
                 <svg className={s.searchIcon} width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -215,47 +289,26 @@ export function AdminExcellentCasesPage() {
                 />
               </div>
 
-              {/* 카테고리 필터 (/api/meta/categories) */}
-              <select
-                className={s.filterSelect}
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-              >
+              <select className={s.filterSelect} value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
                 <option value="">카테고리 전체</option>
                 {uniqueSmallCategories.map(c => (
-                  <option key={c.categoryCode} value={c.smallCategory}>
-                    {c.smallCategory}
-                  </option>
+                  <option key={c.categoryCode} value={c.smallCategory}>{c.smallCategory}</option>
                 ))}
               </select>
 
-              {/* 상담사 필터 (/api/meta/agents) */}
-              <select
-                className={s.filterSelect}
-                value={agentFilter}
-                onChange={(e) => setAgentFilter(e.target.value)}
-              >
+              <select className={s.filterSelect} value={agentFilter} onChange={(e) => setAgentFilter(e.target.value)}>
                 <option value="">상담사 전체</option>
                 {agents.map(a => (
-                  <option key={a.empId} value={a.name}>
-                    {a.name}
-                  </option>
+                  <option key={a.empId} value={a.name}>{a.name}</option>
                 ))}
               </select>
             </div>
 
             <div className={s.toolbarRight}>
-              {/* 정렬 기준 */}
-              <select
-                className={s.filterSelect}
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
+              <select className={s.filterSelect} value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                 <option value="">최신순</option>
                 <option value="score">점수순</option>
               </select>
-
-              {/* 정렬 방향 */}
               <select
                 className={s.filterSelect}
                 value={direction}
@@ -267,36 +320,60 @@ export function AdminExcellentCasesPage() {
             </div>
           </div>
 
-          {/* ─── Content ─── */}
+          {/* ─── Table ─── */}
           {isPending && <p className={s.stateText}>불러오는 중...</p>}
           {isError   && <p className={s.stateText}>데이터를 불러오지 못했습니다.</p>}
-          {!isPending && !isError && filteredItems.length === 0 && (
-            <p className={s.stateText}>해당 조건의 후보 사례가 없습니다.</p>
-          )}
 
-          {!isPending && !isError && filteredItems.length > 0 && (
-            <>
-              <div className={s.sortRow}>
-                <p className={s.sectionTitle}>목록 {filteredItems.length}건</p>
+          {!isPending && !isError && (
+            <div className={s.tableWrap}>
+              <div className={s.tableScroll}>
+                <table className={s.table}>
+                  <thead className={s.thead}>
+                    <tr>
+                      <th className={s.th}>카테고리</th>
+                      <th className={s.th}>제목</th>
+                      <th className={s.th}>상담사</th>
+                      <th className={s.thCenter}>AI 점수</th>
+                      <th className={s.th}>상태</th>
+                      <th className={s.th}>등록일</th>
+                      <th className={s.thCenter}>관리</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredItems.length === 0 ? (
+                      <tr>
+                        <td className={s.td} colSpan={7} style={{ textAlign: "center", padding: "48px 0", color: "#94A3B8" }}>
+                          해당 조건의 후보 사례가 없습니다.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredItems.map((item: EvaluationListResponse) => (
+                        <CandidateRow
+                          key={item.consultId}
+                          item={item}
+                          onRowClick={() => item.consultId != null && setModalState({ consultId: item.consultId, openSelectMode: false })}
+                          onSelectClick={() => item.consultId != null && setModalState({ consultId: item.consultId, openSelectMode: true })}
+                          onRejectClick={(e) => item.consultId != null && handleReject(e, item.consultId)}
+                          isRejecting={rejectingId === item.consultId}
+                        />
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
-              <div className={s.casesGrid}>
-                {filteredItems.map((item) => (
-                  <CandidateCard
-                    key={item.consultId}
-                    item={item}
-                    onClick={() => item.consultId != null && setSelectedId(item.consultId)}
-                  />
-                ))}
+              <div className={s.tableFooter}>
+                <span className={s.tableFooterText}>전체 {filteredItems.length}건</span>
               </div>
-            </>
+            </div>
           )}
         </div>
       </main>
 
-      {selectedId != null && (
+      {modalState != null && (
         <AdminExcellentCaseDetailModal
-          consultId={selectedId}
-          onClose={() => setSelectedId(null)}
+          consultId={modalState.consultId}
+          initialSelectMode={modalState.openSelectMode}
+          onClose={() => setModalState(null)}
         />
       )}
     </>

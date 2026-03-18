@@ -199,102 +199,114 @@ export const sectionTitle = style({
   margin: 0,
 });
 
-/* ─── Cases Grid ─── */
+/* ─── Table Wrapper ─── */
 
-export const casesGrid = style({
-  display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
-  gap: vars.spacing["4"],
-});
-
-/* ─── Candidate Card ─── */
-
-export const caseCard = style({
+export const tableWrap = style({
   backgroundColor: vars.color.surface,
   borderRadius: vars.radius.lg,
-  overflow: "hidden",
-  boxShadow: vars.shadow.sm,
-  cursor: "pointer",
-  display: "flex",
-  flexDirection: "column",
-  transition: `transform ${vars.transition.fast}, box-shadow ${vars.transition.fast}`,
   border: `1px solid ${vars.color.border}`,
-  ":hover": {
-    transform: "translateY(-3px)",
-    boxShadow: vars.shadow.md,
+  overflow: "hidden",
+});
+
+export const tableScroll = style({
+  overflowX: "auto",
+});
+
+export const table = style({
+  width: "100%",
+  borderCollapse: "collapse",
+});
+
+export const thead = style({
+  backgroundColor: "#F8FAFC",
+});
+
+export const th = style({
+  padding: "10px 14px",
+  textAlign: "left",
+  fontSize: vars.fontSize.xs,
+  fontWeight: vars.fontWeight.semibold,
+  color: vars.color.textSecondary,
+  borderBottom: `1px solid ${vars.color.border}`,
+  whiteSpace: "nowrap",
+});
+
+export const thCenter = style([th, { textAlign: "center" }]);
+
+export const tr = style({
+  cursor: "pointer",
+});
+
+export const td = style({
+  padding: "12px 14px",
+  fontSize: vars.fontSize.sm,
+  borderBottom: `1px solid #F1F5F9`,
+  verticalAlign: "middle",
+  selectors: {
+    "tr:last-child &": { borderBottom: "none" },
+    "tr:hover &": { backgroundColor: "#F8FAFC" },
   },
 });
 
-export const caseCardStrip = style({
-  height: "4px",
-  flexShrink: 0,
-});
+export const tdCenter = style([td, { textAlign: "center" }]);
 
-export const caseCardBody = style({
-  padding: vars.spacing["4"],
+export const tableFooter = style({
   display: "flex",
-  flexDirection: "column",
-  gap: vars.spacing["3"],
-  flex: 1,
-});
-
-export const caseCardHeader = style({
-  display: "flex",
-  alignItems: "flex-start",
+  alignItems: "center",
   justifyContent: "space-between",
-  gap: vars.spacing["2"],
+  padding: `${vars.spacing["3"]} ${vars.spacing["4"]}`,
+  borderTop: `1px solid ${vars.color.border}`,
 });
+
+export const tableFooterText = style({
+  fontSize: vars.fontSize.xs,
+  color: vars.color.textSecondary,
+});
+
+/* ─── Cell Elements ─── */
 
 export const categoryPill = style({
+  display: "inline-flex",
   padding: `2px ${vars.spacing["2"]}`,
   borderRadius: vars.radius.full,
   fontSize: "11px",
   fontWeight: vars.fontWeight.semibold,
-  flexShrink: 0,
   backgroundColor: "#EFF6FF",
   color: "#1E40AF",
+  whiteSpace: "nowrap",
 });
 
-export const scoreBadge = style({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: "40px",
-  height: "40px",
-  borderRadius: vars.radius.full,
-  fontSize: vars.fontSize.sm,
-  fontWeight: vars.fontWeight.bold,
-  color: "#FFFFFF",
-  flexShrink: 0,
+export const titleCell = style({
+  maxWidth: "240px",
 });
 
-export const caseTitle = style({
+export const titleText = style({
   fontSize: vars.fontSize.sm,
   fontWeight: vars.fontWeight.semibold,
   color: vars.color.textPrimary,
-  lineHeight: vars.lineHeight.normal,
-  display: "-webkit-box",
-  WebkitLineClamp: 2,
-  WebkitBoxOrient: "vertical",
+  whiteSpace: "nowrap",
   overflow: "hidden",
-  margin: 0,
+  textOverflow: "ellipsis",
 });
 
-export const caseCardFooter = style({
-  display: "flex",
+export const scoreBadge = style({
+  display: "inline-flex",
   alignItems: "center",
-  justifyContent: "space-between",
-  marginTop: "auto",
-  paddingTop: vars.spacing["2"],
-  borderTop: `1px solid ${vars.color.border}`,
+  justifyContent: "center",
+  width: "36px",
+  height: "36px",
+  borderRadius: vars.radius.full,
+  fontSize: vars.fontSize.xs,
+  fontWeight: vars.fontWeight.bold,
+  color: "#FFFFFF",
 });
 
 export const counselorChip = style({
   display: "flex",
   alignItems: "center",
   gap: "6px",
-  fontSize: vars.fontSize.xs,
-  color: vars.color.textSecondary,
+  fontSize: vars.fontSize.sm,
+  color: vars.color.textPrimary,
 });
 
 export const counselorAvatar = style({
@@ -314,6 +326,43 @@ export const counselorAvatar = style({
 export const dateText = style({
   fontSize: vars.fontSize.xs,
   color: vars.color.textSecondary,
+  whiteSpace: "nowrap",
+});
+
+/* ─── Action Buttons ─── */
+
+export const actionCell = style({
+  display: "flex",
+  gap: "6px",
+  justifyContent: "center",
+});
+
+export const btnSelect = style({
+  padding: `4px 10px`,
+  fontSize: "11px",
+  fontWeight: vars.fontWeight.semibold,
+  backgroundColor: "#EFF6FF",
+  color: "#1D4ED8",
+  border: `1px solid #BFDBFE`,
+  borderRadius: vars.radius.sm,
+  cursor: "pointer",
+  transition: `all ${vars.transition.fast}`,
+  whiteSpace: "nowrap",
+  ":hover": { backgroundColor: "#DBEAFE" },
+});
+
+export const btnReject = style({
+  padding: `4px 10px`,
+  fontSize: "11px",
+  fontWeight: vars.fontWeight.semibold,
+  backgroundColor: "#FEF2F2",
+  color: "#DC2626",
+  border: `1px solid #FECACA`,
+  borderRadius: vars.radius.sm,
+  cursor: "pointer",
+  transition: `all ${vars.transition.fast}`,
+  whiteSpace: "nowrap",
+  ":hover": { backgroundColor: "#FEE2E2" },
 });
 
 /* ─── Status Badge ─── */
