@@ -1,7 +1,7 @@
 import * as s from "./AdminManualListPage.css";
 import type { ManualHistoryItem } from "./adminManualManagement.api";
 import {
-	extractSmallCategory,
+	formatCategoryName,
 	formatManualDate,
 } from "./adminManualManagement.utils";
 
@@ -34,7 +34,7 @@ export function AdminManualTable({
 							<tr key={item.manualId} className={s.tr}>
 								<td className={s.td}>
 									<span className={s.categoryPill}>
-										{extractSmallCategory(item.categoryName)}
+										{formatCategoryName(item.categoryName)}
 									</span>
 								</td>
 								<td className={s.td}>

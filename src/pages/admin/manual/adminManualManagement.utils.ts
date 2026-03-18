@@ -19,10 +19,8 @@ export function filterCategories(list: CategoryDto[], keyword: string) {
 	});
 }
 
-export function extractSmallCategory(categoryName: string) {
-	const match = categoryName.match(/>([^>\]]+)\]$/);
-
-	return match ? match[1].trim() : categoryName;
+export function formatCategoryName(categoryName: string) {
+	return categoryName.replaceAll("[", "").replaceAll("]", "").trim();
 }
 
 export function buildCategoryLabel(category: CategoryDto) {

@@ -10,7 +10,7 @@ import type {
 	ManualUpdatePayload,
 } from "./adminManualManagement.api";
 import {
-	extractSmallCategory,
+	formatCategoryName,
 	formatManualDate,
 } from "./adminManualManagement.utils";
 
@@ -139,7 +139,7 @@ export function AdminManualModal({
 							<div className={s.detailItem}>
 								<span className={s.detailLabel}>카테고리</span>
 								<strong className={s.detailValue}>
-									{extractSmallCategory(manual.categoryName)}
+									{formatCategoryName(manual.categoryName)}
 								</strong>
 							</div>
 							<div className={s.detailItem}>
