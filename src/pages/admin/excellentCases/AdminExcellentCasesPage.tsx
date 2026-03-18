@@ -73,8 +73,7 @@ interface RowProps {
 function CandidateRow({ item, onRowClick, onSelectClick, onRejectClick, isRejecting }: RowProps) {
   const status = item.selectionStatus ?? EvaluationListResponseSelectionStatus.PENDING;
 
-  const canSelect = status === EvaluationListResponseSelectionStatus.PENDING
-    || status === EvaluationListResponseSelectionStatus.REJECTED;
+  const canSelect = status === EvaluationListResponseSelectionStatus.PENDING;
   const canReject = status === EvaluationListResponseSelectionStatus.PENDING
     || status === EvaluationListResponseSelectionStatus.SELECTED;
 
@@ -156,7 +155,14 @@ function CandidateRow({ item, onRowClick, onSelectClick, onRejectClick, isReject
   );
 }
 
-const PAGE_SIZE = 20;
+function getCurrentISOWeek() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  const week = Math.ceil((((d.valueOf() - yearStart.valueOf()) / 86400000) + 1) / 7);
+  return { year: d.getFullYear(), week };
+}
 
 export function AdminExcellentCasesPage() {
   const [activeFilter, setActiveFilter]     = useState<FilterStatus>("ALL");
@@ -167,18 +173,46 @@ export function AdminExcellentCasesPage() {
   const [direction, setDirection]           = useState<typeof GetCandidatesDirection[keyof typeof GetCandidatesDirection]>(GetCandidatesDirection.desc);
   const [modalState, setModalState]         = useState<DetailModalState | null>(null);
   const [rejectingId, setRejectingId]       = useState<number | null>(null);
-  const [page, setPage]                     = useState(0);
+  const [page, setPage]                     = useState(1);
+  const [yearWeek, setYearWeek]             = useState(getCurrentISOWeek);
 
-  useEffect(() => { setPage(0); }, [activeFilter, keyword, categoryFilter, agentFilter]);
+  useEffect(() => { setPage(1); }, [activeFilter, sortBy, direction, yearWeek]);
 
   const queryClient = useQueryClient();
 
+  const statusParam = activeFilter === "ALL"      ? GetCandidatesStatus.ALL      :
+                      activeFilter === "PENDING"  ? GetCandidatesStatus.PENDING  :
+                      activeFilter === "SELECTED" ? GetCandidatesStatus.SELECTED :
+                      GetCandidatesStatus.REJECTED;
+
+  function navigateWeek(delta: number) {
+    setYearWeek(prev => {
+      const d = new Date(prev.year, 0, 1 + (prev.week - 1) * 7);
+      d.setDate(d.getDate() + delta * 7);
+      d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+      const yearStart = new Date(d.getFullYear(), 0, 1);
+      const w = Math.ceil((((d.valueOf() - yearStart.valueOf()) / 86400000) + 1) / 7);
+      return { year: d.getFullYear(), week: w };
+    });
+  }
+
+  const hasClientFilter = !!(keyword.trim() || categoryFilter || agentFilter);
+  const PAGE_SIZE = 20;
+
   // ─── API 호출 ───
   const { data, isPending, isError } = useGetCandidatesQuery({
-    status: GetCandidatesStatus.ALL,
+    status: statusParam,
     sortBy: sortBy || undefined,
     direction,
+    size: hasClientFilter ? 9999 : PAGE_SIZE,
+    page: hasClientFilter ? 0 : page - 1,
+    year: yearWeek.year,
+    week: yearWeek.week,
   });
+  const { data: countAll }      = useGetCandidatesQuery({ status: GetCandidatesStatus.ALL,      size: 1, page: 0, year: yearWeek.year, week: yearWeek.week });
+  const { data: countPending }  = useGetCandidatesQuery({ status: GetCandidatesStatus.PENDING,  size: 1, page: 0, year: yearWeek.year, week: yearWeek.week });
+  const { data: countSelected } = useGetCandidatesQuery({ status: GetCandidatesStatus.SELECTED, size: 1, page: 0, year: yearWeek.year, week: yearWeek.week });
+  const { data: countRejected } = useGetCandidatesQuery({ status: GetCandidatesStatus.REJECTED, size: 1, page: 0, year: yearWeek.year, week: yearWeek.week });
   const { data: categoryData } = useGetCategoriesQuery();
   const { data: agentData }    = useGetAgentsQuery();
 
@@ -204,19 +238,7 @@ export function AdminExcellentCasesPage() {
 
   const agents = agentData ?? [];
 
-  // 상태별 카운트
-  const pendingItems  = allItems.filter(i => i.selectionStatus === EvaluationListResponseSelectionStatus.PENDING);
-  const selectedItems = allItems.filter(i => i.selectionStatus === EvaluationListResponseSelectionStatus.SELECTED);
-  const rejectedItems = allItems.filter(i => i.selectionStatus === EvaluationListResponseSelectionStatus.REJECTED);
-
-  // 클라이언트 필터 적용
   const filteredItems = allItems
-    .filter(i =>
-      activeFilter === "ALL"      ? true :
-      activeFilter === "PENDING"  ? i.selectionStatus === EvaluationListResponseSelectionStatus.PENDING  :
-      activeFilter === "SELECTED" ? i.selectionStatus === EvaluationListResponseSelectionStatus.SELECTED :
-      i.selectionStatus === EvaluationListResponseSelectionStatus.REJECTED
-    )
     .filter(i => categoryFilter ? i.categoryName === categoryFilter : true)
     .filter(i => agentFilter    ? i.counselorName === agentFilter   : true)
     .filter(i => {
@@ -228,8 +250,12 @@ export function AdminExcellentCasesPage() {
       );
     });
 
-  const totalPages    = Math.ceil(filteredItems.length / PAGE_SIZE);
-  const paginatedItems = filteredItems.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const totalPages = hasClientFilter
+    ? Math.max(1, Math.ceil(filteredItems.length / PAGE_SIZE))
+    : (data?.totalPages ?? 1);
+  const pagedItems = hasClientFilter
+    ? filteredItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    : filteredItems;
 
   const STAT_BOXES: {
     key: FilterStatus;
@@ -238,10 +264,10 @@ export function AdminExcellentCasesPage() {
     countColor: string;
     boxClass: string;
   }[] = [
-    { key: "ALL",      label: "전체 사례",           count: allItems.length,     countColor: "#0F172A", boxClass: s.statBoxAll      },
-    { key: "PENDING",  label: "AI선정 후보군",        count: pendingItems.length,  countColor: "#D97706", boxClass: s.statBoxPending  },
-    { key: "SELECTED", label: "이달의 사례로 게시중", count: selectedItems.length, countColor: "#059669", boxClass: s.statBoxSelected },
-    { key: "REJECTED", label: "후보군 제외",          count: rejectedItems.length, countColor: "#DC2626", boxClass: s.statBoxRejected },
+    { key: "ALL",      label: "전체 사례",           count: countAll?.totalElements      ?? 0, countColor: "#0F172A", boxClass: s.statBoxAll      },
+    { key: "PENDING",  label: "AI선정 후보군",        count: countPending?.totalElements  ?? 0, countColor: "#D97706", boxClass: s.statBoxPending  },
+    { key: "SELECTED", label: "이달의 사례로 게시중", count: countSelected?.totalElements ?? 0, countColor: "#059669", boxClass: s.statBoxSelected },
+    { key: "REJECTED", label: "후보군 제외",          count: countRejected?.totalElements ?? 0, countColor: "#DC2626", boxClass: s.statBoxRejected },
   ];
 
   function handleReject(e: React.MouseEvent, consultId: number) {
@@ -257,9 +283,18 @@ export function AdminExcellentCasesPage() {
       <main className={layout.main}>
         <div className={s.pageWrapper}>
         <div className={s.pageHeader}>
-          <div className={s.headerBadge}>⭐ ADMIN · EXCELLENT CASES</div>
-          <h1 className={s.headerTitle}>우수 상담사례 후보군 관리</h1>
-          <p className={s.headerSubtitle}>AI가 선별한 후보 사례를 검토하고 최종 선정 또는 제외하세요</p>
+          <div className={s.headerTop}>
+            <div>
+              <div className={s.headerBadge}>⭐ ADMIN · EXCELLENT CASES</div>
+              <h1 className={s.headerTitle}>우수 상담사례 후보군 관리</h1>
+              <p className={s.headerSubtitle}>AI가 선별한 후보 사례를 검토하고 최종 선정 또는 제외하세요</p>
+            </div>
+            <div className={s.weekNav}>
+              <button type="button" className={s.weekNavBtn} onClick={() => navigateWeek(-1)}>‹</button>
+              <span className={s.weekLabel}>{yearWeek.year}년 {yearWeek.week}주차</span>
+              <button type="button" className={s.weekNavBtn} onClick={() => navigateWeek(1)}>›</button>
+            </div>
+          </div>
         </div>
 
         <div className={s.content}>
@@ -348,14 +383,14 @@ export function AdminExcellentCasesPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredItems.length === 0 ? (
+                    {pagedItems.length === 0 ? (
                       <tr>
                         <td className={s.td} colSpan={7} style={{ textAlign: "center", padding: "48px 0", color: "#94A3B8" }}>
                           해당 조건의 후보 사례가 없습니다.
                         </td>
                       </tr>
                     ) : (
-                      paginatedItems.map((item: EvaluationListResponse) => (
+                      pagedItems.map((item: EvaluationListResponse) => (
                         <CandidateRow
                           key={item.consultId}
                           item={item}
@@ -370,55 +405,18 @@ export function AdminExcellentCasesPage() {
                 </table>
               </div>
               <div className={s.tableFooter}>
-                <span className={s.tableFooterText}>
-                  전체 {filteredItems.length}건 · {page + 1} / {totalPages || 1} 페이지
-                </span>
+                <span className={s.tableFooterText}>전체 {hasClientFilter ? filteredItems.length : (data?.totalElements ?? 0)}건</span>
                 {totalPages > 1 && (
                   <div className={s.pagination}>
-                    <button
-                      type="button"
-                      className={s.pageBtn}
-                      disabled={page === 0}
-                      onClick={() => setPage(0)}
-                    >
-                      «
-                    </button>
-                    <button
-                      type="button"
-                      className={s.pageBtn}
-                      disabled={page === 0}
-                      onClick={() => setPage(p => p - 1)}
-                    >
-                      ‹
-                    </button>
-                    {Array.from({ length: totalPages }, (_, i) => i)
+                    <button type="button" className={s.pageBtn} disabled={page === 1} onClick={() => setPage(1)}>«</button>
+                    <button type="button" className={s.pageBtn} disabled={page === 1} onClick={() => setPage(p => p - 1)}>‹</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
                       .filter(i => Math.abs(i - page) <= 2)
                       .map(i => (
-                        <button
-                          key={i}
-                          type="button"
-                          className={i === page ? s.pageBtnActive : s.pageBtn}
-                          onClick={() => setPage(i)}
-                        >
-                          {i + 1}
-                        </button>
+                        <button key={i} type="button" className={i === page ? s.pageBtnActive : s.pageBtn} onClick={() => setPage(i)}>{i}</button>
                       ))}
-                    <button
-                      type="button"
-                      className={s.pageBtn}
-                      disabled={page >= totalPages - 1}
-                      onClick={() => setPage(p => p + 1)}
-                    >
-                      ›
-                    </button>
-                    <button
-                      type="button"
-                      className={s.pageBtn}
-                      disabled={page >= totalPages - 1}
-                      onClick={() => setPage(totalPages - 1)}
-                    >
-                      »
-                    </button>
+                    <button type="button" className={s.pageBtn} disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>›</button>
+                    <button type="button" className={s.pageBtn} disabled={page === totalPages} onClick={() => setPage(totalPages)}>»</button>
                   </div>
                 )}
               </div>

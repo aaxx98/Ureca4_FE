@@ -6,12 +6,13 @@ import { ConsultationDetailRawChat } from "../list/ConsultationDetailRawChat";
 
 interface Props {
   consultId: number;
+  adminReason?: string;
   onClose: () => void;
 }
 
 type Tab = "summary" | "chat";
 
-export function ExcellentCaseDetailModal({ consultId, onClose }: Props) {
+export function ExcellentCaseDetailModal({ consultId, adminReason, onClose }: Props) {
   const [tab, setTab] = useState<Tab>("summary");
   const { data: detail, isPending, isError } = useGetBoardDetailQuery(consultId);
 
@@ -84,6 +85,13 @@ export function ExcellentCaseDetailModal({ consultId, onClose }: Props) {
                 <div className={ms.fieldGroup}>
                   <p className={ms.fieldLabel}>AI 우수 선정 사유</p>
                   <div className={ms.fieldBoxMultiline}>{detail.evaluationReason}</div>
+                </div>
+              )}
+
+              {adminReason && (
+                <div className={ms.fieldGroup}>
+                  <p className={ms.fieldLabel}>관리자 선정 사유</p>
+                  <div className={ms.fieldBoxMultiline}>{adminReason}</div>
                 </div>
               )}
             </div>

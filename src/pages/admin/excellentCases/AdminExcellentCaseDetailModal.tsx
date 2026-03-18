@@ -68,8 +68,7 @@ export function AdminExcellentCaseDetailModal({ consultId, onClose, initialSelec
   });
 
   const status = detail?.selectionStatus ?? "PENDING";
-  const canSelect = status === EvaluationDetailResponseSelectionStatus.PENDING
-    || status === EvaluationDetailResponseSelectionStatus.REJECTED;
+  const canSelect = status === EvaluationDetailResponseSelectionStatus.PENDING;
   const canReject = status === EvaluationDetailResponseSelectionStatus.PENDING
     || status === EvaluationDetailResponseSelectionStatus.SELECTED;
 
