@@ -21,6 +21,7 @@ import { Route as AppExcellentCasesRouteImport } from './routes/_app/excellent-c
 import { Route as AppAdminManualRouteImport } from './routes/_app/admin-manual'
 import { Route as AppAdminExcellentCasesRouteImport } from './routes/_app/admin-excellent-cases'
 import { Route as AppAdminEmployeesRouteImport } from './routes/_app/admin-employees'
+import { Route as AppAdminAnalysisFailedRouteImport } from './routes/_app/admin-analysis-failed'
 import { Route as AppConsultRouteImport } from './routes/_app/_consult'
 import { Route as AppConsultSummaryRouteImport } from './routes/_app/_consult/summary'
 import { Route as AppConsultOutboundReportRouteImport } from './routes/_app/_consult/outbound-report'
@@ -90,6 +91,11 @@ const AppAdminEmployeesRoute = AppAdminEmployeesRouteImport.update({
   path: '/admin-employees',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminAnalysisFailedRoute = AppAdminAnalysisFailedRouteImport.update({
+  id: '/admin-analysis-failed',
+  path: '/admin-analysis-failed',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppConsultRoute = AppConsultRouteImport.update({
   id: '/_consult',
   getParentRoute: () => AppRoute,
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
+  '/admin-analysis-failed': typeof AppAdminAnalysisFailedRoute
   '/admin-employees': typeof AppAdminEmployeesRoute
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/admin-manual': typeof AppAdminManualRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
   '/': typeof AppIndexRoute
+  '/admin-analysis-failed': typeof AppAdminAnalysisFailedRoute
   '/admin-employees': typeof AppAdminEmployeesRoute
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/admin-manual': typeof AppAdminManualRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
   '/_app/_consult': typeof AppConsultRouteWithChildren
+  '/_app/admin-analysis-failed': typeof AppAdminAnalysisFailedRoute
   '/_app/admin-employees': typeof AppAdminEmployeesRoute
   '/_app/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
   '/_app/admin-manual': typeof AppAdminManualRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/oauth'
+    | '/admin-analysis-failed'
     | '/admin-employees'
     | '/admin-excellent-cases'
     | '/admin-manual'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/oauth'
     | '/'
+    | '/admin-analysis-failed'
     | '/admin-employees'
     | '/admin-excellent-cases'
     | '/admin-manual'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/oauth'
     | '/_app/_consult'
+    | '/_app/admin-analysis-failed'
     | '/_app/admin-employees'
     | '/_app/admin-excellent-cases'
     | '/_app/admin-manual'
@@ -365,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminEmployeesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin-analysis-failed': {
+      id: '/_app/admin-analysis-failed'
+      path: '/admin-analysis-failed'
+      fullPath: '/admin-analysis-failed'
+      preLoaderRoute: typeof AppAdminAnalysisFailedRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/_consult': {
       id: '/_app/_consult'
       path: ''
@@ -459,6 +478,7 @@ const AppConsultRouteWithChildren = AppConsultRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppConsultRoute: typeof AppConsultRouteWithChildren
+  AppAdminAnalysisFailedRoute: typeof AppAdminAnalysisFailedRoute
   AppAdminEmployeesRoute: typeof AppAdminEmployeesRoute
   AppAdminExcellentCasesRoute: typeof AppAdminExcellentCasesRoute
   AppAdminManualRoute: typeof AppAdminManualRoute
@@ -472,6 +492,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppConsultRoute: AppConsultRouteWithChildren,
+  AppAdminAnalysisFailedRoute: AppAdminAnalysisFailedRoute,
   AppAdminEmployeesRoute: AppAdminEmployeesRoute,
   AppAdminExcellentCasesRoute: AppAdminExcellentCasesRoute,
   AppAdminManualRoute: AppAdminManualRoute,
