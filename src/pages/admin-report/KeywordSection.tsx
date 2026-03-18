@@ -120,10 +120,10 @@ function CustomerTypeKeywords({ groups }: { groups: CustomerTypeGroup[] }) {
   );
 }
 
-export function KeywordSection({ top, longTerm, customerTypes, topPending, ltPending, ctPending, period }: Props) {
+export function KeywordSection({ top, longTerm, customerTypes, topPending, ltPending, ctPending }: Props) {
   const isPending = topPending || ltPending || ctPending;
   const hasData = !!(top || longTerm || customerTypes);
-  const notice = period === "daily" ? "장기·유형 키워드: 일간 미지원 · 주간 데이터" : undefined;
+  const notice = undefined;
 
   const topData = top as Record<string, unknown> | undefined;
   const ltData = longTerm as Record<string, unknown> | undefined;
@@ -142,31 +142,36 @@ export function KeywordSection({ top, longTerm, customerTypes, topPending, ltPen
     if (firstArrayKey) ctGroups = ctData[firstArrayKey] as CustomerTypeGroup[];
   }
 
+  const showLongTerm = ltPending || longTerm !== undefined;
   const divider = <hr style={{ border: "none", borderTop: "1px solid #E5E7EB", margin: "28px 0" }} />;
 
   return (
     <ReportSection title="키워드 분석" isPending={isPending} hasData={hasData} notice={notice}>
       <div style={{ padding: "0 20px", display: "flex", gap: "0" }}>
         {/* Left: 전체 키워드 빈도 순위 */}
-        <div style={{ flex: 3, minWidth: 0, paddingRight: "24px" }}>
+        <div style={{ flex: 3, minWidth: 0, paddingRight: "24px", display: "flex", flexDirection: "column" }}>
           <p className={s.subTitle} style={{ marginTop: 0, marginBottom: "12px" }}>전체 키워드 빈도 순위</p>
-          <TopKeywordList items={topItems} newKeywords={newKeywordNames} />
+          <div style={{ maxWidth: "320px", margin: "0 auto", width: "100%" }}>
+            <TopKeywordList items={topItems} newKeywords={newKeywordNames} />
+          </div>
         </div>
 
         {/* Vertical divider */}
         <div style={{ width: "1px", backgroundColor: "#E5E7EB", flexShrink: 0, alignSelf: "stretch" }} />
 
         {/* Right: 장기 상위 유지 + 고객 유형별 키워드 stacked */}
-        <div style={{ flex: 2, minWidth: 0, paddingLeft: "24px", display: "flex", flexDirection: "column", gap: "0" }}>
-          <div>
-            <p className={s.subTitle} style={{ marginTop: 0, marginBottom: "12px" }}>상위 유지 키워드</p>
-            <LongTermKeywords items={ltItems} />
-          </div>
-          {divider}
-          <div>
-            <p className={s.subTitle} style={{ marginTop: 0, marginBottom: "12px" }}>고객 유형별 키워드</p>
-            <CustomerTypeKeywords groups={ctGroups} />
-          </div>
+        <div style={{ flex: 2, minWidth: 0, paddingLeft: "24px", paddingRight: "40px", display: "flex", flexDirection: "column" }}>
+          {showLongTerm && (
+            <>
+              <div>
+                <p className={s.subTitle} style={{ marginTop: 0, marginBottom: "12px" }}>상위 유지 키워드</p>
+                <LongTermKeywords items={ltItems} />
+              </div>
+              {divider}
+            </>
+          )}
+          <p className={s.subTitle} style={{ marginTop: 0, marginBottom: "12px" }}>고객 유형별 키워드</p>
+          <CustomerTypeKeywords groups={ctGroups} />
         </div>
       </div>
     </ReportSection>
