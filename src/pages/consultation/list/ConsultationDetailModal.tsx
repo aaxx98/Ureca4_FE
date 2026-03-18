@@ -11,10 +11,10 @@ type Tab = "basic" | "iam" | "raw" | "ai" | "history";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "basic",   label: "기본정보" },
-  { key: "iam",     label: "IAM 내용" },
+  { key: "iam",     label: "상담 내용" },
   { key: "raw",     label: "원문 대화" },
   { key: "ai",      label: "AI 분석결과" },
-  { key: "history", label: "처리이력" },
+  { key: "history", label: "상품 변경 이력" },
 ];
 
 interface Props {

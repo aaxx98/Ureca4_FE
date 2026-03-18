@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useGetRandomConsultDataQuery } from "../../../shared/api/generated/demo";
-import { ROUTES } from "../../../shared/config/routes";
-import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
-import { AnalysisIcon, ConsultationIcon } from "../../../shared/ui/icons";
 import * as layout from "../../../shared/ui/pageLayout.css";
-import { AppSidebar } from "../../../widgets/AppSidebar/AppSidebar";
 import { ConsultationResultChatModal } from "./ConsultationResultChatModal";
 import { ConsultationResultConsultCard } from "./ConsultationResultConsultCard";
 import { ConsultationResultCustomerCard } from "./ConsultationResultCustomerCard";
@@ -36,13 +32,6 @@ export function ConsultationResultPage() {
 
   return (
     <>
-      <AppSidebar label="상담업무">
-        <ContextNavItem icon={<ConsultationIcon />} label="상담내역"    to={ROUTES.CONSULT} />
-        <ContextNavItem icon={<ConsultationIcon />} label="결과서 작성" to={ROUTES.CONSULT_RESULT} isActive />
-        <ContextNavItem icon={<ConsultationIcon />} label="상담요약" />
-        <ContextNavItem icon={<AnalysisIcon />}     label="상담분석" />
-      </AppSidebar>
-
       <main className={layout.main}>
         <div className={s.pageWrapper}>
           <div className={s.header}>

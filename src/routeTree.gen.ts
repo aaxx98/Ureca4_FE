@@ -15,8 +15,10 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppMypageRouteImport } from './routes/_app/mypage'
 import { Route as AppExcellentCasesRouteImport } from './routes/_app/excellent-cases'
-import { Route as AppConsultationResultRouteImport } from './routes/_app/consultation-result'
-import { Route as AppConsultationListRouteImport } from './routes/_app/consultation-list'
+import { Route as AppConsultRouteImport } from './routes/_app/_consult'
+import { Route as AppConsultSummaryRouteImport } from './routes/_app/_consult/summary'
+import { Route as AppConsultConsultationResultRouteImport } from './routes/_app/_consult/consultation-result'
+import { Route as AppConsultConsultationListRouteImport } from './routes/_app/_consult/consultation-list'
 
 const OauthRoute = OauthRouteImport.update({
   id: '/oauth',
@@ -47,45 +49,60 @@ const AppExcellentCasesRoute = AppExcellentCasesRouteImport.update({
   path: '/excellent-cases',
   getParentRoute: () => AppRoute,
 } as any)
-const AppConsultationResultRoute = AppConsultationResultRouteImport.update({
-  id: '/consultation-result',
-  path: '/consultation-result',
+const AppConsultRoute = AppConsultRouteImport.update({
+  id: '/_consult',
   getParentRoute: () => AppRoute,
 } as any)
-const AppConsultationListRoute = AppConsultationListRouteImport.update({
-  id: '/consultation-list',
-  path: '/consultation-list',
-  getParentRoute: () => AppRoute,
+const AppConsultSummaryRoute = AppConsultSummaryRouteImport.update({
+  id: '/summary',
+  path: '/summary',
+  getParentRoute: () => AppConsultRoute,
 } as any)
+const AppConsultConsultationResultRoute =
+  AppConsultConsultationResultRouteImport.update({
+    id: '/consultation-result',
+    path: '/consultation-result',
+    getParentRoute: () => AppConsultRoute,
+  } as any)
+const AppConsultConsultationListRoute =
+  AppConsultConsultationListRouteImport.update({
+    id: '/consultation-list',
+    path: '/consultation-list',
+    getParentRoute: () => AppConsultRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
-  '/consultation-list': typeof AppConsultationListRoute
-  '/consultation-result': typeof AppConsultationResultRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
+  '/consultation-list': typeof AppConsultConsultationListRoute
+  '/consultation-result': typeof AppConsultConsultationResultRoute
+  '/summary': typeof AppConsultSummaryRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
-  '/consultation-list': typeof AppConsultationListRoute
-  '/consultation-result': typeof AppConsultationResultRoute
+  '/': typeof AppIndexRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
   '/mypage': typeof AppMypageRoute
-  '/': typeof AppIndexRoute
+  '/consultation-list': typeof AppConsultConsultationListRoute
+  '/consultation-result': typeof AppConsultConsultationResultRoute
+  '/summary': typeof AppConsultSummaryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/oauth': typeof OauthRoute
-  '/_app/consultation-list': typeof AppConsultationListRoute
-  '/_app/consultation-result': typeof AppConsultationResultRoute
+  '/_app/_consult': typeof AppConsultRouteWithChildren
   '/_app/excellent-cases': typeof AppExcellentCasesRoute
   '/_app/mypage': typeof AppMypageRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/_consult/consultation-list': typeof AppConsultConsultationListRoute
+  '/_app/_consult/consultation-result': typeof AppConsultConsultationResultRoute
+  '/_app/_consult/summary': typeof AppConsultSummaryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,29 +110,33 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/oauth'
-    | '/consultation-list'
-    | '/consultation-result'
     | '/excellent-cases'
     | '/mypage'
+    | '/consultation-list'
+    | '/consultation-result'
+    | '/summary'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/oauth'
-    | '/consultation-list'
-    | '/consultation-result'
+    | '/'
     | '/excellent-cases'
     | '/mypage'
-    | '/'
+    | '/consultation-list'
+    | '/consultation-result'
+    | '/summary'
   id:
     | '__root__'
     | '/_app'
     | '/login'
     | '/oauth'
-    | '/_app/consultation-list'
-    | '/_app/consultation-result'
+    | '/_app/_consult'
     | '/_app/excellent-cases'
     | '/_app/mypage'
     | '/_app/'
+    | '/_app/_consult/consultation-list'
+    | '/_app/_consult/consultation-result'
+    | '/_app/_consult/summary'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -168,34 +189,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppExcellentCasesRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/consultation-result': {
-      id: '/_app/consultation-result'
-      path: '/consultation-result'
-      fullPath: '/consultation-result'
-      preLoaderRoute: typeof AppConsultationResultRouteImport
+    '/_app/_consult': {
+      id: '/_app/_consult'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppConsultRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/consultation-list': {
-      id: '/_app/consultation-list'
+    '/_app/_consult/summary': {
+      id: '/_app/_consult/summary'
+      path: '/summary'
+      fullPath: '/summary'
+      preLoaderRoute: typeof AppConsultSummaryRouteImport
+      parentRoute: typeof AppConsultRoute
+    }
+    '/_app/_consult/consultation-result': {
+      id: '/_app/_consult/consultation-result'
+      path: '/consultation-result'
+      fullPath: '/consultation-result'
+      preLoaderRoute: typeof AppConsultConsultationResultRouteImport
+      parentRoute: typeof AppConsultRoute
+    }
+    '/_app/_consult/consultation-list': {
+      id: '/_app/_consult/consultation-list'
       path: '/consultation-list'
       fullPath: '/consultation-list'
-      preLoaderRoute: typeof AppConsultationListRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AppConsultConsultationListRouteImport
+      parentRoute: typeof AppConsultRoute
     }
   }
 }
 
+interface AppConsultRouteChildren {
+  AppConsultConsultationListRoute: typeof AppConsultConsultationListRoute
+  AppConsultConsultationResultRoute: typeof AppConsultConsultationResultRoute
+  AppConsultSummaryRoute: typeof AppConsultSummaryRoute
+}
+
+const AppConsultRouteChildren: AppConsultRouteChildren = {
+  AppConsultConsultationListRoute: AppConsultConsultationListRoute,
+  AppConsultConsultationResultRoute: AppConsultConsultationResultRoute,
+  AppConsultSummaryRoute: AppConsultSummaryRoute,
+}
+
+const AppConsultRouteWithChildren = AppConsultRoute._addFileChildren(
+  AppConsultRouteChildren,
+)
+
 interface AppRouteChildren {
-  AppConsultationListRoute: typeof AppConsultationListRoute
-  AppConsultationResultRoute: typeof AppConsultationResultRoute
+  AppConsultRoute: typeof AppConsultRouteWithChildren
   AppExcellentCasesRoute: typeof AppExcellentCasesRoute
   AppMypageRoute: typeof AppMypageRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppConsultationListRoute: AppConsultationListRoute,
-  AppConsultationResultRoute: AppConsultationResultRoute,
+  AppConsultRoute: AppConsultRouteWithChildren,
   AppExcellentCasesRoute: AppExcellentCasesRoute,
   AppMypageRoute: AppMypageRoute,
   AppIndexRoute: AppIndexRoute,

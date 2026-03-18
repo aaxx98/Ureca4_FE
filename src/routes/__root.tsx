@@ -17,6 +17,9 @@ async function tryRestoreSession(currentPath: string) {
 	// 이미 로그인/oauth 페이지면 복원 시도 불필요
 	if (currentPath === ROUTES.LOGIN || currentPath.startsWith("/oauth")) return;
 
+	// SSR 환경에서는 브라우저 쿠키가 없으므로 클라이언트에서만 실행
+	if (typeof window === "undefined") return;
+
 	try {
 		const data = await ky
 			.post(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`, {
@@ -47,13 +50,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 					content: "width=device-width, initial-scale=1",
 				},
 				{
-					title: "App",
+					title: "상담4조",
 				},
 			],
 			links: [
 				{
 					rel: "stylesheet",
 					href: appCss,
+				},
+				{
+					rel: "icon",
+					type: "image/svg+xml",
+					href: "/favicon.svg",
 				},
 			],
 		}),
