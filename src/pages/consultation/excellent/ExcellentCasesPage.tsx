@@ -3,7 +3,7 @@ import { useGetWeeklyBoardQuery } from "../../../shared/api/generated/weekly-exc
 import { getRole } from "../../../shared/api/roleStore";
 import { ROUTES } from "../../../shared/config/routes";
 import { ContextNavItem } from "../../../shared/ui/ContextNavItem";
-import { AnalysisIcon } from "../../../shared/ui/icons";
+import { AnalysisIcon, NoticeIcon } from "../../../shared/ui/icons";
 import * as layout from "../../../shared/ui/pageLayout.css";
 import { AppSidebar } from "../../../widgets/AppSidebar/AppSidebar";
 import { ExcellentCaseCard } from "./ExcellentCaseCard";
@@ -52,7 +52,8 @@ export function ExcellentCasesPage() {
   return (
     <>
       <AppSidebar label="대시보드">
-        <ContextNavItem icon={<AnalysisIcon />} label="우수 사례 게시판" to={ROUTES.EXCELLENT} />
+        <ContextNavItem icon={<AnalysisIcon />} label="우수 사례 게시판" to={ROUTES.EXCELLENT} isActive />
+        <ContextNavItem icon={<NoticeIcon />}   label="공지사항"         to={ROUTES.NOTICE} />
         {role === "관리자" && (
           <ContextNavItem icon={<AnalysisIcon />} label="우수사례 설정" to={ROUTES.ADMIN_EXCELLENT_CASES} />
         )}
