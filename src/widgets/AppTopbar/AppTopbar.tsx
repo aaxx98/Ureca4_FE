@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { ROUTES } from "../../shared/config/routes";
 import {
   AnalysisIcon,
@@ -13,7 +14,8 @@ import * as s from "./AppTopbar.css";
 import { UserDropdown } from "./UserDropdown";
 
 export function AppTopbar() {
-  const isAdmin = getRole() === "관리자";
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => { setIsAdmin(getRole() === "관리자"); }, []);
 
   return (
     <header className={s.topbar}>

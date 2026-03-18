@@ -16,7 +16,9 @@ import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppNotificationsRouteImport } from './routes/_app/notifications'
 import { Route as AppNoticeRouteImport } from './routes/_app/notice'
 import { Route as AppMypageRouteImport } from './routes/_app/mypage'
+import { Route as AppMyBookmarksRouteImport } from './routes/_app/my-bookmarks'
 import { Route as AppExcellentCasesRouteImport } from './routes/_app/excellent-cases'
+import { Route as AppAdminManualRouteImport } from './routes/_app/admin-manual'
 import { Route as AppAdminExcellentCasesRouteImport } from './routes/_app/admin-excellent-cases'
 import { Route as AppAdminEmployeesRouteImport } from './routes/_app/admin-employees'
 import { Route as AppAdminAnalysisFailedRouteImport } from './routes/_app/admin-analysis-failed'
@@ -29,7 +31,6 @@ import { Route as AppConsultConsultationListRouteImport } from './routes/_app/_c
 import { Route as AppConsultAnalysisRouteImport } from './routes/_app/_consult/analysis'
 import { Route as AppConsultAdminReportRouteImport } from './routes/_app/_consult/admin-report'
 import { Route as AppConsultAdminManualSettingsRouteImport } from './routes/_app/_consult/admin-manual-settings'
-import { Route as AppConsultAdminManualRouteImport } from './routes/_app/_consult/admin-manual'
 
 const OauthRoute = OauthRouteImport.update({
   id: '/oauth',
@@ -65,9 +66,19 @@ const AppMypageRoute = AppMypageRouteImport.update({
   path: '/mypage',
   getParentRoute: () => AppRoute,
 } as any)
+const AppMyBookmarksRoute = AppMyBookmarksRouteImport.update({
+  id: '/my-bookmarks',
+  path: '/my-bookmarks',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppExcellentCasesRoute = AppExcellentCasesRouteImport.update({
   id: '/excellent-cases',
   path: '/excellent-cases',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminManualRoute = AppAdminManualRouteImport.update({
+  id: '/admin-manual',
+  path: '/admin-manual',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminExcellentCasesRoute = AppAdminExcellentCasesRouteImport.update({
@@ -133,11 +144,6 @@ const AppConsultAdminManualSettingsRoute =
     path: '/admin-manual-settings',
     getParentRoute: () => AppConsultRoute,
   } as any)
-const AppConsultAdminManualRoute = AppConsultAdminManualRouteImport.update({
-  id: '/admin-manual',
-  path: '/admin-manual',
-  getParentRoute: () => AppConsultRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -146,11 +152,12 @@ export interface FileRoutesByFullPath {
   '/admin-analysis-failed': typeof AppAdminAnalysisFailedRoute
   '/admin-employees': typeof AppAdminEmployeesRoute
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
+  '/admin-manual': typeof AppAdminManualRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
+  '/my-bookmarks': typeof AppMyBookmarksRoute
   '/mypage': typeof AppMypageRoute
   '/notice': typeof AppNoticeRoute
   '/notifications': typeof AppNotificationsRoute
-  '/admin-manual': typeof AppConsultAdminManualRoute
   '/admin-manual-settings': typeof AppConsultAdminManualSettingsRoute
   '/admin-report': typeof AppConsultAdminReportRoute
   '/analysis': typeof AppConsultAnalysisRoute
@@ -167,11 +174,12 @@ export interface FileRoutesByTo {
   '/admin-analysis-failed': typeof AppAdminAnalysisFailedRoute
   '/admin-employees': typeof AppAdminEmployeesRoute
   '/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
+  '/admin-manual': typeof AppAdminManualRoute
   '/excellent-cases': typeof AppExcellentCasesRoute
+  '/my-bookmarks': typeof AppMyBookmarksRoute
   '/mypage': typeof AppMypageRoute
   '/notice': typeof AppNoticeRoute
   '/notifications': typeof AppNotificationsRoute
-  '/admin-manual': typeof AppConsultAdminManualRoute
   '/admin-manual-settings': typeof AppConsultAdminManualSettingsRoute
   '/admin-report': typeof AppConsultAdminReportRoute
   '/analysis': typeof AppConsultAnalysisRoute
@@ -190,12 +198,13 @@ export interface FileRoutesById {
   '/_app/admin-analysis-failed': typeof AppAdminAnalysisFailedRoute
   '/_app/admin-employees': typeof AppAdminEmployeesRoute
   '/_app/admin-excellent-cases': typeof AppAdminExcellentCasesRoute
+  '/_app/admin-manual': typeof AppAdminManualRoute
   '/_app/excellent-cases': typeof AppExcellentCasesRoute
+  '/_app/my-bookmarks': typeof AppMyBookmarksRoute
   '/_app/mypage': typeof AppMypageRoute
   '/_app/notice': typeof AppNoticeRoute
   '/_app/notifications': typeof AppNotificationsRoute
   '/_app/': typeof AppIndexRoute
-  '/_app/_consult/admin-manual': typeof AppConsultAdminManualRoute
   '/_app/_consult/admin-manual-settings': typeof AppConsultAdminManualSettingsRoute
   '/_app/_consult/admin-report': typeof AppConsultAdminReportRoute
   '/_app/_consult/analysis': typeof AppConsultAnalysisRoute
@@ -214,11 +223,12 @@ export interface FileRouteTypes {
     | '/admin-analysis-failed'
     | '/admin-employees'
     | '/admin-excellent-cases'
+    | '/admin-manual'
     | '/excellent-cases'
+    | '/my-bookmarks'
     | '/mypage'
     | '/notice'
     | '/notifications'
-    | '/admin-manual'
     | '/admin-manual-settings'
     | '/admin-report'
     | '/analysis'
@@ -235,11 +245,12 @@ export interface FileRouteTypes {
     | '/admin-analysis-failed'
     | '/admin-employees'
     | '/admin-excellent-cases'
+    | '/admin-manual'
     | '/excellent-cases'
+    | '/my-bookmarks'
     | '/mypage'
     | '/notice'
     | '/notifications'
-    | '/admin-manual'
     | '/admin-manual-settings'
     | '/admin-report'
     | '/analysis'
@@ -257,12 +268,13 @@ export interface FileRouteTypes {
     | '/_app/admin-analysis-failed'
     | '/_app/admin-employees'
     | '/_app/admin-excellent-cases'
+    | '/_app/admin-manual'
     | '/_app/excellent-cases'
+    | '/_app/my-bookmarks'
     | '/_app/mypage'
     | '/_app/notice'
     | '/_app/notifications'
     | '/_app/'
-    | '/_app/_consult/admin-manual'
     | '/_app/_consult/admin-manual-settings'
     | '/_app/_consult/admin-report'
     | '/_app/_consult/analysis'
@@ -330,11 +342,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMypageRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/my-bookmarks': {
+      id: '/_app/my-bookmarks'
+      path: '/my-bookmarks'
+      fullPath: '/my-bookmarks'
+      preLoaderRoute: typeof AppMyBookmarksRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/excellent-cases': {
       id: '/_app/excellent-cases'
       path: '/excellent-cases'
       fullPath: '/excellent-cases'
       preLoaderRoute: typeof AppExcellentCasesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin-manual': {
+      id: '/_app/admin-manual'
+      path: '/admin-manual'
+      fullPath: '/admin-manual'
+      preLoaderRoute: typeof AppAdminManualRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/admin-excellent-cases': {
@@ -421,18 +447,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppConsultAdminManualSettingsRouteImport
       parentRoute: typeof AppConsultRoute
     }
-    '/_app/_consult/admin-manual': {
-      id: '/_app/_consult/admin-manual'
-      path: '/admin-manual'
-      fullPath: '/admin-manual'
-      preLoaderRoute: typeof AppConsultAdminManualRouteImport
-      parentRoute: typeof AppConsultRoute
-    }
   }
 }
 
 interface AppConsultRouteChildren {
-  AppConsultAdminManualRoute: typeof AppConsultAdminManualRoute
   AppConsultAdminManualSettingsRoute: typeof AppConsultAdminManualSettingsRoute
   AppConsultAdminReportRoute: typeof AppConsultAdminReportRoute
   AppConsultAnalysisRoute: typeof AppConsultAnalysisRoute
@@ -444,7 +462,6 @@ interface AppConsultRouteChildren {
 }
 
 const AppConsultRouteChildren: AppConsultRouteChildren = {
-  AppConsultAdminManualRoute: AppConsultAdminManualRoute,
   AppConsultAdminManualSettingsRoute: AppConsultAdminManualSettingsRoute,
   AppConsultAdminReportRoute: AppConsultAdminReportRoute,
   AppConsultAnalysisRoute: AppConsultAnalysisRoute,
@@ -464,7 +481,9 @@ interface AppRouteChildren {
   AppAdminAnalysisFailedRoute: typeof AppAdminAnalysisFailedRoute
   AppAdminEmployeesRoute: typeof AppAdminEmployeesRoute
   AppAdminExcellentCasesRoute: typeof AppAdminExcellentCasesRoute
+  AppAdminManualRoute: typeof AppAdminManualRoute
   AppExcellentCasesRoute: typeof AppExcellentCasesRoute
+  AppMyBookmarksRoute: typeof AppMyBookmarksRoute
   AppMypageRoute: typeof AppMypageRoute
   AppNoticeRoute: typeof AppNoticeRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
@@ -476,7 +495,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminAnalysisFailedRoute: AppAdminAnalysisFailedRoute,
   AppAdminEmployeesRoute: AppAdminEmployeesRoute,
   AppAdminExcellentCasesRoute: AppAdminExcellentCasesRoute,
+  AppAdminManualRoute: AppAdminManualRoute,
   AppExcellentCasesRoute: AppExcellentCasesRoute,
+  AppMyBookmarksRoute: AppMyBookmarksRoute,
   AppMypageRoute: AppMypageRoute,
   AppNoticeRoute: AppNoticeRoute,
   AppNotificationsRoute: AppNotificationsRoute,

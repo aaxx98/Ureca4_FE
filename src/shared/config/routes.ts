@@ -17,6 +17,7 @@ export const ROUTES = {
   ADMIN_EMPLOYEES: "/admin-employees",
   ADMIN_ANALYSIS_FAILED: "/admin-analysis-failed",
   OUTBOUND_REPORT: "/outbound-report",
+  MY_BOOKMARKS: "/my-bookmarks",
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];

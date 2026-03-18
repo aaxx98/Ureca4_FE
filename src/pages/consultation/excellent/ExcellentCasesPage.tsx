@@ -32,12 +32,12 @@ export function ExcellentCasesPage() {
   const { data, isPending, isError } = useGetWeeklyBoardQuery({ year, week });
   const items = data ?? [];
 
-  const categories     = Array.from(new Set(items.map((i) => i.smallCategory).filter(Boolean))) as string[];
   const sorted         = [...items].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
   const heroCase       = sorted[0];
   const otherCases     = sorted.slice(1);
+  const categories     = Array.from(new Set(sorted.map((i) => i.smallCategory).filter(Boolean))) as string[];
   const filteredOthers = selectedCategory
-    ? otherCases.filter(i => i.smallCategory === selectedCategory)
+    ? sorted.filter(i => i.smallCategory === selectedCategory)
     : otherCases;
 
   function navigate(delta: number) {
@@ -136,6 +136,7 @@ export function ExcellentCasesPage() {
       {selectedId != null && (
         <ExcellentCaseDetailModal
           consultId={selectedId}
+          adminReason={items.find(i => i.consultId === selectedId)?.adminReason ?? undefined}
           onClose={() => setSelectedId(null)}
         />
       )}

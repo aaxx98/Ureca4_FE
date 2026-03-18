@@ -20,9 +20,18 @@ const RISK_LABELS: { key: keyof CustomerRiskResponse; label: string; emoji: stri
   { key: "churnRisk", label: "해지 위험", emoji: "🚨" },
 ];
 
-const KEY_TO_LABEL: Record<string, string> = Object.fromEntries(
-  RISK_LABELS.map(({ key, label }) => [key, label])
-);
+const KEY_TO_LABEL: Record<string, string> = {
+  ...Object.fromEntries(RISK_LABELS.map(({ key, label }) => [key, label])),
+  // API surgeTypes 대문자 매핑
+  FRAUD_SUSPECT: "사기 의심",
+  MALICIOUS_COMPLAINT: "악성 민원",
+  POLICY_ABUSE: "정책 악용",
+  EXCESSIVE_COMPENSATION: "과도한 보상",
+  REPEATED_COMPLAINT: "반복 민원",
+  PHISHING_VICTIM: "피싱 피해",
+  CHURN_RISK: "해지 위험",
+  CHURN: "해지 위험",
+};
 
 function ChangeRateBadge({ rate }: { rate?: number }) {
   if (rate == null) return null;
@@ -57,37 +66,39 @@ export function CustomerRiskSection({ risk, compare, riskPending, comparePending
 
   return (
     <ReportSection title="고객 특이사항" isPending={isPending} hasData={hasData} notice={notice}>
-      {compare && (
-        <p style={{ fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>
-          비교 기간: <strong>{compare.compareDate}</strong> → <strong>{compare.baseDate}</strong>
-        </p>
-      )}
-      {risk && (
-        <>
-          <div className={s.riskGrid}>
-            {RISK_LABELS.map(({ key, label, emoji }) => {
-              const changeRate = changes[key]?.changeRate;
-              return (
-                <div key={key} className={s.riskItem} style={riskCardStyle(changeRate)}>
-                  <p className={s.riskLabel}>{emoji} {label}</p>
-                  <p className={s.riskCount}>{(risk[key] as number | undefined) ?? "-"}</p>
-                  <ChangeRateBadge rate={changeRate} />
-                </div>
-              );
-            })}
-            <div className={s.riskItem} style={riskCardStyle(compare?.changes?.totalRiskCount?.changeRate)}>
-              <p className={s.riskLabel}>⚠️ 총 위험 건수</p>
-              <p className={s.riskCount}>{risk.totalRiskCount ?? "-"}</p>
-              <ChangeRateBadge rate={compare?.changes?.totalRiskCount?.changeRate} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        {compare && (
+          <p style={{ fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>
+            비교 기간: <strong>{compare.compareDate}</strong> → <strong>{compare.baseDate}</strong>
+          </p>
+        )}
+        {risk && (
+          <>
+            <div className={s.riskGrid}>
+              {RISK_LABELS.map(({ key, label, emoji }) => {
+                const changeRate = changes[key]?.changeRate;
+                return (
+                  <div key={key} className={s.riskItem} style={riskCardStyle(changeRate)}>
+                    <p className={s.riskLabel}>{emoji} {label}</p>
+                    <p className={s.riskCount}>{(risk[key] as number | undefined) ?? "-"}</p>
+                    <ChangeRateBadge rate={changeRate} />
+                  </div>
+                );
+              })}
+              <div className={s.riskItem} style={riskCardStyle(compare?.changes?.totalRiskCount?.changeRate)}>
+                <p className={s.riskLabel}>⚠️ 총 위험 건수</p>
+                <p className={s.riskCount}>{risk.totalRiskCount ?? "-"}</p>
+                <ChangeRateBadge rate={compare?.changes?.totalRiskCount?.changeRate} />
+              </div>
             </div>
-          </div>
-          {risk.surgeAlerts?.surgeDetected && (
-            <p className={s.surgeAlert}>
-              ⚠ 급증 감지: {risk.surgeAlerts.surgeTypes?.map((t) => KEY_TO_LABEL[t] ?? t).join(", ")} ({risk.surgeAlerts.changeRate?.toFixed(1)}% 변화)
-            </p>
-          )}
-        </>
-      )}
+            {risk.surgeAlerts?.surgeDetected && (
+              <p className={s.surgeAlert}>
+                ⚠ 급증 감지: {risk.surgeAlerts.surgeTypes?.map((t) => KEY_TO_LABEL[t] ?? t).join(", ")} ({risk.surgeAlerts.changeRate?.toFixed(1)}% 변화)
+              </p>
+            )}
+          </>
+        )}
+      </div>
     </ReportSection>
   );
 }
