@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import type { CategoryDto } from "../../../shared/api/generated/api.schemas";
 import { BaseModal } from "../../../shared/ui/BaseModal/BaseModal";
 import { Button } from "../../../shared/ui/Button/Button";
@@ -62,11 +62,6 @@ export function AdminManualModal({
 		setContent(manual?.content ?? "");
 		setIsActive(manual?.isActive ?? false);
 	}, [manual, mode]);
-
-	const selectedCategory = useMemo(
-		() => categories.find((item) => item.categoryCode === categoryCode),
-		[categories, categoryCode],
-	);
 
 	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -230,32 +225,6 @@ export function AdminManualModal({
 								rows={10}
 							/>
 						</div>
-					</div>
-				</section>
-
-				<section className={s.modalSection}>
-					<h3 className={s.modalSectionTitle}>HTML 미리보기</h3>
-					<div className={s.previewCard}>
-						<div className={s.previewTitle}>{title || "제목 미리보기"}</div>
-						<div className={s.previewMeta}>
-							<span>
-								{mode === "create"
-									? selectedCategory?.smallCategory || "카테고리 미선택"
-									: extractSmallCategory(manual?.categoryName ?? "")}
-							</span>
-							{mode === "detail" && <span>{manual?.empName || "-"}</span>}
-							{mode === "detail" && (
-								<span>{isActive ? "활성화" : "비활성화"}</span>
-							)}
-						</div>
-						<div
-							className={s.previewContent}
-							dangerouslySetInnerHTML={{
-								__html:
-									content ||
-									"<p>내용을 입력하면 HTML 미리보기가 표시됩니다.</p>",
-							}}
-						/>
 					</div>
 				</section>
 			</form>

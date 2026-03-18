@@ -138,22 +138,9 @@ export function useAdminManualManagement() {
 				nextIsActive,
 			};
 		},
-		onSuccess: async ({ manual, data, nextIsActive }) => {
+		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: MANUAL_QUERY_KEY });
-			setModalState((current) =>
-				current?.mode === "detail" &&
-				current.manual?.manualId === manual.manualId
-					? {
-							...current,
-							manual: {
-								...current.manual,
-								title: data.title,
-								content: data.content,
-								isActive: nextIsActive,
-							},
-						}
-					: current,
-			);
+			setModalState(null);
 		},
 	});
 
