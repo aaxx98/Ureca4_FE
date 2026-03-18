@@ -12,7 +12,7 @@ import type {
 
 export const getFilterGroupDetail = (id: number, signal?: AbortSignal) => {
 	return apiClient<FilterGroupDetailResponse>({
-		url: `/api/search-filters/${id}`,
+		url: `/search-filters/${id}`,
 		method: "GET",
 		signal,
 	});
@@ -20,7 +20,7 @@ export const getFilterGroupDetail = (id: number, signal?: AbortSignal) => {
 
 export const putFilterGroup = (id: number, filterGroupUpdateRequest: FilterGroupUpdateRequest) => {
 	return apiClient<FilterGroupDetailResponse>({
-		url: `/api/search-filters/${id}`,
+		url: `/search-filters/${id}`,
 		method: "PUT",
 		headers: { "Content-Type": "application/json" },
 		data: filterGroupUpdateRequest,
@@ -29,14 +29,14 @@ export const putFilterGroup = (id: number, filterGroupUpdateRequest: FilterGroup
 
 export const deleteFilterGroup = (id: number) => {
 	return apiClient<DeleteFilterGroup200>({
-		url: `/api/search-filters/${id}`,
+		url: `/search-filters/${id}`,
 		method: "DELETE",
 	});
 };
 
 export const putFilterGroupOrder = (filterGroupOrderRequest: FilterGroupOrderRequest) => {
 	return apiClient<UpdateFilterGroupOrder200>({
-		url: `/api/search-filters/order`,
+		url: `/search-filters/order`,
 		method: "PUT",
 		headers: { "Content-Type": "application/json" },
 		data: filterGroupOrderRequest,
@@ -45,7 +45,7 @@ export const putFilterGroupOrder = (filterGroupOrderRequest: FilterGroupOrderReq
 
 export const getMyFilterGroups = (signal?: AbortSignal) => {
 	return apiClient<GetMyFilterGroups200>({
-		url: `/api/search-filters`,
+		url: `/search-filters`,
 		method: "GET",
 		signal,
 	});
@@ -53,7 +53,7 @@ export const getMyFilterGroups = (signal?: AbortSignal) => {
 
 export const postFilterGroup = (filterGroupCreateRequest: FilterGroupCreateRequest, signal?: AbortSignal) => {
 	return apiClient<FilterGroupDetailResponse>({
-		url: `/api/search-filters`,
+		url: `/search-filters`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		data: filterGroupCreateRequest,
@@ -63,7 +63,7 @@ export const postFilterGroup = (filterGroupCreateRequest: FilterGroupCreateReque
 
 export const getFilterDefinitions = (signal?: AbortSignal) => {
 	return apiClient<GetFilterDefinitions200>({
-		url: `/api/filters`,
+		url: `/filters`,
 		method: "GET",
 		signal,
 	});

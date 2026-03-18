@@ -551,9 +551,9 @@ export interface PageNotificationResponse {
   content?: NotificationResponse[];
   number?: number;
   sort?: SortObject;
-  numberOfElements?: number;
   first?: boolean;
   last?: boolean;
+  numberOfElements?: number;
   empty?: boolean;
 }
 
@@ -628,9 +628,9 @@ export interface PageNoticeSummary {
   content?: NoticeSummary[];
   number?: number;
   sort?: SortObject;
-  numberOfElements?: number;
   first?: boolean;
   last?: boolean;
+  numberOfElements?: number;
   empty?: boolean;
 }
 
@@ -935,7 +935,6 @@ export interface ConsultationHistoryItemDto {
 export interface ConsultationIamInfoDto {
   title?: string;
   content?: string;
-  aiSummary?: string;
   memo?: string;
 }
 
@@ -1050,9 +1049,9 @@ export interface PageConsultationSummaryDto {
   content?: ConsultationSummaryDto[];
   number?: number;
   sort?: SortObject;
-  numberOfElements?: number;
   first?: boolean;
   last?: boolean;
+  numberOfElements?: number;
   empty?: boolean;
 }
 
@@ -1852,9 +1851,9 @@ export interface PageEvaluationListResponse {
   content?: EvaluationListResponse[];
   number?: number;
   sort?: SortObject;
-  numberOfElements?: number;
   first?: boolean;
   last?: boolean;
+  numberOfElements?: number;
   empty?: boolean;
 }
 
