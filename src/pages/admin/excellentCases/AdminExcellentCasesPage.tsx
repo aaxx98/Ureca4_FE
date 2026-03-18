@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetCandidatesQuery, useMutationPatchRejectExcellentCaseQuery } from "../../../shared/api/generated/admin-excellent-case";
-import { getDetailKey } from "../../../shared/api/generated/admin-excellent-case/admin-excellent-case.keys";
 import {
   useGetAgentsQuery,
   useGetCategoriesQuery,
@@ -28,16 +27,30 @@ interface DetailModalState {
   openSelectMode: boolean;
 }
 
-function getScoreColor(score?: number) {
-  if (!score) return "#94A3B8";
-  if (score >= 90) return "#F59E0B";
-  if (score >= 80) return "#64748B";
-  return "#10B981";
+function getScoreBadgeStyle(score?: number): React.CSSProperties {
+  if (!score || score < 50)
+    return { background: "#F1F5F9", color: "#94A3B8", boxShadow: "none" };
+  if (score < 60)
+    return { background: "linear-gradient(135deg, #E0F2FE, #BAE6FD)", color: "#0369A1", boxShadow: "none" };
+  if (score < 70)
+    return { background: "linear-gradient(135deg, #0EA5E9, #0284C7)", color: "#FFFFFF", boxShadow: "0 1px 6px rgba(2,132,199,0.3)" };
+  if (score < 80)
+    return { background: "linear-gradient(135deg, #06B6D4, #0891B2)", color: "#FFFFFF", boxShadow: "0 2px 8px rgba(8,145,178,0.35)" };
+  if (score < 90)
+    return { background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#FFFFFF", boxShadow: "0 2px 10px rgba(217,119,6,0.4)" };
+  return { background: "linear-gradient(135deg, #F97316, #EA580C)", color: "#FFFFFF", boxShadow: "0 3px 14px rgba(234,88,12,0.55)", fontWeight: 800 };
 }
 
 function formatDate(iso?: string) {
   if (!iso) return "";
   return iso.slice(0, 10).replace(/-/g, ".");
+}
+
+function extractSituationTitle(title?: string): string {
+  if (!title) return "제목 없음";
+  const match = title.match(/\[상황\]\s*([\s\S]*?)(?:\s*(?:→|->))/);
+  if (match) return match[1].trim();
+  return title;
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -61,8 +74,7 @@ interface RowProps {
 }
 
 function CandidateRow({ item, onRowClick, onSelectClick, onRejectClick, isRejecting }: RowProps) {
-  const status  = item.selectionStatus ?? EvaluationListResponseSelectionStatus.PENDING;
-  const initial = item.counselorName?.charAt(0) ?? "?";
+  const status = item.selectionStatus ?? EvaluationListResponseSelectionStatus.PENDING;
 
   const canSelect = status === EvaluationListResponseSelectionStatus.PENDING
     || status === EvaluationListResponseSelectionStatus.REJECTED;
@@ -79,28 +91,22 @@ function CandidateRow({ item, onRowClick, onSelectClick, onRejectClick, isReject
       {/* 제목 */}
       <td className={s.td}>
         <div className={s.titleCell}>
-          <div className={s.titleText} title={item.title ?? ""}>
-            {item.title ?? "제목 없음"}
+          <div className={s.titleText}>
+            {extractSituationTitle(item.title)}
           </div>
         </div>
       </td>
 
       {/* 상담사 */}
       <td className={s.td}>
-        <div className={s.counselorChip}>
-          <div className={s.counselorAvatar}>{initial}</div>
-          {item.counselorName ?? "-"}
-        </div>
+        <span style={{ fontSize: "13px", color: "#374151" }}>{item.counselorName ?? "-"}</span>
       </td>
 
       {/* AI 점수 */}
       <td className={s.tdCenter}>
         <div
           className={s.scoreBadge}
-          style={{
-            background: `linear-gradient(135deg, ${getScoreColor(item.score)}, ${getScoreColor(item.score)}CC)`,
-            margin: "0 auto",
-          }}
+          style={{ ...getScoreBadgeStyle(item.score), margin: "0 auto" }}
         >
           {item.score ?? "-"}
         </div>
@@ -176,9 +182,8 @@ export function AdminExcellentCasesPage() {
 
   const rejectMutation = useMutationPatchRejectExcellentCaseQuery({
     mutation: {
-      onSuccess: (_, { consultId }) => {
+      onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["/admin/excellent-cases/candidates"] });
-        queryClient.invalidateQueries({ queryKey: getDetailKey(consultId) });
         setRejectingId(null);
       },
       onError: () => setRejectingId(null),
@@ -229,7 +234,7 @@ export function AdminExcellentCasesPage() {
     boxClass: string;
   }[] = [
     { key: "ALL",      label: "전체 사례",           count: allItems.length,     countColor: "#0F172A", boxClass: s.statBoxAll      },
-    { key: "PENDING",  label: "후보군",              count: pendingItems.length,  countColor: "#D97706", boxClass: s.statBoxPending  },
+    { key: "PENDING",  label: "AI선정 후보군",        count: pendingItems.length,  countColor: "#D97706", boxClass: s.statBoxPending  },
     { key: "SELECTED", label: "이달의 사례로 게시중", count: selectedItems.length, countColor: "#059669", boxClass: s.statBoxSelected },
     { key: "REJECTED", label: "후보군 제외",          count: rejectedItems.length, countColor: "#DC2626", boxClass: s.statBoxRejected },
   ];

@@ -277,16 +277,28 @@ export const categoryPill = style({
 });
 
 export const titleCell = style({
-  maxWidth: "240px",
+  minWidth: "320px",
 });
 
 export const titleText = style({
   fontSize: vars.fontSize.sm,
   fontWeight: vars.fontWeight.semibold,
   color: vars.color.textPrimary,
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
+  wordBreak: "keep-all",
+  whiteSpace: "normal",
+});
+
+export const titleTag = style({
+  display: "inline-block",
+  marginRight: "4px",
+  padding: "1px 5px",
+  borderRadius: "4px",
+  fontSize: "11px",
+  fontWeight: vars.fontWeight.bold,
+  backgroundColor: "#EDE9FE",
+  color: "#6D28D9",
+  verticalAlign: "middle",
+  flexShrink: 0,
 });
 
 export const scoreBadge = style({
