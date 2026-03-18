@@ -7,6 +7,8 @@ interface Props {
   date: string;
   onPeriodChange: (p: Period) => void;
   onDateChange: (d: string) => void;
+  hideDateInput?: boolean;
+  activeColor?: string;
 }
 
 const PERIOD_OPTIONS: { label: string; value: Period }[] = [
@@ -15,25 +17,37 @@ const PERIOD_OPTIONS: { label: string; value: Period }[] = [
   { label: "월간", value: "monthly" },
 ];
 
-export function PeriodSelector({ period, date, onPeriodChange, onDateChange }: Props) {
+const INPUT_TYPE: Record<Period, string> = {
+  daily: "date",
+  weekly: "week",
+  monthly: "month",
+};
+
+export function PeriodSelector({ period, date, onPeriodChange, onDateChange, hideDateInput, activeColor }: Props) {
   return (
     <div className={s.periodBar}>
-      {PERIOD_OPTIONS.map((opt) => (
-        <button
-          key={opt.value}
-          type="button"
-          className={s.periodBtnVariant[period === opt.value ? "active" : "default"]}
-          onClick={() => onPeriodChange(opt.value)}
-        >
-          {opt.label}
-        </button>
-      ))}
-      <input
-        type="date"
-        className={s.dateInput}
-        value={date}
-        onChange={(e) => onDateChange(e.target.value)}
-      />
+      {PERIOD_OPTIONS.map((opt) => {
+        const isActive = period === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            className={s.periodBtnVariant[isActive ? "active" : "default"]}
+            style={isActive && activeColor ? { backgroundColor: activeColor, borderColor: activeColor } : undefined}
+            onClick={() => onPeriodChange(opt.value)}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+      {!hideDateInput && (
+        <input
+          type={INPUT_TYPE[period]}
+          className={s.dateInput}
+          value={date}
+          onChange={(e) => onDateChange(e.target.value)}
+        />
+      )}
     </div>
   );
 }
